@@ -26,10 +26,20 @@ namespace TMCS_PRJ
             _view.Form_Load += _view_Form_Load;
             _view.btnInputClick += _view_btnInputClick;
             _view.btnOutputClick += _view_btnOutputClick;
+            _view.btnConnectClick += _view_btnConnectClick;
+            _view.btnCreateClick += _view_btnCreateClick;
 
         }
 
+        private void _view_btnCreateClick(object? sender, EventArgs e)
+        {
+            _matrixControl.sssss();
+        }
 
+        private void _view_btnConnectClick(object? sender, EventArgs e)
+        {
+            _matrixControl.SetConnect();
+        }
 
         private void _view_btnOutputClick(object? sender, EventArgs e)
         {

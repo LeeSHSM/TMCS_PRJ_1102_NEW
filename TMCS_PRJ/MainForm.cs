@@ -47,10 +47,21 @@ namespace TMCS_PRJ
             Form_Load?.Invoke(sender, e);
         }
 
+        private void btnConnect_Click(object sender, EventArgs e)
+        {
+            btnConnectClick(sender, e);
+        }
+
+        private void bbbb_Click(object sender, EventArgs e)
+        {
+            btnCreateClick(sender, e);
+        }
+
         public event EventHandler refreshRequest;
         public event EventHandler Form_Load;
         public event EventHandler btnInputClick;
         public event EventHandler btnOutputClick;
         public event EventHandler btnCreateClick;
+        public event EventHandler btnConnectClick;
     }
 }

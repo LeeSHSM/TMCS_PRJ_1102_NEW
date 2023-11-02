@@ -32,6 +32,8 @@
             btnMatrixOutput = new Button();
             btnMatrixInput = new Button();
             pnMatrixFrame = new Panel();
+            btnConnect = new Button();
+            bbbb = new Button();
             groupBox1.SuspendLayout();
             SuspendLayout();
             // 
@@ -74,11 +76,33 @@
             pnMatrixFrame.Size = new Size(286, 300);
             pnMatrixFrame.TabIndex = 0;
             // 
+            // btnConnect
+            // 
+            btnConnect.Location = new Point(522, 265);
+            btnConnect.Name = "btnConnect";
+            btnConnect.Size = new Size(75, 23);
+            btnConnect.TabIndex = 1;
+            btnConnect.Text = "button1";
+            btnConnect.UseVisualStyleBackColor = true;
+            btnConnect.Click += btnConnect_Click;
+            // 
+            // bbbb
+            // 
+            bbbb.Location = new Point(544, 359);
+            bbbb.Name = "bbbb";
+            bbbb.Size = new Size(75, 23);
+            bbbb.TabIndex = 2;
+            bbbb.Text = "button1";
+            bbbb.UseVisualStyleBackColor = true;
+            bbbb.Click += bbbb_Click;
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1163, 740);
+            Controls.Add(bbbb);
+            Controls.Add(btnConnect);
             Controls.Add(groupBox1);
             Name = "MainForm";
             Text = "Form1";
@@ -93,5 +117,7 @@
         private Button btnMatrixOutput;
         private Button btnMatrixInput;
         private Panel pnMatrixFrame;
+        private Button btnConnect;
+        private Button bbbb;
     }
 }

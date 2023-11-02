@@ -5,6 +5,7 @@ using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using static System.Runtime.InteropServices.JavaScript.JSType;
@@ -25,9 +26,7 @@ namespace TMCS_PRJ
 
 
         private MatrixConnect _connect;
-        public MatrixConnect Connect { get => _connect; set => _connect = value; }
-
-        
+        public MatrixConnect Connect { get => _connect; set => _connect = value; }               
 
         #endregion
 
@@ -76,11 +75,11 @@ namespace TMCS_PRJ
         public List<MatrixChannel> GetChannelListInfo(string inout)
         {
             List<MatrixChannel> channels = new List<MatrixChannel>();
-            if (inout == "INPUT")
+            if (inout == input)
             {
                 channels = Matrix.InputChannel;
             }
-            else if (inout == "OUTPUT")
+            else if (inout == output)
             {
                 channels = Matrix.OutputChannel;
             }
@@ -190,6 +189,27 @@ namespace TMCS_PRJ
 
         #endregion
 
+
+        public void Connent()
+        {
+            _connect.Connect();
+        }
+
+        public void DisConnect()
+        {
+            _connect.DisConnect();
+        }
+
+        public void GetState(string msg)
+        {
+            _connect.GetState(msg);
+        }
+
+        public void SendMsg(string msg)
+        {
+            _connect.SendMsg(msg);
+        }
+
     }
 
     public interface MatrixConnect
@@ -204,19 +224,40 @@ namespace TMCS_PRJ
 
     public class RTVDMMatrixToIP : MatrixConnect
     {
-        public RTVDMMatrixToIP()
+        public RTVDMMatrixToIP(IPAddress ip, int port)
         {
+            Address = ip;
+            Port = port;
         }
+
+        private TcpClient _client;
+        private NetworkStream _stream;
+        private StreamReader _reader;
+        private CancellationTokenSource _cts;
+
         public IPAddress Address { get; set; }
         public int Port { get; set; }
 
-        public void Connect()
+        public async void Connect()
         {
+            _client = new TcpClient();
+            await _client.ConnectAsync(Address, Port);
+            _stream = _client.GetStream();
+            _reader = new StreamReader(_stream);
+            _cts = new CancellationTokenSource();
+
+            // Start reading in a background task
+            ReceiveMessages(_cts.Token);
         }
 
         public void DisConnect()
         {
-            throw new NotImplementedException();
+
+                _cts?.Cancel();
+                _reader?.Dispose();
+                _stream?.Dispose();
+                _client?.Close();
+            
         }
 
         public void GetState(string msg)
@@ -224,9 +265,51 @@ namespace TMCS_PRJ
             throw new NotImplementedException();
         }
 
-        public void SendMsg(string msg)
+
+        public async Task SendMsg(string msg)
         {
-            throw new NotImplementedException();
+            string myString = "*255CI02O03!\r\n";
+            byte[] asciiBytes = Encoding.ASCII.GetBytes(myString);
+
+
+            if (_stream == null)
+                throw new InvalidOperationException("Not connected to the server.");
+
+            // Convert the message to ASCII bytes
+            byte[] bytesToSend = Encoding.ASCII.GetBytes(msg);
+
+            // Send the message
+            await _stream.WriteAsync(asciiBytes, 0, asciiBytes.Length);
+        }
+
+        private async void ReceiveMessages(CancellationToken ct)
+        {
+            try
+            {
+                // Keep reading the stream as long as we're connected
+                while (!_cts.IsCancellationRequested)
+                {
+                    string message = await _reader.ReadLineAsync();
+                    if (message != null)
+                    {
+                        // Here, you can do something with the received message
+                        Debug.WriteLine("Received: " + message);
+                    }
+                }
+            }
+            catch (IOException ex)
+            {
+                Debug.WriteLine("Error during receive: " + ex.Message);
+                DisConnect();
+            }
+        }
+
+
+        void MatrixConnect.SendMsg(string msg)
+        {
+
+
+            SendMsg(msg);
         }
     }
 }

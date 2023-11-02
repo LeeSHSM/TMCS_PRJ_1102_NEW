@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -10,11 +11,13 @@ namespace TMCS_PRJ
 {
     public class MatrixPresenter
     {
+
         public MatrixPresenter(int inputCount, int outputCount)
         {
             MatrixFrameControl = new MatrixFrameControl();
             _matrixManager = new MatrixManager(new Matrix(inputCount, outputCount));
             CreateAsync();
+            _matrixManager.Connect = new RTVDMMatrixToIP(IPAddress.Parse("192.168.50.8"), 23);
         }
 
         private MatrixFrameView _matrixFrame;
@@ -41,7 +44,6 @@ namespace TMCS_PRJ
         {
             MatrixFrameControl.ChangeMatrixChannelListClick += MatrixControl_ChangeMatrixChannelListClick;
             MatrixFrameControl.CellClick += MatrixControl_CellClick;
-
         }
 
 
@@ -55,6 +57,17 @@ namespace TMCS_PRJ
             _matrixInOutFrame.Add(mc);
 
             return mc;
+        }
+
+        public void SetConnect()
+        {
+            _matrixManager.Connent();
+            
+        }
+
+        public void sssss()
+        {
+            _matrixManager.SendMsg("hfd");
         }
 
 

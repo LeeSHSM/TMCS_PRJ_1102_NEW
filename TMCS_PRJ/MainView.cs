@@ -13,6 +13,7 @@ namespace TMCS_PRJ
         event EventHandler btnInputClick;
         event EventHandler btnOutputClick;
         event EventHandler btnCreateClick;
+        event EventHandler btnConnectClick;
 
         UserControl pnMatrixFrame { set; }
         UserControl pnMatrixInOutSelectFrame { set; }
