@@ -28,12 +28,70 @@
         /// </summary>
         private void InitializeComponent()
         {
-            components = new System.ComponentModel.Container();
+            groupBox1 = new GroupBox();
+            btnMatrixOutput = new Button();
+            btnMatrixInput = new Button();
+            pnMatrixFrame = new Panel();
+            groupBox1.SuspendLayout();
+            SuspendLayout();
+            // 
+            // groupBox1
+            // 
+            groupBox1.Controls.Add(btnMatrixOutput);
+            groupBox1.Controls.Add(btnMatrixInput);
+            groupBox1.Controls.Add(pnMatrixFrame);
+            groupBox1.Location = new Point(12, 12);
+            groupBox1.Name = "groupBox1";
+            groupBox1.Size = new Size(298, 684);
+            groupBox1.TabIndex = 0;
+            groupBox1.TabStop = false;
+            groupBox1.Text = "groupBox1";
+            // 
+            // btnMatrixOutput
+            // 
+            btnMatrixOutput.Location = new Point(217, 22);
+            btnMatrixOutput.Name = "btnMatrixOutput";
+            btnMatrixOutput.Size = new Size(75, 23);
+            btnMatrixOutput.TabIndex = 2;
+            btnMatrixOutput.Text = "button2";
+            btnMatrixOutput.UseVisualStyleBackColor = true;
+            btnMatrixOutput.Click += btnMatrixOutput_Click;
+            // 
+            // btnMatrixInput
+            // 
+            btnMatrixInput.Location = new Point(136, 22);
+            btnMatrixInput.Name = "btnMatrixInput";
+            btnMatrixInput.Size = new Size(75, 23);
+            btnMatrixInput.TabIndex = 1;
+            btnMatrixInput.Text = "button1";
+            btnMatrixInput.UseVisualStyleBackColor = true;
+            btnMatrixInput.Click += btnMatrixInput_Click;
+            // 
+            // pnMatrixFrame
+            // 
+            pnMatrixFrame.Location = new Point(6, 59);
+            pnMatrixFrame.Name = "pnMatrixFrame";
+            pnMatrixFrame.Size = new Size(286, 300);
+            pnMatrixFrame.TabIndex = 0;
+            // 
+            // MainForm
+            // 
+            AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(800, 450);
+            ClientSize = new Size(1163, 740);
+            Controls.Add(groupBox1);
+            Name = "MainForm";
             Text = "Form1";
+            Load += MainForm_Load;
+            groupBox1.ResumeLayout(false);
+            ResumeLayout(false);
         }
 
         #endregion
+
+        private GroupBox groupBox1;
+        private Button btnMatrixOutput;
+        private Button btnMatrixInput;
+        private Panel pnMatrixFrame;
     }
 }

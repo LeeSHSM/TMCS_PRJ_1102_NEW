@@ -10,9 +10,10 @@
 
   <ItemGroup>
     <Folder Include="Dlp\" />
-    <Folder Include="Matrix\Model\" />
-    <Folder Include="Matrix\Presenter\" />
-    <Folder Include="Matrix\View\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Data.SqlClient" Version="4.8.5" />
   </ItemGroup>
 
 </Project>

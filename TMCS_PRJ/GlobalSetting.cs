@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TMCS_PRJ
 {
-    public class GlobalSettings
+    public class GlobalSetting
     {
 
         public static Logger Logger { get; } = new Logger();

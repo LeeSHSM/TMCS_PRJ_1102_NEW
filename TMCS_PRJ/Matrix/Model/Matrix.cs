@@ -9,17 +9,18 @@ namespace TMCS_PRJ
     public class MatrixChannel : Label
     {
         public event EventHandler ChangeNameEvent;
+        public event EventHandler ChangeRouteNo;
 
         #region Properties
         private int _portNo;
         private string _channelName;
         private string _channelType;
-        private int _inToOutRouteNo;
+        private int _routeNo;
         public int Port
         {
             get => _portNo;
             set
-            {               
+            {
                 _portNo = value;
             }
         }
@@ -41,14 +42,15 @@ namespace TMCS_PRJ
             }
         }
         /// <summary>
-        /// 인풋채널에만 있음.. 인풋채널은 0 고정, out채널은 0은 신호없음, 나머진 1~ 최대 아웃카운트중
+        /// 아웃풋채널에만 있음.. 인풋채널은 0 고정, out채널은 0은 신호없음, 나머진 1~ 최대 아웃카운트중
         /// </summary>
-        public int InToOutRouteNo
+        public int RouteNo
         {
-            get => _inToOutRouteNo;
+            get => _routeNo;
             set
             {
-                _inToOutRouteNo = value;
+                _routeNo = value;
+                ChangeRouteNo?.Invoke(this, EventArgs.Empty);
             }
         }
         #endregion
@@ -57,9 +59,11 @@ namespace TMCS_PRJ
     public class Matrix
     {
         #region Properties
+        private string input = GlobalSetting.ChannelType.INPUT.ToString();
+        private string output = GlobalSetting.ChannelType.OUTPUT.ToString();
+
         private int _inputChannelPortCount;
         private int _outputChannelPortCount;
-        private string _videoType;
         private List<MatrixChannel> _inputChannels;
         private List<MatrixChannel> _outputChannels;
 
@@ -67,49 +71,31 @@ namespace TMCS_PRJ
         public int OutputChannelCount { get => _outputChannelPortCount; }
         public List<MatrixChannel> InputChannel { get => _inputChannels; set => _inputChannels = value; }
         public List<MatrixChannel> OutputChannel { get => _outputChannels; set => _outputChannels = value; }
-        public string VideoType { get => _videoType; }
         #endregion
 
         #region 생성자
-        public Matrix(int inputChannelCount, int outputChannelCount, string videoType)
+        public Matrix(int inputChannelCount, int outputChannelCount)
         {
             _inputChannelPortCount = inputChannelCount;
             _outputChannelPortCount = outputChannelCount;
             _inputChannels = new List<MatrixChannel>();
             _outputChannels = new List<MatrixChannel>();
-            _videoType = videoType;
         }
         #endregion
 
         #region Public Methods
-        public int getChannelPortCount(string channelType)
+        public int getChannelInputPortCount()
         {
-            if (channelType == GlobalSetting.ChannelType.INPUT.ToString())
-            {
-                return _inputChannelPortCount;
-            }
-            else if (channelType == GlobalSetting.ChannelType.OUTPUT.ToString())
-            {
-                return _outputChannelPortCount;
-            }
-
-            throw new ArgumentException("Invalid channel type", nameof(channelType));
+            return _inputChannelPortCount;
+        }
+        public int getChannelOutputPortCount()
+        {
+            return _outputChannelPortCount;
         }
         #endregion
 
         #region Private Methods
-        private void InitializeChannels()
-        {
-            for (int i = 0; i < _inputChannelPortCount; i++)
-            {
-                _inputChannels.Add(new MatrixChannel { Port = i + 1, ChannelType = "INPUT" });
-            }
 
-            for (int i = 0; i < _outputChannelPortCount; i++)
-            {
-                _outputChannels.Add(new MatrixChannel { Port = i + 1, ChannelType = "OUTPUT" });
-            }
-        }
         #endregion
     }
 }
