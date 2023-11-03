@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -84,6 +85,13 @@ namespace TMCS_PRJ
         #endregion
 
         #region Public Methods
+        public int getChannelPortCount(string channelType)
+        {
+            if(channelType == input) return _inputChannelPortCount;
+            if(channelType == output) return _outputChannelPortCount;
+
+            return 0;
+        }
         public int getChannelInputPortCount()
         {
             return _inputChannelPortCount;

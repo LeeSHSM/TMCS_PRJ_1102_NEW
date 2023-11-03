@@ -16,8 +16,23 @@ namespace TMCS_PRJ
         public MatrixInOutSelectFrame()
         {
             InitializeComponent();
-            lblOutput.Click += Input_Click;
-            lblInput.Click += Output_Click;
+            _matrixChannelInput = new MatrixChannel
+            {
+                Port = 0,
+                ChannelName = "-",
+                ChannelType = "INPUT",
+                RouteNo = 0
+            };
+
+            _matrixChannelOutput = new MatrixChannel
+            {
+                Port = 0,
+                ChannelName = "-",
+                ChannelType = "OUTPUT",
+                RouteNo = 0
+            };
+            lblOutput.Click += Output_Click;
+            lblInput.Click += Input_Click;
         }
 
         private MatrixChannel _matrixChannelOutput;
@@ -53,11 +68,7 @@ namespace TMCS_PRJ
                 {
                     UpdateMatrixChannel(_matrixChannelInput);
                 }
-
-                if(_matrixChannelOutput.Port > 0)
-                {
-                    RouteNoChanege?.Invoke(_matrixChannelInput.Port, _matrixChannelOutput.Port);
-                }                
+                RouteNoChange?.Invoke(_matrixChannelInput.Port, _matrixChannelOutput.Port);
             }
         }
 
@@ -83,8 +94,12 @@ namespace TMCS_PRJ
             InputClick?.Invoke(this, e);
         }
 
+
+
+
+
         public event EventHandler InputClick;
         public event EventHandler OutputClick;
-        public event MatrixInOutSelectFrameView.delRouteNoChange RouteNoChanege;
+        public event MatrixInOutSelectFrameView.delRouteNoChange RouteNoChange;
     }
 }

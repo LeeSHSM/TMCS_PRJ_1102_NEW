@@ -53,6 +53,11 @@ namespace TMCS_PRJ
                 UpdateDgvMatrixChannelListLayOut();
             }
         }
+        public void ClearClickedCell()
+        {
+            dgvMatrixChannelList.ClearSelection();
+        }
+
 
         #region Utility Methods
         /// <summary>
@@ -60,8 +65,10 @@ namespace TMCS_PRJ
         /// </summary>
         private void UpdateDgvMatrixChannelListLayOut()
         {
+            SuspendLayout();
             if (dgvMatrixChannelList.Columns.Count > 0)
             {
+                dgvMatrixChannelList.ScrollBars = ScrollBars.None;
                 // 인덱스 컬럼을 비공개
                 dgvMatrixChannelList.RowHeadersVisible = false;
                 // 여백없이 화면에 곽차게
@@ -117,30 +124,20 @@ namespace TMCS_PRJ
 
                 // 최초 dgv 실행시 선택된 컬럼이 없게 하기
                 dgvMatrixChannelList.ClearSelection();
+                
             }
+            ResumeLayout(false);
         }
         #endregion
 
 
         #region Event Handles
 
-        private void 이름바꾸기ToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (sender is ToolStripItem item && item.Owner is ContextMenuStrip contextMenuStrip)
-            {
-                if (dgvMatrixChannelList.SelectedCells.Count == 1)
-                {
-                    DataGridViewCell selectedCell = dgvMatrixChannelList.SelectedCells[0];
-
-                    dgvMatrixChannelList.ReadOnly = false;
-                    selectedCell.ReadOnly = false;
-
-                    dgvMatrixChannelList.CurrentCell = selectedCell;
-                    dgvMatrixChannelList.BeginEdit(true);
-                }
-            }
-        }
-
+        /// <summary>
+        /// dgv 셀렉한거 바뀔때 이벤트
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void dgvMatrixChannelList_SelectionChanged(object sender, EventArgs e)
         {
             if (dgvMatrixChannelList.SelectedCells.Count > 0 && _channelType != null) // 유효한 셀인지 확인
@@ -160,7 +157,11 @@ namespace TMCS_PRJ
                 CellClick?.Invoke(null, EventArgs.Empty);
             }
         }
-
+        /// <summary>
+        /// 셀 우클릭 했을때 이벤트
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void dgvMatrixChannelList_CellMouseUp(object sender, DataGridViewCellMouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right && e.RowIndex >= 0 && e.ColumnIndex == 1)
@@ -176,6 +177,33 @@ namespace TMCS_PRJ
             }
         }
 
+        /// <summary>
+        /// cms 이름바꾸기 클릭시 이벤트 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void 이름바꾸기ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (sender is ToolStripItem item && item.Owner is ContextMenuStrip contextMenuStrip)
+            {
+                if (dgvMatrixChannelList.SelectedCells.Count == 1)
+                {
+                    DataGridViewCell selectedCell = dgvMatrixChannelList.SelectedCells[0];
+
+                    dgvMatrixChannelList.ReadOnly = false;
+                    selectedCell.ReadOnly = false;
+
+                    dgvMatrixChannelList.CurrentCell = selectedCell;
+                    dgvMatrixChannelList.BeginEdit(true);
+                }
+            }
+        }
+
+        /// <summary>
+        /// 우클릭후 이름바꾼후 이벤트 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void dgvMatrixChannelList_CellEndEdit(object sender, DataGridViewCellEventArgs e)
         {
             dgvMatrixChannelList.ReadOnly = true;
@@ -189,9 +217,11 @@ namespace TMCS_PRJ
                 dgvMatrixChannelList.Rows[rowIndex].Cells[columnIndex].Selected = true;
             }));
         }
+
+ 
+
         #endregion
 
-        public event MatrixFrameView.delChangeMatrixChangeList ChangeMatrixChannelListClick;
         public event EventHandler CellClick;
     }
 }

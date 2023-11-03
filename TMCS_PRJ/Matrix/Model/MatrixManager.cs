@@ -42,8 +42,8 @@ namespace TMCS_PRJ
         {
             await Task.Run(async () =>
             {
-                List<MatrixChannel> inputChannels = await LoadChannelFromDB(input);
-                List<MatrixChannel> outputChannels = await LoadChannelFromDB(output);
+                List<MatrixChannel> inputChannels = await LoadChannelAsync(input);
+                List<MatrixChannel> outputChannels = await LoadChannelAsync(output);
 
                 _matrix.InputChannel = inputChannels;
                 _matrix.OutputChannel = outputChannels;
@@ -93,9 +93,9 @@ namespace TMCS_PRJ
         /// <summary>
         /// DataTable 형식으로 채널 전체정보 반환
         /// </summary>
-        public DataTable GetChannelListInfoToDataTable(string inout)
+        public DataTable GetChannelListInfoToDataTable(string channelType)
         {
-            List<MatrixChannel> channels = GetChannelListInfo(inout);
+            List<MatrixChannel> channels = GetChannelListInfo(channelType);
 
             DataTable dt = new DataTable();
             dt.Columns.Add("Port");
@@ -134,13 +134,18 @@ namespace TMCS_PRJ
             //대충 in,out 채널리스트 db에 저장하는 메서드
         }
        
-        private async Task<List<MatrixChannel>> LoadChannelFromDB(string channelType)
+        /// <summary>
+        /// 채널정보 불러오기
+        /// </summary>
+        /// <param name="channelType"></param>
+        /// <returns></returns>
+        private async Task<List<MatrixChannel>> LoadChannelAsync(string channelType)
         {
             //string connectionString = "Server=192.168.50.50;Database=TMCS;User Id=sa;password=tkdgus12#;";
 
             List<MatrixChannel> mc = new List<MatrixChannel>();
 
-            for (int port = 1; port <= 16; port++)
+            for (int port = 1; port <= _matrix.getChannelPortCount(channelType); port++)
             {
                 MatrixChannel channel = await GetMatrixChannelFromDBAsync(_connectionString, port, channelType);
                 mc.Add(channel);
@@ -148,7 +153,13 @@ namespace TMCS_PRJ
 
             return mc;
         }
-
+        /// <summary>
+        /// DB로부터 채널정보 개별 불러오기 
+        /// </summary>
+        /// <param name="connectionString"></param>
+        /// <param name="port"></param>
+        /// <param name="channelType"></param>
+        /// <returns></returns>
         private async Task<MatrixChannel> GetMatrixChannelFromDBAsync(string connectionString, int port, string channelType)
         {
             // 기본값 설정
@@ -194,7 +205,7 @@ namespace TMCS_PRJ
         #endregion
 
 
-        public void Connent()
+        public void StartConnect()
         {
             _connectInfo.StartConnect();
         }
@@ -204,14 +215,14 @@ namespace TMCS_PRJ
             _connectInfo.DisConnect();
         }
 
-        public void GetState(string msg)
+        public Task<bool> GetStateAsync()
         {
-            _connectInfo.GetState(msg);
+            return _connectInfo.GetState();
         }
 
-        public void SendMsg(string msg)
+        public async Task SendMsgAsync(string msg)
         {
-            _connectInfo.SendMsg(msg);
+            await _connectInfo.SendMsgAsync(msg);
         }
 
     }
@@ -222,8 +233,10 @@ namespace TMCS_PRJ
         int Port { get; set; }
         void StartConnect();
         void DisConnect();
-        void GetState(string msg);
+        Task< bool> GetState();
         void SendMsg(string msg);
+
+        Task SendMsgAsync(string msg);
     }
 
     public class RTVDMMatrixToIP : MatrixConnectInfo
@@ -262,13 +275,15 @@ namespace TMCS_PRJ
                 _client?.Close();            
         }
 
-        public void GetState(string msg)
+        public Task< bool> GetState()
         {
-
+            // _client가 null이 아니고, 연결되어 있으면 true를 반환합니다.
+            // 그리고 _stream이 null이 아니고 소켓이 연결되어 있으면 true를 반환합니다.
+            bool state = _client != null && _client.Connected && _stream != null && _stream.CanRead;
+            return Task.FromResult(state);
         }
 
-
-        private async Task SendMsgAsync(string msg)
+        public async Task SendMsgAsync(string msg)
         {
             byte[] asciiBytes = Encoding.ASCII.GetBytes(msg);
 
@@ -277,6 +292,7 @@ namespace TMCS_PRJ
 
         private async void ReceiveMessages(CancellationToken ct)
         {
+            Debug.WriteLine("서버로부터 데이터 수신 대기시작!");
             await Task.Run(async () =>
             {
                 try
@@ -288,7 +304,7 @@ namespace TMCS_PRJ
                         if (message != null)
                         {
                             // Here, you can do something with the received message
-                            Debug.WriteLine("Received: " + message);
+                            Debug.WriteLine(message);
                         }
                     }
                 }
@@ -298,12 +314,53 @@ namespace TMCS_PRJ
                     DisConnect();
                 }
             });
+
+            //try
+            //{
+            //    //버퍼와 문자열 빌더를 설정합니다.
+            //    byte[] buffer = new byte[1024];
+            //    StringBuilder stringBuilder = new StringBuilder();
+
+            //    //연결이 유지되는 동안 계속 수신합니다.
+            //    while (!_cts.IsCancellationRequested)
+            //    {
+            //        int numberOfBytesRead = await _stream.ReadAsync(buffer, 0, buffer.Length, ct);
+            //        string receivedText = Encoding.ASCII.GetString(buffer, 0, numberOfBytesRead);
+
+            //        //메시지를 문자열 빌더에 추가합니다.
+            //        stringBuilder.Append(receivedText);
+
+            //        //'!' 문자가 있는지 확인하고, 있다면 메시지를 처리합니다.
+            //        int messageEndIndex;
+            //        while ((messageEndIndex = stringBuilder.ToString().IndexOf('!')) != -1)
+            //        {
+            //            //메시지의 시작부터 '!' 문자가 있는 부분까지를 추출합니다.
+            //            string completeMessage = stringBuilder.ToString(0, messageEndIndex + 1);
+            //            MessageBox.Show(stringBuilder.ToString());
+            //            Debug.WriteLine(completeMessage);
+
+            //            //추출된 메시지를 빌더에서 제거합니다.
+            //            stringBuilder.Remove(0, messageEndIndex + 1);
+            //        }
+            //    }
+            //}
+            //catch (IOException ex)
+            //{
+            //    Debug.WriteLine("Error during receive: " + ex.Message);
+            //    //오류 발생 시 연결을 종료합니다.
+            //   DisConnect();
+            //}
+            //catch (OperationCanceledException)
+            //{
+            //    //취소 요청이 들어올 경우 처리합니다.
+            //   Debug.WriteLine("Receiving cancelled.");
+            //}
         }
 
 
         public void SendMsg(string msg)
         {
-            SendMsgAsync(msg);
+            
         }
     }
 }

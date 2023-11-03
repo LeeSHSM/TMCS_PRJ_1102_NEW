@@ -27,9 +27,8 @@ namespace TMCS_PRJ
 
         private MatrixChannel _mappingChannel;
 
-        public MatrixFrameView MatrixFrameControl { get => _matrixFrame;}
 
-        public async Task CreateAsync()
+        private async Task CreateAsync()
         {
             await InitializeAsync();
         }
@@ -42,9 +41,8 @@ namespace TMCS_PRJ
         {
             await _matrixManager.InitializeChannels(); // MatrixManager의 초기화가 완료될 때까지 기다립니다.
             InitializeEvent();
-
             //채널설정 초기화 끝나면 최초로 폼 전달역할
-            MatrixFrameControl.ChannelType = MatrixFrame_ChangeMatrixChannelListClick("INPUT");
+            ChangeMatrixChannelList("INPUT");
         }
 
         /// <summary>
@@ -52,9 +50,10 @@ namespace TMCS_PRJ
         /// </summary>
         private void InitializeEvent()
         {
-            MatrixFrameControl.ChangeMatrixChannelListClick += MatrixFrame_ChangeMatrixChannelListClick;
-            MatrixFrameControl.CellClick += MatrixFrame_CellClick;
+            _matrixFrame.CellClick += MatrixFrame_CellClick;
         }
+
+        #region Public Methods
 
         /// <summary>
         /// MatrixManager 통신역할 인터페이스 할당 
@@ -75,6 +74,36 @@ namespace TMCS_PRJ
             _matrixFrameTotalManager.ConnectionString = connectionString;
         }
 
+        public void StartConnection()
+        {
+            _matrixManager.StartConnect();
+        }
+
+        public void SendMsg(string msg)
+        {
+
+        }
+
+        /// <summary>
+        /// 프레임 채널리스트 변경하기
+        /// </summary>
+        /// <param name="channelType"></param>
+        public void ChangeMatrixChannelList(string channelType)
+        {
+            _matrixFrame.ChannelType = MatrixFrame_ChangeMatrixChannelListClick(channelType);
+        }
+
+        /// <summary>
+        /// Frame 가져오기 
+        /// </summary>
+        /// <returns></returns>
+        public UserControl GetMatrixFrame()
+        {
+            UserControl uc = (UserControl)_matrixFrame;
+
+            return uc;
+        }
+
         /// <summary>
         /// 매트릭스 인아웃 프레임 추가 
         /// </summary>
@@ -82,8 +111,9 @@ namespace TMCS_PRJ
         public MatrixInOutSelectFrame AddMatrixInOutFrame()
         {
             MatrixInOutSelectFrame mc = new MatrixInOutSelectFrame();
-            mc.InputClick += Mc_matrixChannelInputClick;
-            mc.OutputClick += Mc_matrixChannelOutputClick;
+            mc.InputClick += Mc_InputClick;
+            mc.OutputClick += Mc_OutputClick;
+            mc.RouteNoChange += Mc_RouteNoChangeAsync;
 
             _matrixInOutFrame.Add(mc);
 
@@ -94,6 +124,7 @@ namespace TMCS_PRJ
         {
 
         }
+        #endregion
 
         #region 설정관련 Public Methods
 
@@ -103,8 +134,15 @@ namespace TMCS_PRJ
         //-----------------------매트릭스 인아웃프레임 영역-----------------------
 
         //인아웃프레임 클릭!(아웃)
-        private void Mc_matrixChannelOutputClick(object? sender, EventArgs e)
+        private void Mc_OutputClick(object? sender, EventArgs e)
         {
+
+            if (_mappingChannel == null || _mappingChannel.ChannelType != "OUTPUT" )
+            {
+                //MessageBox.Show("출력신호를 선택해주세요");
+                return;
+            }
+
             var frame = sender as MatrixInOutSelectFrameView;
             bool check = false;
             foreach (MatrixInOutSelectFrameView mc in _matrixInOutFrame)
@@ -119,32 +157,54 @@ namespace TMCS_PRJ
 
             if (!check)
             {
-                foreach (MatrixInOutSelectFrameView mc in _matrixInOutFrame)
+                foreach (MatrixInOutSelectFrame mc in _matrixInOutFrame)
                 {
                     if (mc == frame)
                     {
-                        mc.MatrixChannelOutput = frame.MatrixChannelOutput;
-                        frame.MatrixChannelOutput = _mappingChannel;
+                        mc.MatrixChannelOutput = _mappingChannel;
+                        _matrixFrame.ClearClickedCell();
                     }
                 }
             }
         }
 
         //인아웃프레임 클릭!(인)
-        private void Mc_matrixChannelInputClick(object? sender, EventArgs e)
+        private void Mc_InputClick(object? sender, EventArgs e)
         {
-            var frame = sender as MatrixInOutSelectFrameView;            
+            if (_mappingChannel == null || _mappingChannel.ChannelType != "INPUT")
+            {
+                //MessageBox.Show("입력신호를 선택해주세요");
+                return;
+            }
+            var frame = sender as MatrixInOutSelectFrameView;       
+            if( frame.MatrixChannelOutput.Port == 0 )
+            {
+                MessageBox.Show("출력신호를 먼저 선택해주세요");
+                return;
+            }
 
-            foreach (MatrixInOutSelectFrameView mc in _matrixInOutFrame)
+            foreach (MatrixInOutSelectFrame mc in _matrixInOutFrame)
             {
                 if (mc == frame)
                 {
-                    mc.MatrixChannelInput = frame.MatrixChannelInput;
-                    frame.MatrixChannelInput = _mappingChannel;
+                    mc.MatrixChannelInput = _mappingChannel;
+                    _matrixFrame.ClearClickedCell();
                 }
             }
-
         }
+
+        //인아웃프레임에서 라우트정보 변경됨
+        private async void Mc_RouteNoChangeAsync(int inputNo, int outputNo)
+        {
+            if(await _matrixManager.GetStateAsync())
+            {
+                string routeChange = $"*255CI{inputNo:D2}O{outputNo:D2}!\r\n";
+                _matrixManager.SendMsgAsync(routeChange);
+            }
+            
+            //매트릭스에 바로 송신메세지 보내기
+        }
+
         //----------------------매트릭스 프레임 영역----------------------------
         //프레임 셀 클릭
         private void MatrixFrame_CellClick(object? sender, EventArgs e)
@@ -161,13 +221,13 @@ namespace TMCS_PRJ
             }
         }
 
+        //프레임 인아웃 채널 바꿔줌
         private string MatrixFrame_ChangeMatrixChannelListClick(string channelType)
         {
             DataTable dt = CreateDataTableForMatrixChannelList(channelType);
-            MatrixFrameControl.SetMatrixChannelList(dt);
+            _matrixFrame.SetMatrixChannelList(dt);
 
             return channelType;
-
         }
         #endregion
 

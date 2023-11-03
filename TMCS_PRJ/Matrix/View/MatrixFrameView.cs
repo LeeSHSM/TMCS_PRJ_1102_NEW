@@ -12,9 +12,8 @@ namespace TMCS_PRJ
         string ChannelType { get; set; }
         MatrixChannel SelectedChannel { get;}
         void SetMatrixChannelList(DataTable dataTable);
+        void ClearClickedCell();
 
-        public delegate string delChangeMatrixChangeList(string channelType);
-        event delChangeMatrixChangeList ChangeMatrixChannelListClick;
         event EventHandler CellClick;
     }
 }

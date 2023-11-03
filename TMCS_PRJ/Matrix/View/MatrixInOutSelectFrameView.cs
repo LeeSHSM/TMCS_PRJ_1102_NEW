@@ -13,7 +13,7 @@ namespace TMCS_PRJ
 
         event EventHandler InputClick;
         event EventHandler OutputClick;
-        event delRouteNoChange RouteNoChanege;
+        event delRouteNoChange RouteNoChange;
 
         delegate void delRouteNoChange(int inputNo, int outputNo);
     }

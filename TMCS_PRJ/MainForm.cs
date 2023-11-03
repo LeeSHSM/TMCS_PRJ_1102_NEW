@@ -1,4 +1,5 @@
 using System.Data.SqlClient;
+using System.Diagnostics;
 using System.Drawing.Drawing2D;
 
 namespace TMCS_PRJ
@@ -10,23 +11,53 @@ namespace TMCS_PRJ
             InitializeComponent();
         }
 
-        public UserControl pnMatrixInOutSelectFrame { set => throw new NotImplementedException(); }
+        UserControl MainView.pnMatrixInOutSelectFrame
+        {
+            set
+            {
+                if (this.InvokeRequired)
+                {
+                    this.Invoke(new Action(() => SetMatrixMioFrame(value)));
+                }
+                else
+                {
+                    SetMatrixMioFrame(value);
+                }
+            }
+        }
+
         UserControl MainView.pnMatrixFrame
         {
             set
             {
                 if (this.InvokeRequired)
                 {
-                    this.Invoke(new Action(() => SetMatrixControl(value)));
+                    this.Invoke(new Action(() => SetMatrixFrame(value)));
                 }
                 else
                 {
-                    SetMatrixControl(value);
+                    SetMatrixFrame(value);
                 }
             }
         }
+        private void SetMatrixMioFrame(UserControl value)
+        {
+            int pnMioFrameControlsCount = pnMioFrame.Controls.Count;
+            int maxColCount = 5;
+            int maxRowCount = 5;
+            int width = 20;
+            int height = 30;
+            value.Size = new Size(100, 120);
 
-        private void SetMatrixControl(UserControl value)
+            int X = ((value.Width + width) * ((pnMioFrameControlsCount) % maxColCount));
+            int Y = ((pnMioFrameControlsCount / maxRowCount) * (value.Height + height));
+
+            pnMioFrame.Controls.Add(value);
+            value.Location = new Point(X, Y);
+
+        }
+
+        private void SetMatrixFrame(UserControl value)
         {
             pnMatrixFrame.Controls.Add(value);
             value.Dock = DockStyle.Fill;
@@ -34,12 +65,12 @@ namespace TMCS_PRJ
 
         private void btnMatrixInput_Click(object sender, EventArgs e)
         {
-            btnInputClick?.Invoke(sender, e);
+            btnMatrixInputClick?.Invoke(sender, e);
         }
 
         private void btnMatrixOutput_Click(object sender, EventArgs e)
         {
-            btnOutputClick?.Invoke(sender, e);
+            btnMatrixOutputClick?.Invoke(sender, e);
         }
 
         private void MainForm_Load(object sender, EventArgs e)
@@ -47,21 +78,14 @@ namespace TMCS_PRJ
             Form_Load?.Invoke(sender, e);
         }
 
-        private void btnConnect_Click(object sender, EventArgs e)
+        private void btnAddMioFrame_Click(object sender, EventArgs e)
         {
-            btnConnectClick(sender, e);
+            btnAddMioFrameClick(sender, e);
         }
 
-        private void bbbb_Click(object sender, EventArgs e)
-        {
-            btnCreateClick(sender, e);
-        }
-
-        public event EventHandler refreshRequest;
         public event EventHandler Form_Load;
-        public event EventHandler btnInputClick;
-        public event EventHandler btnOutputClick;
-        public event EventHandler btnCreateClick;
-        public event EventHandler btnConnectClick;
+        public event EventHandler btnMatrixInputClick;
+        public event EventHandler btnMatrixOutputClick;
+        public event EventHandler btnAddMioFrameClick;
     }
 }

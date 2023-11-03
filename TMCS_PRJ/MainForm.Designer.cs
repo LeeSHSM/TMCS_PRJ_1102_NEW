@@ -32,8 +32,9 @@
             btnMatrixOutput = new Button();
             btnMatrixInput = new Button();
             pnMatrixFrame = new Panel();
-            btnConnect = new Button();
+            btnAddMioFrame = new Button();
             bbbb = new Button();
+            pnMioFrame = new Panel();
             groupBox1.SuspendLayout();
             SuspendLayout();
             // 
@@ -55,7 +56,7 @@
             btnMatrixOutput.Name = "btnMatrixOutput";
             btnMatrixOutput.Size = new Size(75, 23);
             btnMatrixOutput.TabIndex = 2;
-            btnMatrixOutput.Text = "button2";
+            btnMatrixOutput.Text = "출 력";
             btnMatrixOutput.UseVisualStyleBackColor = true;
             btnMatrixOutput.Click += btnMatrixOutput_Click;
             // 
@@ -65,7 +66,7 @@
             btnMatrixInput.Name = "btnMatrixInput";
             btnMatrixInput.Size = new Size(75, 23);
             btnMatrixInput.TabIndex = 1;
-            btnMatrixInput.Text = "button1";
+            btnMatrixInput.Text = "입 력";
             btnMatrixInput.UseVisualStyleBackColor = true;
             btnMatrixInput.Click += btnMatrixInput_Click;
             // 
@@ -73,36 +74,43 @@
             // 
             pnMatrixFrame.Location = new Point(6, 59);
             pnMatrixFrame.Name = "pnMatrixFrame";
-            pnMatrixFrame.Size = new Size(286, 300);
+            pnMatrixFrame.Size = new Size(286, 313);
             pnMatrixFrame.TabIndex = 0;
             // 
-            // btnConnect
+            // btnAddMioFrame
             // 
-            btnConnect.Location = new Point(522, 265);
-            btnConnect.Name = "btnConnect";
-            btnConnect.Size = new Size(75, 23);
-            btnConnect.TabIndex = 1;
-            btnConnect.Text = "button1";
-            btnConnect.UseVisualStyleBackColor = true;
-            btnConnect.Click += btnConnect_Click;
+            btnAddMioFrame.Location = new Point(316, 12);
+            btnAddMioFrame.Name = "btnAddMioFrame";
+            btnAddMioFrame.Size = new Size(75, 23);
+            btnAddMioFrame.TabIndex = 1;
+            btnAddMioFrame.Text = "출력추가!!";
+            btnAddMioFrame.UseVisualStyleBackColor = true;
+            btnAddMioFrame.Click += btnAddMioFrame_Click;
             // 
             // bbbb
             // 
-            bbbb.Location = new Point(544, 359);
+            bbbb.Location = new Point(409, 12);
             bbbb.Name = "bbbb";
             bbbb.Size = new Size(75, 23);
             bbbb.TabIndex = 2;
             bbbb.Text = "button1";
             bbbb.UseVisualStyleBackColor = true;
-            bbbb.Click += bbbb_Click;
+            // 
+            // pnMioFrame
+            // 
+            pnMioFrame.Location = new Point(316, 71);
+            pnMioFrame.Name = "pnMioFrame";
+            pnMioFrame.Size = new Size(545, 326);
+            pnMioFrame.TabIndex = 3;
             // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1163, 740);
+            Controls.Add(pnMioFrame);
             Controls.Add(bbbb);
-            Controls.Add(btnConnect);
+            Controls.Add(btnAddMioFrame);
             Controls.Add(groupBox1);
             Name = "MainForm";
             Text = "Form1";
@@ -117,7 +125,8 @@
         private Button btnMatrixOutput;
         private Button btnMatrixInput;
         private Panel pnMatrixFrame;
-        private Button btnConnect;
+        private Button btnAddMioFrame;
         private Button bbbb;
+        private Panel pnMioFrame;
     }
 }
