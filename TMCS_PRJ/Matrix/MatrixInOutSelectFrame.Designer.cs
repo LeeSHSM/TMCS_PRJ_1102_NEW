@@ -29,8 +29,8 @@
         private void InitializeComponent()
         {
             tableLayoutPanel1 = new TableLayoutPanel();
-            mcOutput = new MatrixChannel();
-            mcInput = new MatrixChannel();
+            lblOutput = new Label();
+            lblInput = new Label();
             tableLayoutPanel1.SuspendLayout();
             SuspendLayout();
             // 
@@ -38,8 +38,8 @@
             // 
             tableLayoutPanel1.ColumnCount = 1;
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
-            tableLayoutPanel1.Controls.Add(mcOutput, 0, 0);
-            tableLayoutPanel1.Controls.Add(mcInput, 0, 1);
+            tableLayoutPanel1.Controls.Add(lblOutput, 0, 0);
+            tableLayoutPanel1.Controls.Add(lblInput, 0, 1);
             tableLayoutPanel1.Dock = DockStyle.Fill;
             tableLayoutPanel1.Location = new Point(0, 0);
             tableLayoutPanel1.Margin = new Padding(0);
@@ -50,39 +50,29 @@
             tableLayoutPanel1.Size = new Size(150, 150);
             tableLayoutPanel1.TabIndex = 0;
             // 
-            // mcOutput
+            // lblOutput
             // 
-            mcOutput.AutoSize = true;
-            mcOutput.BorderStyle = BorderStyle.FixedSingle;
-            mcOutput.ChannelName = null;
-            mcOutput.ChannelType = null;
-            mcOutput.Dock = DockStyle.Fill;
-            mcOutput.Location = new Point(0, 0);
-            mcOutput.Margin = new Padding(0);
-            mcOutput.Name = "mcOutput";
-            mcOutput.Port = 0;
-            mcOutput.RouteNo = 0;
-            mcOutput.Size = new Size(150, 52);
-            mcOutput.TabIndex = 0;
-            mcOutput.Text = "-";
-            mcOutput.TextAlign = ContentAlignment.MiddleCenter;
+            lblOutput.BorderStyle = BorderStyle.FixedSingle;
+            lblOutput.Dock = DockStyle.Fill;
+            lblOutput.Location = new Point(0, 0);
+            lblOutput.Margin = new Padding(0);
+            lblOutput.Name = "lblOutput";
+            lblOutput.Size = new Size(150, 52);
+            lblOutput.TabIndex = 0;
+            lblOutput.Text = "-";
+            lblOutput.TextAlign = ContentAlignment.MiddleCenter;
             // 
-            // mcInput
+            // lblInput
             // 
-            mcInput.AutoSize = true;
-            mcInput.BorderStyle = BorderStyle.FixedSingle;
-            mcInput.ChannelName = null;
-            mcInput.ChannelType = null;
-            mcInput.Dock = DockStyle.Fill;
-            mcInput.Location = new Point(0, 52);
-            mcInput.Margin = new Padding(0);
-            mcInput.Name = "mcInput";
-            mcInput.Port = 0;
-            mcInput.RouteNo = 0;
-            mcInput.Size = new Size(150, 98);
-            mcInput.TabIndex = 1;
-            mcInput.Text = "-";
-            mcInput.TextAlign = ContentAlignment.MiddleCenter;
+            lblInput.BorderStyle = BorderStyle.FixedSingle;
+            lblInput.Dock = DockStyle.Fill;
+            lblInput.Location = new Point(0, 52);
+            lblInput.Margin = new Padding(0);
+            lblInput.Name = "lblInput";
+            lblInput.Size = new Size(150, 98);
+            lblInput.TabIndex = 1;
+            lblInput.Text = "-";
+            lblInput.TextAlign = ContentAlignment.MiddleCenter;
             // 
             // MatrixInOutSelectFrame
             // 
@@ -91,14 +81,13 @@
             Controls.Add(tableLayoutPanel1);
             Name = "MatrixInOutSelectFrame";
             tableLayoutPanel1.ResumeLayout(false);
-            tableLayoutPanel1.PerformLayout();
             ResumeLayout(false);
         }
 
         #endregion
 
         private TableLayoutPanel tableLayoutPanel1;
-        private MatrixChannel mcOutput;
-        private MatrixChannel mcInput;
+        private Label lblOutput;
+        private Label lblInput;
     }
 }

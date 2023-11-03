@@ -1,0 +1,3 @@
+﻿DB구조
+	- Matrix in/out - port, channelname, channeltype, routeno
+	- Matrix View - 

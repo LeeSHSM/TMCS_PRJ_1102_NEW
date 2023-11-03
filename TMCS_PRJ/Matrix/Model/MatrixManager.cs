@@ -20,13 +20,15 @@ namespace TMCS_PRJ
 
         private Matrix _matrix;
         private string _roomName;
+        private string _connectionString;
 
         public Matrix Matrix { get => _matrix; }
         public string RoomName { get => _roomName; set => _roomName = value; }
+        public string ConnectionString { get => _connectionString; set => _connectionString = value; }
 
-
-        private MatrixConnect _connect;
-        public MatrixConnect Connect { get => _connect; set => _connect = value; }               
+        private MatrixConnectInfo _connectInfo;
+        public MatrixConnectInfo ConnectInfo { get => _connectInfo; set => _connectInfo = value; }
+        
 
         #endregion
 
@@ -35,7 +37,6 @@ namespace TMCS_PRJ
         {
             _matrix = matrix;
         }
-
 
         public async Task InitializeChannels()
         {
@@ -47,7 +48,6 @@ namespace TMCS_PRJ
                 _matrix.InputChannel = inputChannels;
                 _matrix.OutputChannel = outputChannels;
             });
-
         }
 
         #endregion
@@ -128,16 +128,21 @@ namespace TMCS_PRJ
         #endregion
 
         #region LoadForDB Methods...
+
+        private async Task SaveChannelToDB()
+        {
+            //대충 in,out 채널리스트 db에 저장하는 메서드
+        }
        
         private async Task<List<MatrixChannel>> LoadChannelFromDB(string channelType)
         {
-            string connectionString = "Server=192.168.50.50;Database=TMCS;User Id=sa;password=tkdgus12#;";
+            //string connectionString = "Server=192.168.50.50;Database=TMCS;User Id=sa;password=tkdgus12#;";
 
             List<MatrixChannel> mc = new List<MatrixChannel>();
 
             for (int port = 1; port <= 16; port++)
             {
-                MatrixChannel channel = await GetMatrixChannelFromDBAsync(connectionString, port, channelType);
+                MatrixChannel channel = await GetMatrixChannelFromDBAsync(_connectionString, port, channelType);
                 mc.Add(channel);
             }
 
@@ -172,8 +177,7 @@ namespace TMCS_PRJ
                                 ChannelName = reader.GetString(0), // 첫 번째 컬럼 (name)
                                 ChannelType = reader.GetString(1), // 두 번째 컬럼 (channeltype)
                                 RouteNo = reader.GetInt32(2) // 세 번째 컬럼 (routeno)                                
-                            };
-                            
+                            };                            
                         }
                     }
                 }
@@ -181,7 +185,7 @@ namespace TMCS_PRJ
             return new MatrixChannel
             {
                 Port = port,
-                Name = defaultName,
+                ChannelName = defaultName,
                 ChannelType = defaultChannelType,
                 RouteNo = defaultRouteNo
             };
@@ -192,37 +196,37 @@ namespace TMCS_PRJ
 
         public void Connent()
         {
-            _connect.Connect();
+            _connectInfo.StartConnect();
         }
 
         public void DisConnect()
         {
-            _connect.DisConnect();
+            _connectInfo.DisConnect();
         }
 
         public void GetState(string msg)
         {
-            _connect.GetState(msg);
+            _connectInfo.GetState(msg);
         }
 
         public void SendMsg(string msg)
         {
-            _connect.SendMsg(msg);
+            _connectInfo.SendMsg(msg);
         }
 
     }
 
-    public interface MatrixConnect
+    public interface MatrixConnectInfo
     {
         IPAddress Address { get; set; }
         int Port { get; set; }
-        void Connect();
+        void StartConnect();
         void DisConnect();
         void GetState(string msg);
         void SendMsg(string msg);
     }
 
-    public class RTVDMMatrixToIP : MatrixConnect
+    public class RTVDMMatrixToIP : MatrixConnectInfo
     {
         public RTVDMMatrixToIP(IPAddress ip, int port)
         {
@@ -238,7 +242,7 @@ namespace TMCS_PRJ
         public IPAddress Address { get; set; }
         public int Port { get; set; }
 
-        public async void Connect()
+        public async void StartConnect()
         {
             _client = new TcpClient();
             await _client.ConnectAsync(Address, Port);
@@ -252,64 +256,54 @@ namespace TMCS_PRJ
 
         public void DisConnect()
         {
-
                 _cts?.Cancel();
                 _reader?.Dispose();
                 _stream?.Dispose();
-                _client?.Close();
-            
+                _client?.Close();            
         }
 
         public void GetState(string msg)
         {
-            throw new NotImplementedException();
+
         }
 
 
-        public async Task SendMsg(string msg)
+        private async Task SendMsgAsync(string msg)
         {
-            string myString = "*255CI02O03!\r\n";
-            byte[] asciiBytes = Encoding.ASCII.GetBytes(myString);
+            byte[] asciiBytes = Encoding.ASCII.GetBytes(msg);
 
-
-            if (_stream == null)
-                throw new InvalidOperationException("Not connected to the server.");
-
-            // Convert the message to ASCII bytes
-            byte[] bytesToSend = Encoding.ASCII.GetBytes(msg);
-
-            // Send the message
             await _stream.WriteAsync(asciiBytes, 0, asciiBytes.Length);
         }
 
         private async void ReceiveMessages(CancellationToken ct)
         {
-            try
+            await Task.Run(async () =>
             {
-                // Keep reading the stream as long as we're connected
-                while (!_cts.IsCancellationRequested)
+                try
                 {
-                    string message = await _reader.ReadLineAsync();
-                    if (message != null)
+                    // Keep reading the stream as long as we're connected
+                    while (!_cts.IsCancellationRequested)
                     {
-                        // Here, you can do something with the received message
-                        Debug.WriteLine("Received: " + message);
+                        string message = await _reader.ReadLineAsync();
+                        if (message != null)
+                        {
+                            // Here, you can do something with the received message
+                            Debug.WriteLine("Received: " + message);
+                        }
                     }
                 }
-            }
-            catch (IOException ex)
-            {
-                Debug.WriteLine("Error during receive: " + ex.Message);
-                DisConnect();
-            }
+                catch (IOException ex)
+                {
+                    Debug.WriteLine("Error during receive: " + ex.Message);
+                    DisConnect();
+                }
+            });
         }
 
 
-        void MatrixConnect.SendMsg(string msg)
+        public void SendMsg(string msg)
         {
-
-
-            SendMsg(msg);
+            SendMsgAsync(msg);
         }
     }
 }

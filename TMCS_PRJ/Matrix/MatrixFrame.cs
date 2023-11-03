@@ -11,9 +11,9 @@ using static TMCS_PRJ.GlobalSetting;
 
 namespace TMCS_PRJ
 {
-    public partial class MatrixFrameControl : UserControl, MatrixFrameView
+    public partial class MatrixFrame : UserControl, MatrixFrameView
     {
-        public MatrixFrameControl()
+        public MatrixFrame()
         {
             InitializeComponent();
         }

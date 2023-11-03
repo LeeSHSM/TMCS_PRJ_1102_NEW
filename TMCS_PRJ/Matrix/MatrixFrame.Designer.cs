@@ -1,6 +1,6 @@
 ﻿namespace TMCS_PRJ
 {
-    partial class MatrixFrameControl
+    partial class MatrixFrame
     {
         /// <summary> 
         /// 필수 디자이너 변수입니다.

@@ -11,9 +11,10 @@ namespace TMCS_PRJ
         MatrixChannel MatrixChannelInput { get; set; }
         MatrixChannel MatrixChannelOutput { get; set; }
 
-        void SetMatrixOutputChannel(MatrixChannel matrixChannel);
-        void SetMatrixInputChannel(MatrixChannel matrixChannel);
-        event EventHandler matrixChannelInputClick;
-        event EventHandler matrixChannelOutputClick;
+        event EventHandler InputClick;
+        event EventHandler OutputClick;
+        event delRouteNoChange RouteNoChanege;
+
+        delegate void delRouteNoChange(int inputNo, int outputNo);
     }
 }

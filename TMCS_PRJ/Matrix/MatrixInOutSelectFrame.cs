@@ -16,80 +16,75 @@ namespace TMCS_PRJ
         public MatrixInOutSelectFrame()
         {
             InitializeComponent();
-            mcInput.Click += McInput_Click;
-            mcOutput.Click += McOutput_Click;
+            lblOutput.Click += Input_Click;
+            lblInput.Click += Output_Click;
         }
 
-        public MatrixChannel MatrixChannelInput
-        {
-            get { return mcInput; }
-            set
-            {
-                mcInput = value;
-                Debug.WriteLine(mcInput.Text);
-            }
-        }
+        private MatrixChannel _matrixChannelOutput;
+        private MatrixChannel _matrixChannelInput;
 
         public MatrixChannel MatrixChannelOutput
         {
-            get { return mcOutput; }
+            get { return _matrixChannelOutput; }
             set
             {
-                mcOutput = value;
-                Debug.WriteLine(mcOutput.Text);
+                _matrixChannelOutput = value;
+                if (InvokeRequired)
+                {
+                    this.Invoke(new Action(() => UpdateMatrixChannel(_matrixChannelOutput)));
+                }
+                else
+                {
+                    UpdateMatrixChannel(_matrixChannelOutput);
+                }
             }
         }
-
-
-        public void SetMatrixInputChannel(MatrixChannel matrixChannel)
+        public MatrixChannel MatrixChannelInput
         {
-            if (InvokeRequired)
+            get { return _matrixChannelInput; }
+            set
             {
-                this.Invoke(new Action(() => UpdateMatrixChannel(mcInput, matrixChannel)));
-            }
-            else
-            {
-                UpdateMatrixChannel(mcInput, matrixChannel);
+                _matrixChannelInput = value;
+                if (InvokeRequired)
+                {
+                    this.Invoke(new Action(() => UpdateMatrixChannel(_matrixChannelInput)));
+                }
+                else
+                {
+                    UpdateMatrixChannel(_matrixChannelInput);
+                }
+
+                if(_matrixChannelOutput.Port > 0)
+                {
+                    RouteNoChanege?.Invoke(_matrixChannelInput.Port, _matrixChannelOutput.Port);
+                }                
             }
         }
 
-        public void SetMatrixOutputChannel(MatrixChannel matrixChannel)
+        private void UpdateMatrixChannel(MatrixChannel mc)
+        {           
+            if (mc == _matrixChannelOutput)
+            {
+                lblOutput.Text = mc.ChannelName;
+            }
+            else if (mc == _matrixChannelInput)
+            {
+                lblInput.Text = mc.ChannelName;
+            }
+        }
+
+        private void Output_Click(object? sender, EventArgs e)
         {
-            if (InvokeRequired)
-            {
-                this.Invoke(new Action(() => UpdateMatrixChannel(mcOutput, matrixChannel)));
-            }
-            else
-            {
-                UpdateMatrixChannel(mcOutput, matrixChannel);
-            }
+            OutputClick?.Invoke(this, e);
         }
 
-        private void McOutput_Click(object? sender, EventArgs e)
+        private void Input_Click(object? sender, EventArgs e)
         {
-            matrixChannelOutputClick?.Invoke(this, e);
+            InputClick?.Invoke(this, e);
         }
 
-        private void McInput_Click(object? sender, EventArgs e)
-        {
-            matrixChannelInputClick?.Invoke(this, e);
-        }
-
-        private void UpdateMatrixChannel(MatrixChannel oldMc, MatrixChannel newMc)
-        {
-            oldMc.ChannelName = newMc.ChannelName;
-            oldMc.Text = oldMc.ChannelName;
-            oldMc.ChannelType = newMc.ChannelType;
-            oldMc.Port = newMc.Port;
-
-            if (oldMc.ChannelType == "INPUT")
-            {
-                mcOutput.RouteNo = newMc.RouteNo;
-            }
-        }
-
-
-        public event EventHandler matrixChannelInputClick;
-        public event EventHandler matrixChannelOutputClick;
+        public event EventHandler InputClick;
+        public event EventHandler OutputClick;
+        public event MatrixInOutSelectFrameView.delRouteNoChange RouteNoChanege;
     }
 }

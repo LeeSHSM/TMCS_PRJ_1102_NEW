@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TMCS_PRJ
 {
-    public class MatrixChannel : Label
+    public class MatrixChannel
     {
         public event EventHandler ChangeNameEvent;
         public event EventHandler ChangeRouteNo;
