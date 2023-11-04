@@ -19,6 +19,11 @@ namespace TMCS_PRJ
             CreateAsync();
         }
 
+        public event EventHandler<DragEventClass> DragStarted;
+        public event EventHandler<DragEventClass> DragMoved;
+        public event EventHandler<DragEventClass> DragEnded;
+
+
         private MatrixFrameView _matrixFrame;
         private List<MatrixInOutSelectFrameView> _matrixInOutFrame = new List<MatrixInOutSelectFrameView>();
         
@@ -26,7 +31,6 @@ namespace TMCS_PRJ
         private MatrixFrameTotalManager _matrixFrameTotalManager;
 
         private MatrixChannel _mappingChannel;
-
 
         private async Task CreateAsync()
         {
@@ -51,7 +55,11 @@ namespace TMCS_PRJ
         private void InitializeEvent()
         {
             _matrixFrame.CellClick += MatrixFrame_CellClick;
+            _matrixFrame.DragStarted += _matrixFrame_DragStarted;
+            _matrixFrame.DragMoved += _matrixFrame_DragMoved;
+            _matrixFrame.DragEnded += _matrixFrame_DragEnded;
         }
+
 
         #region Public Methods
 
@@ -72,16 +80,6 @@ namespace TMCS_PRJ
         {
             _matrixManager.ConnectionString = connectionString;
             _matrixFrameTotalManager.ConnectionString = connectionString;
-        }
-
-        public void StartConnection()
-        {
-            _matrixManager.StartConnect();
-        }
-
-        public void SendMsg(string msg)
-        {
-
         }
 
         /// <summary>
@@ -122,7 +120,7 @@ namespace TMCS_PRJ
 
         public void DeleteMatrixInOutFrame(MatrixInOutSelectFrame mc)
         {
-
+            //추가한 인아웃 프레임 삭제하는 메서드 추가
         }
         #endregion
 
@@ -206,6 +204,24 @@ namespace TMCS_PRJ
         }
 
         //----------------------매트릭스 프레임 영역----------------------------
+        // 드래그 시작 이벤트
+        private void _matrixFrame_DragStarted(object? sender, DragEventClass e)
+        {
+            DragStarted?.Invoke(sender, e);
+        }
+
+        //드래그 중 이벤트
+        private void _matrixFrame_DragMoved(object? sender, DragEventClass e)
+        {
+            DragMoved?.Invoke(sender, e);
+        }
+
+        //드래그 끝 이벤트
+        private void _matrixFrame_DragEnded(object? sender, DragEventClass e)
+        {
+            DragEnded?.Invoke(sender, e);
+        }
+
         //프레임 셀 클릭
         private void MatrixFrame_CellClick(object? sender, EventArgs e)
         {

@@ -21,7 +21,7 @@ namespace TMCS_PRJ
             //나중에 ip관련정보, DB접속정보들은 xml파일로 분리하자...그래야 컴파일 없이 외부에서 수정가능할듯?
             _matrixControl.SetConnectInfo(new RTVDMMatrixToIP(IPAddress.Parse("192.168.50.8"), 23));
             _matrixControl.SetConnectDBInfo("Server=192.168.50.50;Database=TMCS;User Id=sa;password=tkdgus12#;");
-            _matrixControl.StartConnection();
+            //_matrixControl.StartConnection();
             
             InitializeViewEvent();
         }
@@ -33,6 +33,24 @@ namespace TMCS_PRJ
             _view.btnMatrixOutputClick += _view_btnOutputClick;
             _view.btnAddMioFrameClick += _view_btnAddMioFrameClick;
 
+            _matrixControl.DragEnded += _matrixControl_DragEnded;
+            _matrixControl.DragMoved += _matrixControl_DragMoved;
+            _matrixControl.DragStarted += _matrixControl_DragStarted;
+        }
+
+        private void _matrixControl_DragStarted(object? sender, DragEventClass e)
+        {
+            _view.DragStarted(sender, e);
+        }
+
+        private void _matrixControl_DragMoved(object? sender, DragEventClass e)
+        {
+         _view.DragMove(sender, e);   
+        }
+
+        private void _matrixControl_DragEnded(object? sender, DragEventClass e)
+        {
+            _view.DragEnded(sender, e);
         }
 
         private void _view_btnAddMioFrameClick(object? sender, EventArgs e)

@@ -15,5 +15,9 @@ namespace TMCS_PRJ
         void ClearClickedCell();
 
         event EventHandler CellClick;
+        event EventHandler<DragEventClass> DragStarted;
+        event EventHandler<DragEventClass> DragMoved;
+        event EventHandler<DragEventClass> DragEnded;
+        
     }
 }

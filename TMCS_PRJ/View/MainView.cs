@@ -13,8 +13,12 @@ namespace TMCS_PRJ
         event EventHandler btnMatrixOutputClick;
         event EventHandler btnAddMioFrameClick;
 
-
         UserControl pnMatrixFrame { set; }
         UserControl pnMatrixInOutSelectFrame { set; }
+
+        void DragStarted(object sender, DragEventClass e);
+        void DragMove(object sender, DragEventClass e);
+        void DragEnded(object sender, DragEventClass e);
+
     }
 }

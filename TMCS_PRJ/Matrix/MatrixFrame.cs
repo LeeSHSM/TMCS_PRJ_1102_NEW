@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -11,12 +13,40 @@ using static TMCS_PRJ.GlobalSetting;
 
 namespace TMCS_PRJ
 {
+
     public partial class MatrixFrame : UserControl, MatrixFrameView
     {
         public MatrixFrame()
         {
             InitializeComponent();
+            InitializeEvent();
+            DoubleBuffered = true;
+            SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint | ControlStyles.DoubleBuffer, true);
+            UpdateStyles();
+            dgvMatrixChannelList.DoubleBuffered(true);
         }
+        protected override CreateParams CreateParams
+        {
+            get
+            {
+                CreateParams cp = base.CreateParams;
+                cp.ExStyle |= 0x02000000;  // Turn on WS_EX_COMPOSITED
+                return cp;
+            }
+        }
+
+
+
+
+        private void InitializeEvent()
+        {
+            dgvMatrixChannelList.MouseDown += DgvMatrixChannelList_MouseDown;
+            dgvMatrixChannelList.MouseMove += DgvMatrixChannelList_MouseMove;
+            dgvMatrixChannelList.MouseUp += DgvMatrixChannelList_MouseUp;
+        }
+
+
+
         #region Properties
         private string _channelType;
         private MatrixChannel _selectedChannel;
@@ -150,6 +180,7 @@ namespace TMCS_PRJ
                 mc.ChannelType = _channelType;
                 mc.Port = rowIndex + 1;
                 mc.RouteNo = 0;
+                _selectedChannel = mc;
                 CellClick?.Invoke(mc, EventArgs.Empty);
             }
             else if (dgvMatrixChannelList.SelectedCells.Count == 0 && _channelType != null)
@@ -157,6 +188,54 @@ namespace TMCS_PRJ
                 CellClick?.Invoke(null, EventArgs.Empty);
             }
         }
+
+
+        private bool _isClick = false;
+        private Point? _startPoint = null;
+
+        private void DgvMatrixChannelList_MouseDown(object? sender, MouseEventArgs e)
+        {
+            _isClick = true;
+
+            if (e.Button == MouseButtons.Left)
+            {
+                _startPoint = MousePosition;//MousePosition;
+            }
+        }
+
+        private void DgvMatrixChannelList_MouseMove(object? sender, MouseEventArgs e)
+        {
+            if (_startPoint.HasValue)
+            {
+                Point startPoint = _startPoint.Value;
+                Point nowPoint = MousePosition;
+
+                if (GetDistance(startPoint, nowPoint) >= 10)
+                {
+                    if (_isClick)
+                    {
+                        _isClick = false;
+                        DragStarted?.Invoke(this, new DragEventClass(startPoint,SelectedChannel));
+                    }
+                    DragMoved?.Invoke(this, new DragEventClass(nowPoint, SelectedChannel));
+                }
+            }           
+        }
+        private void DgvMatrixChannelList_MouseUp(object? sender, MouseEventArgs e)
+        {
+            DragEnded?.Invoke(this, new DragEventClass(MousePosition, SelectedChannel));
+            _startPoint = null;
+            _isClick = false;
+        }
+
+        static double GetDistance(Point p1, Point p2)
+        {
+            int dx = p2.X - p1.X;
+            int dy = p2.Y - p1.Y;
+            return Math.Sqrt(dx * dx + dy * dy);
+        }
+
+
         /// <summary>
         /// 셀 우클릭 했을때 이벤트
         /// </summary>
@@ -223,5 +302,8 @@ namespace TMCS_PRJ
         #endregion
 
         public event EventHandler CellClick;
+        public event EventHandler<DragEventClass> DragStarted;
+        public event EventHandler<DragEventClass> DragMoved;
+        public event EventHandler<DragEventClass> DragEnded;
     }
 }
