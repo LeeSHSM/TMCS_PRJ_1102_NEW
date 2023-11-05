@@ -24,5 +24,11 @@ namespace TMCS_PRJ
         void DragMove(object sender, DragEventClass e);
         void DragEnded(object sender, DragEventClass e);
 
+        void MioFrameResizeStarted(object sender, MioFrameResizeEventClass e);
+        void MioFrameResizeMoved(object sender, MioFrameResizeEventClass e);
+        void MioFrameResizeEnded(object sender, MioFrameResizeEventClass e);
+        void MioFrameDelete(object sender, EventArgs e);
+
+
     }
 }

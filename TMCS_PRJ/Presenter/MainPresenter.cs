@@ -18,11 +18,11 @@ namespace TMCS_PRJ
         public MainPresenter(MainView view)
         {
             _view = view;
-            _matrixControl = new MatrixPresenter(16, 16);
+            _matrixControl = new MatrixPresenter(8, 8);
             //나중에 ip관련정보, DB접속정보들은 xml파일로 분리하자...그래야 컴파일 없이 외부에서 수정가능할듯?
             _matrixControl.SetConnectInfo(new RTVDMMatrixToIP(IPAddress.Parse("192.168.50.8"), 23));
             _matrixControl.SetConnectDBInfo("Server=192.168.50.50;Database=TMCS;User Id=sa;password=tkdgus12#;");
-            //_matrixControl.StartConnection();
+            _matrixControl.StartConnection();
 
             InitializeViewEvent();
         }
@@ -38,6 +38,33 @@ namespace TMCS_PRJ
             _matrixControl.DragEnded += _matrixControl_DragEnded;
             _matrixControl.DragMoved += _matrixControl_DragMoved;
             _matrixControl.DragStarted += _matrixControl_DragStarted;
+
+            _matrixControl.MioFrameResizeStarted += _matrixControl_MioFrameResizeStarted;
+            _matrixControl.MioFrameResizeMoved += _matrixControl_MioFrameResizeMoved;
+            _matrixControl.MioFrameResizeEnded += _matrixControl_MioFrameResizeEnded;
+            _matrixControl.MioFrameDelete += _matrixControl_MioFrameDelete;
+        }
+
+        private void _matrixControl_MioFrameDelete(object? sender, EventArgs e)
+        {
+            _view.MioFrameDelete(sender, e);
+        }
+
+        private void _matrixControl_MioFrameResizeEnded(object? sender, MioFrameResizeEventClass e)
+        {
+            _view.MioFrameResizeEnded(sender, e);
+        }
+
+        private void _matrixControl_MioFrameResizeMoved(object? sender, MioFrameResizeEventClass e)
+        {
+            _view.MioFrameResizeMoved(sender, e);
+        }
+
+        private void _matrixControl_MioFrameResizeStarted(object? sender, MioFrameResizeEventClass e)
+        {
+            MatrixInOutSelectFrame mioFrame = sender as MatrixInOutSelectFrame;
+            Debug.WriteLine(mioFrame.Size);
+            _view.MioFrameResizeStarted(sender, e);
         }
 
 
@@ -46,21 +73,72 @@ namespace TMCS_PRJ
 
         private void _view_MatrixFrameDragEnded(object? sender, DragEventClass e)
         {
-            //_view.pnMatrixInOutSelectFrame.Controls
-            Label lbl = sender as Label;
-            Point lblLocationOnForm = ConvertToFormCoordinates(lbl.Parent, lbl);
+            // 라벨을 기준으로 충돌체크
+            //Label lbl = sender as Label;
+            //if (lbl == null) return; // Early return if the sender is not a Label.
+
+            //Point lblLocationOnForm = ConvertToFormCoordinates(lbl.Parent, lbl);
+            //Rectangle lblBounds = new Rectangle(lblLocationOnForm, lbl.Size);
+
+            //Control maxOverlapControl = null; // To keep track of the control with maximum overlap.
+            //int maxOverlapArea = 0;
+
+            //foreach (Control con in _view.pnMatrixInOutSelectFrame.Controls)
+            //{
+            //    Point conLocation = ConvertToFormCoordinates(con.Parent, con);
+            //    Rectangle conBounds = new Rectangle(conLocation, con.Size);
+            //    if (lblBounds.IntersectsWith(conBounds))
+            //    {
+            //        // Calculate the area of intersection
+            //        Rectangle intersection = Rectangle.Intersect(lblBounds, conBounds);
+            //        int overlapArea = intersection.Width * intersection.Height;
+
+            //        // Check if this control has the maximum overlap so far
+            //        if (overlapArea > maxOverlapArea)
+            //        {
+            //            maxOverlapArea = overlapArea;
+            //            maxOverlapControl = con;
+            //        }
+            //    }
+            //}
+
+            //// If a control with maximum overlap is found and the overlap area is more than zero, call the method
+            //if (maxOverlapControl != null && maxOverlapArea > 0)
+            //{
+            //    _matrixControl.RequestDragEnded(maxOverlapControl, e);
+            //}
+
+            //마우스 포인트를 기준으로 충돌체크
+            Point mousePositionOnForm = new Point(e.Location.X, e.Location.Y);
+
+            Control maxOverlapControl = null; // To keep track of the control with maximum overlap.
+            int maxOverlapArea = 0; // To keep track of the maximum overlap area.
 
             foreach (Control con in _view.pnMatrixInOutSelectFrame.Controls)
             {
                 Point conLocation = ConvertToFormCoordinates(con.Parent, con);
-
                 Rectangle conBounds = new Rectangle(conLocation, con.Size);
-                Rectangle lblBounds = new Rectangle(lblLocationOnForm, lbl.Size);
-                if(lblBounds.IntersectsWith(conBounds))
+                Rectangle mouseBounds = new Rectangle(mousePositionOnForm, new Size(1, 1)); // Mouse position as a tiny rectangle.
+
+                if (mouseBounds.IntersectsWith(conBounds))
                 {
-                    //MessageBox.Show("겹침!");
-                    _matrixControl.RequestDragEnded(con, e);
+                    // Calculate the area of intersection
+                    Rectangle intersection = Rectangle.Intersect(mouseBounds, conBounds);
+                    int overlapArea = intersection.Width * intersection.Height;
+
+                    // Check if this control has the maximum overlap so far
+                    if (overlapArea > maxOverlapArea)
+                    {
+                        maxOverlapArea = overlapArea;
+                        maxOverlapControl = con;
+                    }
                 }
+            }
+
+            // If a control with maximum overlap is found and the overlap area is more than zero, call the method
+            if (maxOverlapControl != null && maxOverlapArea > 0)
+            {
+                _matrixControl.RequestDragEnded(maxOverlapControl, e);
             }
         }
 
@@ -95,8 +173,6 @@ namespace TMCS_PRJ
         private void _matrixControl_DragStarted(object? sender, DragEventClass e)
         {
             _view.DragStarted(sender, e);
-            //MatrixChannel mc = sender as MatrixChannel;
-            //mmm = mc;
         }
 
         private void _matrixControl_DragMoved(object? sender, DragEventClass e)

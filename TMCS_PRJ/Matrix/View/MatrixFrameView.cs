@@ -21,8 +21,6 @@ namespace TMCS_PRJ
         event EventHandler<DragEventClass> DragMoved;
         event EventHandler<DragEventClass> DragEnded;
 
-
-
         delegate void delCellValueChange(int rowNum, string channelName);
         
     }

@@ -98,16 +98,16 @@
             // 
             // pnMioFrame
             // 
-            pnMioFrame.Location = new Point(316, 71);
+            pnMioFrame.Location = new Point(316, 228);
             pnMioFrame.Name = "pnMioFrame";
-            pnMioFrame.Size = new Size(545, 326);
+            pnMioFrame.Size = new Size(701, 428);
             pnMioFrame.TabIndex = 3;
             // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1163, 740);
+            ClientSize = new Size(1470, 940);
             Controls.Add(pnMioFrame);
             Controls.Add(bbbb);
             Controls.Add(btnAddMioFrame);

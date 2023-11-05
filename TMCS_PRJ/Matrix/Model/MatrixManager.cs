@@ -348,6 +348,8 @@ namespace TMCS_PRJ
             await _client.ConnectAsync(Address, Port);
             _stream = _client.GetStream();
             _reader = new StreamReader(_stream);
+            
+            
             _cts = new CancellationTokenSource();
 
             // Start reading in a background task
@@ -380,68 +382,72 @@ namespace TMCS_PRJ
         private async void ReceiveMessages(CancellationToken ct)
         {
             Debug.WriteLine("서버로부터 데이터 수신 대기시작!");
-            await Task.Run(async () =>
-            {
-                try
-                {
-                    // Keep reading the stream as long as we're connected
-                    while (!_cts.IsCancellationRequested)
-                    {
-                        string message = await _reader.ReadLineAsync();
-                        if (message != null)
-                        {
-                            // Here, you can do something with the received message
-                            Debug.WriteLine(message);
-                        }
-                    }
-                }
-                catch (IOException ex)
-                {
-                    Debug.WriteLine("Error during receive: " + ex.Message);
-                    DisConnect();
-                }
-            });
-
-            //try
+            //await Task.Run(async () =>
             //{
-            //    //버퍼와 문자열 빌더를 설정합니다.
-            //    byte[] buffer = new byte[1024];
-            //    StringBuilder stringBuilder = new StringBuilder();
-
-            //    //연결이 유지되는 동안 계속 수신합니다.
-            //    while (!_cts.IsCancellationRequested)
+            //    try
             //    {
-            //        int numberOfBytesRead = await _stream.ReadAsync(buffer, 0, buffer.Length, ct);
-            //        string receivedText = Encoding.ASCII.GetString(buffer, 0, numberOfBytesRead);
-
-            //        //메시지를 문자열 빌더에 추가합니다.
-            //        stringBuilder.Append(receivedText);
-
-            //        //'!' 문자가 있는지 확인하고, 있다면 메시지를 처리합니다.
-            //        int messageEndIndex;
-            //        while ((messageEndIndex = stringBuilder.ToString().IndexOf('!')) != -1)
+            //        // Keep reading the stream as long as we're connected
+            //        while (!_cts.IsCancellationRequested)
             //        {
-            //            //메시지의 시작부터 '!' 문자가 있는 부분까지를 추출합니다.
-            //            string completeMessage = stringBuilder.ToString(0, messageEndIndex + 1);
-            //            MessageBox.Show(stringBuilder.ToString());
-            //            Debug.WriteLine(completeMessage);
-
-            //            //추출된 메시지를 빌더에서 제거합니다.
-            //            stringBuilder.Remove(0, messageEndIndex + 1);
+            //            string message = await _reader.ReadLineAsync();
+            //            if (message != null)
+            //            {
+            //                // Here, you can do something with the received message
+            //                Debug.WriteLine(message);
+            //            }
             //        }
             //    }
-            //}
-            //catch (IOException ex)
-            //{
-            //    Debug.WriteLine("Error during receive: " + ex.Message);
-            //    //오류 발생 시 연결을 종료합니다.
-            //   DisConnect();
-            //}
-            //catch (OperationCanceledException)
-            //{
-            //    //취소 요청이 들어올 경우 처리합니다.
-            //   Debug.WriteLine("Receiving cancelled.");
-            //}
+            //    catch (IOException ex)
+            //    {
+            //        Debug.WriteLine("Error during receive: " + ex.Message);
+            //        DisConnect();
+            //    }
+            //});
+
+            try
+            {
+                string message = await _reader.ReadLineAsync();
+                Debug.WriteLine(message);
+                //버퍼와 문자열 빌더를 설정합니다.
+                byte[] buffer = new byte[1024];
+                StringBuilder stringBuilder = new StringBuilder();
+
+                //연결이 유지되는 동안 계속 수신합니다.
+                while (!_cts.IsCancellationRequested)
+                {
+                    int numberOfBytesRead = await _stream.ReadAsync(buffer, 0, buffer.Length, ct);
+                    string receivedText = Encoding.ASCII.GetString(buffer, 0, numberOfBytesRead);
+
+                    //메시지를 문자열 빌더에 추가합니다.
+                    stringBuilder.Append(receivedText);
+
+                    //'!' 문자가 있는지 확인하고, 있다면 메시지를 처리합니다.
+                    int messageEndIndex;
+                    while ((messageEndIndex = stringBuilder.ToString().IndexOf('!')) != -1)
+                    {
+                        //메시지의 시작부터 '!' 문자가 있는 부분까지를 추출합니다.
+                        string completeMessage = stringBuilder.ToString(0, messageEndIndex + 1);
+
+                        completeMessage = completeMessage.TrimStart('\r', '\n');
+                        //MessageBox.Show(stringBuilder.ToString());
+                        Debug.WriteLine(completeMessage);
+
+                        //추출된 메시지를 빌더에서 제거합니다.
+                        stringBuilder.Remove(0, messageEndIndex + 1);
+                    }
+                }
+            }
+            catch (IOException ex)
+            {
+                Debug.WriteLine("Error during receive: " + ex.Message);
+                //오류 발생 시 연결을 종료합니다.
+                DisConnect();
+            }
+            catch (OperationCanceledException)
+            {
+                //취소 요청이 들어올 경우 처리합니다.
+                Debug.WriteLine("Receiving cancelled.");
+            }
         }
 
 

@@ -13,6 +13,13 @@ namespace TMCS_PRJ
 
         event EventHandler InputClick;
         event EventHandler OutputClick;
+
+        event EventHandler<MioFrameResizeEventClass> MioResizeStarted;
+        event EventHandler<MioFrameResizeEventClass> MioResizeMove;
+        event EventHandler<MioFrameResizeEventClass> MioResizeFinished;
+
+        event EventHandler MioFrameDelete;
+
         event delRouteNoChange RouteNoChange;
 
         delegate void delRouteNoChange(int inputNo, int outputNo);

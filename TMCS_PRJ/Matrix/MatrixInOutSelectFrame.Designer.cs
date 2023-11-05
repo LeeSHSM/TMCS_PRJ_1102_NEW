@@ -28,10 +28,15 @@
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
             tableLayoutPanel1 = new TableLayoutPanel();
             lblOutput = new Label();
             lblInput = new Label();
+            cms = new ContextMenuStrip(components);
+            삭제ToolStripMenuItem = new ToolStripMenuItem();
+            이동하기ToolStripMenuItem = new ToolStripMenuItem();
             tableLayoutPanel1.SuspendLayout();
+            cms.SuspendLayout();
             SuspendLayout();
             // 
             // tableLayoutPanel1
@@ -74,6 +79,25 @@
             lblInput.Text = "-";
             lblInput.TextAlign = ContentAlignment.MiddleCenter;
             // 
+            // cms
+            // 
+            cms.Items.AddRange(new ToolStripItem[] { 삭제ToolStripMenuItem, 이동하기ToolStripMenuItem });
+            cms.Name = "cms";
+            cms.Size = new Size(181, 70);
+            // 
+            // 삭제ToolStripMenuItem
+            // 
+            삭제ToolStripMenuItem.Name = "삭제ToolStripMenuItem";
+            삭제ToolStripMenuItem.Size = new Size(180, 22);
+            삭제ToolStripMenuItem.Text = "삭제";
+            삭제ToolStripMenuItem.Click += 삭제ToolStripMenuItem_Click;
+            // 
+            // 이동하기ToolStripMenuItem
+            // 
+            이동하기ToolStripMenuItem.Name = "이동하기ToolStripMenuItem";
+            이동하기ToolStripMenuItem.Size = new Size(180, 22);
+            이동하기ToolStripMenuItem.Text = "이동하기";
+            // 
             // MatrixInOutSelectFrame
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -81,6 +105,7 @@
             Controls.Add(tableLayoutPanel1);
             Name = "MatrixInOutSelectFrame";
             tableLayoutPanel1.ResumeLayout(false);
+            cms.ResumeLayout(false);
             ResumeLayout(false);
         }
 
@@ -89,5 +114,8 @@
         private TableLayoutPanel tableLayoutPanel1;
         private Label lblOutput;
         private Label lblInput;
+        private ContextMenuStrip cms;
+        private ToolStripMenuItem 삭제ToolStripMenuItem;
+        private ToolStripMenuItem 이동하기ToolStripMenuItem;
     }
 }

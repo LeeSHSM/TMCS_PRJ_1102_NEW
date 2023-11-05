@@ -23,6 +23,11 @@ namespace TMCS_PRJ
         public event EventHandler<DragEventClass> DragMoved;
         public event EventHandler<DragEventClass> DragEnded;
 
+        public event EventHandler<MioFrameResizeEventClass> MioFrameResizeStarted;
+        public event EventHandler<MioFrameResizeEventClass> MioFrameResizeMoved;
+        public event EventHandler<MioFrameResizeEventClass> MioFrameResizeEnded;
+
+        public event EventHandler MioFrameDelete;
 
         private MatrixFrameView _matrixFrame;
         private List<MatrixInOutSelectFrameView> _matrixInOutFrame = new List<MatrixInOutSelectFrameView>();
@@ -54,6 +59,11 @@ namespace TMCS_PRJ
         /// </summary>
         private void InitializeEvent()
         {
+            InitializeMatrixFrame();
+        }
+
+        private void InitializeMatrixFrame()
+        {
             _matrixFrame.CellClick += MatrixFrame_CellClick;
             _matrixFrame.DragStarted += _matrixFrame_DragStarted;
             _matrixFrame.DragMoved += _matrixFrame_DragMoved;
@@ -61,6 +71,8 @@ namespace TMCS_PRJ
             _matrixFrame.CellValueChange += _matrixFrame_CellValueChange1;
             _matrixFrame.CellValueChanged += _matrixFrame_CellValueChanged;
         }
+
+
 
         /// <summary>
         /// 매트릭스 프레임에서 이름이 변경됨!!
@@ -142,6 +154,10 @@ namespace TMCS_PRJ
                 ChangeMatrixOutputInMioFrame(frame);
             }
         }
+        public void StartConnection()
+        {
+            _matrixManager.StartConnect();
+        }
 
 
         /// <summary>
@@ -193,10 +209,40 @@ namespace TMCS_PRJ
             mc.InputClick += Mc_InputClick;
             mc.OutputClick += Mc_OutputClick;
             mc.RouteNoChange += Mc_RouteNoChangeAsync;
+            mc.MioResizeStarted += Mc_MioResizeStarted;
+            mc.MioResizeMove += Mc_MioResizeMove;
+            mc.MioResizeFinished += Mc_MioResizeFinished;
+            mc.MioFrameDelete += Mc_MioFrameDelete;
 
             _matrixInOutFrame.Add(mc);
 
             return mc;
+        }
+
+        private void Mc_MioFrameDelete(object? sender, EventArgs e)
+        {
+            MatrixInOutSelectFrame mioFrame = sender as MatrixInOutSelectFrame;
+            if (_matrixInOutFrame.Contains(mioFrame)) // 리스트에 mioFrame이 실제로 있는지 확인
+            {
+                MioFrameDelete?.Invoke(sender, e);
+                _matrixInOutFrame.Remove(mioFrame); // mioFrame 객체를 리스트에서 제거
+            }
+            
+        }
+
+        private void Mc_MioResizeFinished(object? sender, MioFrameResizeEventClass e)
+        {
+            MioFrameResizeEnded?.Invoke(sender, e);
+        }
+
+        private void Mc_MioResizeMove(object? sender, MioFrameResizeEventClass e)
+        {
+            MioFrameResizeMoved?.Invoke(sender, e);
+        }
+
+        private void Mc_MioResizeStarted(object? sender, MioFrameResizeEventClass e)
+        {
+            MioFrameResizeStarted?.Invoke(sender, e);
         }
 
         public void DeleteMatrixInOutFrame(MatrixInOutSelectFrame mc)
@@ -232,6 +278,7 @@ namespace TMCS_PRJ
             if(await _matrixManager.GetStateAsync())
             {
                 string routeChange = $"*255CI{inputNo:D2}O{outputNo:D2}!\r\n";
+                Debug.WriteLine("서버로 전송 : " +routeChange);
                 _matrixManager.SendMsgAsync(routeChange);
             }
             
@@ -364,6 +411,5 @@ namespace TMCS_PRJ
             return dt;
         }
 
-        
     }
 }
