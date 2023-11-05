@@ -74,7 +74,7 @@
             // 
             pnMatrixFrame.Location = new Point(6, 59);
             pnMatrixFrame.Name = "pnMatrixFrame";
-            pnMatrixFrame.Size = new Size(286, 313);
+            pnMatrixFrame.Size = new Size(292, 326);
             pnMatrixFrame.TabIndex = 0;
             // 
             // btnAddMioFrame

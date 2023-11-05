@@ -12,9 +12,13 @@ namespace TMCS_PRJ
         event EventHandler btnMatrixInputClick;
         event EventHandler btnMatrixOutputClick;
         event EventHandler btnAddMioFrameClick;
+        event EventHandler<DragEventClass> MatrixFrameDragEnded;
 
-        UserControl pnMatrixFrame { set; }
-        UserControl pnMatrixInOutSelectFrame { set; }
+        Panel pnMatrixFrame { get; }
+        Panel pnMatrixInOutSelectFrame { get; }
+
+        void DockMatrixFrame(UserControl uc);
+        void AddMatrixInOutSelectFrame(UserControl uc);
 
         void DragStarted(object sender, DragEventClass e);
         void DragMove(object sender, DragEventClass e);

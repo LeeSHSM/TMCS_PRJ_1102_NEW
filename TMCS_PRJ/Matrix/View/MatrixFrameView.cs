@@ -9,15 +9,21 @@ namespace TMCS_PRJ
 {
     public interface MatrixFrameView
     {
-        string ChannelType { get; set; }
-        MatrixChannel SelectedChannel { get;}
+        string NowChannelType { get; set; }
         void SetMatrixChannelList(DataTable dataTable);
         void ClearClickedCell();
 
         event EventHandler CellClick;
+        event delCellValueChange CellValueChange;
+        event EventHandler CellValueChanged;
+
         event EventHandler<DragEventClass> DragStarted;
         event EventHandler<DragEventClass> DragMoved;
         event EventHandler<DragEventClass> DragEnded;
+
+
+
+        delegate void delCellValueChange(int rowNum, string channelName);
         
     }
 }

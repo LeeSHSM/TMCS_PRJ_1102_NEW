@@ -20,23 +20,7 @@ namespace TMCS_PRJ
         {
             InitializeComponent();
             InitializeEvent();
-            DoubleBuffered = true;
-            SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint | ControlStyles.DoubleBuffer, true);
-            UpdateStyles();
-            dgvMatrixChannelList.DoubleBuffered(true);
         }
-        protected override CreateParams CreateParams
-        {
-            get
-            {
-                CreateParams cp = base.CreateParams;
-                cp.ExStyle |= 0x02000000;  // Turn on WS_EX_COMPOSITED
-                return cp;
-            }
-        }
-
-
-
 
         private void InitializeEvent()
         {
@@ -46,27 +30,28 @@ namespace TMCS_PRJ
         }
 
 
-
         #region Properties
-        private string _channelType;
+        private string _nowChannelType;
+
         private MatrixChannel _selectedChannel;
 
-        public string ChannelType
+        public string NowChannelType
         {
-            get { return _channelType; }
+            get { return _nowChannelType; }
             set
             {
                 if (value != "INPUT" && value != "OUTPUT")
                 { throw new ArgumentException("Channel type must be either 'INPUT' or 'OUTPUT'", nameof(value)); }
-                _channelType = value;
+                _nowChannelType = value;
             }
         }
-        public MatrixChannel SelectedChannel
-        {
-            get { return _selectedChannel; }
-        }
+
         #endregion
 
+        /// <summary>
+        /// dgv 내용물 채우는 메서드 
+        /// </summary>
+        /// <param name="dataTable"></param>
         public void SetMatrixChannelList(DataTable dataTable)
         {
             if (this.InvokeRequired)
@@ -83,11 +68,14 @@ namespace TMCS_PRJ
                 UpdateDgvMatrixChannelListLayOut();
             }
         }
+
+        /// <summary>
+        /// dgv 선택한거 없애주는 메서드 
+        /// </summary>
         public void ClearClickedCell()
         {
             dgvMatrixChannelList.ClearSelection();
         }
-
 
         #region Utility Methods
         /// <summary>
@@ -150,11 +138,16 @@ namespace TMCS_PRJ
                         int lastColumnIndex = dgvMatrixChannelList.Columns.Count - 1;
                         dgvMatrixChannelList.CurrentCell = dgvMatrixChannelList.Rows[dgvMatrixChannelList.SelectedCells[0].RowIndex].Cells[lastColumnIndex];
                     }
+                    //if (dgvMatrixChannelList.SelectedCells[0].ColumnIndex == 0)
+                    //{
+
+                    //    dgvMatrixChannelList.CurrentCell = dgvMatrixChannelList.Rows[dgvMatrixChannelList.SelectedCells[0].RowIndex].Cells[1];
+                    //}
                 };
 
                 // 최초 dgv 실행시 선택된 컬럼이 없게 하기
                 dgvMatrixChannelList.ClearSelection();
-                
+
             }
             ResumeLayout(false);
         }
@@ -170,70 +163,87 @@ namespace TMCS_PRJ
         /// <param name="e"></param>
         private void dgvMatrixChannelList_SelectionChanged(object sender, EventArgs e)
         {
-            if (dgvMatrixChannelList.SelectedCells.Count > 0 && _channelType != null) // 유효한 셀인지 확인
+            if (dgvMatrixChannelList.SelectedCells.Count > 0 && _nowChannelType != null && dgvMatrixChannelList.SelectedCells[0].ColumnIndex == 1) // 유효한 셀인지 확인
             {
                 int rowIndex = dgvMatrixChannelList.SelectedCells[0].RowIndex;
                 int columnIndex = dgvMatrixChannelList.SelectedCells[0].ColumnIndex;
 
                 MatrixChannel mc = new MatrixChannel();
                 mc.ChannelName = dgvMatrixChannelList[columnIndex, rowIndex].Value.ToString();
-                mc.ChannelType = _channelType;
+                mc.ChannelType = _nowChannelType;
                 mc.Port = rowIndex + 1;
                 mc.RouteNo = 0;
                 _selectedChannel = mc;
                 CellClick?.Invoke(mc, EventArgs.Empty);
             }
-            else if (dgvMatrixChannelList.SelectedCells.Count == 0 && _channelType != null)
+            else if (dgvMatrixChannelList.SelectedCells.Count == 0 && _nowChannelType != null)
             {
                 CellClick?.Invoke(null, EventArgs.Empty);
             }
         }
 
+        //드래그 관련 전역변수
+        private bool _isDragMouseDown = false;
+        private bool _isDragMouseMove = false;
+        private Point? _pDragStartedPostion = null;
 
-        private bool _isClick = false;
-        private Point? _startPoint = null;
-
+        /// <summary>
+        /// DragStarted 이벤트... 드래그 시작할때? 이건 마우스 좌클릭할때 무조건 동작 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void DgvMatrixChannelList_MouseDown(object? sender, MouseEventArgs e)
         {
-            _isClick = true;
-
             if (e.Button == MouseButtons.Left)
             {
-                _startPoint = MousePosition;//MousePosition;
+                _isDragMouseDown = true;
+                _pDragStartedPostion = MousePosition;
             }
         }
 
+        /// <summary>
+        /// DragMove 이벤트... 드래그 시작후 마우스 움직일때만 동작 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void DgvMatrixChannelList_MouseMove(object? sender, MouseEventArgs e)
         {
-            if (_startPoint.HasValue)
+            //dgvMatrixChannelList.Update();
+            if (_pDragStartedPostion.HasValue)
             {
-                Point startPoint = _startPoint.Value;
+                Point startPoint = _pDragStartedPostion.Value;
                 Point nowPoint = MousePosition;
 
                 if (GetDistance(startPoint, nowPoint) >= 10)
                 {
-                    if (_isClick)
+                    if (_isDragMouseDown)
                     {
-                        _isClick = false;
-                        DragStarted?.Invoke(this, new DragEventClass(startPoint,SelectedChannel));
+                        _isDragMouseDown = false;
+                        _isDragMouseMove = true;
+                        DragStarted?.Invoke(this, new DragEventClass(startPoint, _selectedChannel));
                     }
-                    DragMoved?.Invoke(this, new DragEventClass(nowPoint, SelectedChannel));
+                    DragMoved?.Invoke(this, new DragEventClass(nowPoint, _selectedChannel));
                 }
-            }           
-        }
-        private void DgvMatrixChannelList_MouseUp(object? sender, MouseEventArgs e)
-        {
-            DragEnded?.Invoke(this, new DragEventClass(MousePosition, SelectedChannel));
-            _startPoint = null;
-            _isClick = false;
+            }
         }
 
-        static double GetDistance(Point p1, Point p2)
+        /// <summary>
+        /// DrageEnded 이벤트... 마우스 업 했을때.. 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void DgvMatrixChannelList_MouseUp(object? sender, MouseEventArgs e)
         {
-            int dx = p2.X - p1.X;
-            int dy = p2.Y - p1.Y;
-            return Math.Sqrt(dx * dx + dy * dy);
+            if (_isDragMouseMove)
+            {
+                DragEnded?.Invoke(this, new DragEventClass(MousePosition, _selectedChannel));
+            }
+            _isDragMouseMove = false;
+            _pDragStartedPostion = null;
+            _isDragMouseDown = false;
         }
+
+
 
 
         /// <summary>
@@ -286,7 +296,6 @@ namespace TMCS_PRJ
         private void dgvMatrixChannelList_CellEndEdit(object sender, DataGridViewCellEventArgs e)
         {
             dgvMatrixChannelList.ReadOnly = true;
-            DataGridView dgv = sender as DataGridView;
 
             int rowIndex = e.RowIndex;
             int columnIndex = e.ColumnIndex;
@@ -295,15 +304,32 @@ namespace TMCS_PRJ
             {
                 dgvMatrixChannelList.Rows[rowIndex].Cells[columnIndex].Selected = true;
             }));
+
+            //CellValueChange?.Invoke(rowIndex, dgvMatrixChannelList.Rows[rowIndex].Cells[columnIndex].Value.ToString());
+            CellValueChanged?.Invoke(sender, e);
+
         }
 
- 
+
 
         #endregion
 
+        #region Utility Methods
+        static double GetDistance(Point p1, Point p2)
+        {
+            int dx = p2.X - p1.X;
+            int dy = p2.Y - p1.Y;
+            return Math.Sqrt(dx * dx + dy * dy);
+        }
+        #endregion
+
         public event EventHandler CellClick;
+        public event EventHandler CellValueChanged;
+        public event MatrixFrameView.delCellValueChange CellValueChange;
+
         public event EventHandler<DragEventClass> DragStarted;
         public event EventHandler<DragEventClass> DragMoved;
         public event EventHandler<DragEventClass> DragEnded;
+        
     }
 }

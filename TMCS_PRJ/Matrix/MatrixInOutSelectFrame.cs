@@ -69,6 +69,7 @@ namespace TMCS_PRJ
                     UpdateMatrixChannel(_matrixChannelInput);
                 }
                 RouteNoChange?.Invoke(_matrixChannelInput.Port, _matrixChannelOutput.Port);
+                Debug.WriteLine(_matrixChannelInput.Port + " : " + _matrixChannelOutput.Port);
             }
         }
 

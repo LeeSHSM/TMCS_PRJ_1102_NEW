@@ -9,6 +9,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using static TMCS_PRJ.GlobalSetting;
 
 namespace TMCS_PRJ
 {
@@ -21,6 +22,9 @@ namespace TMCS_PRJ
         private Matrix _matrix;
         private string _roomName;
         private string _connectionString;
+
+        private List<MatrixChannel> _showInputChannels;
+        private List<MatrixChannel> _showOutputChannels;
 
         public Matrix Matrix { get => _matrix; }
         public string RoomName { get => _roomName; set => _roomName = value; }
@@ -47,6 +51,20 @@ namespace TMCS_PRJ
 
                 _matrix.InputChannel = inputChannels;
                 _matrix.OutputChannel = outputChannels;
+                _showInputChannels = inputChannels.ConvertAll(x => new MatrixChannel
+                {
+                    ChannelName = x.ChannelName,
+                    ChannelType = x.ChannelType,
+                    Port = x.Port,
+                    RouteNo = x.RouteNo
+                });
+                _showOutputChannels = outputChannels.ConvertAll(x => new MatrixChannel
+                {
+                    ChannelName = x.ChannelName,
+                    ChannelType = x.ChannelType,
+                    Port = x.Port,
+                    RouteNo = x.RouteNo
+                });
             });
         }
 
@@ -62,10 +80,17 @@ namespace TMCS_PRJ
 
         #region GET, SET Methods...
 
-        public MatrixChannel GetChannelInfo(string inout, int channel)
+        public MatrixChannel GetChannelInfo(int rowNum, string channelType)
         {
-            List<MatrixChannel> channels = GetChannelListInfo(inout);
-            return channels[channel];
+            List<MatrixChannel> channels = GetChannelListInfo(channelType);
+            MatrixChannel channel = new MatrixChannel
+            {
+                ChannelName = channels[rowNum].ChannelName,
+                ChannelType = channels[rowNum].ChannelType,
+                Port = channels[rowNum].Port,
+                RouteNo = channels[rowNum].RouteNo
+            };
+            return channel;
         }
         /// <summary>
         /// 리스트 형식으로 매트릭스의 채널정보 반환
@@ -77,11 +102,11 @@ namespace TMCS_PRJ
             List<MatrixChannel> channels = new List<MatrixChannel>();
             if (inout == input)
             {
-                channels = Matrix.InputChannel;
+                channels = _showInputChannels;
             }
             else if (inout == output)
             {
-                channels = Matrix.OutputChannel;
+                channels = _showOutputChannels;
             }
             else
             {
@@ -112,26 +137,88 @@ namespace TMCS_PRJ
             return dt;
         }
 
-        public void SetChannel(MatrixChannel channel)
+        public void SetChannel(int rowNum, string channelName, string channelType)
         {
-            List<MatrixChannel> channels = GetChannelListInfo(channel.ChannelType);
-            channels[channel.Port - 1] = channel;
+            Debug.WriteLine(rowNum + " " + channelName);
+            List<MatrixChannel> showChannels = GetChannelListInfo(channelType);
+            List<MatrixChannel> originChannels = GetOriginChannelListInfo(channelType);
+            showChannels[rowNum].ChannelName = channelName;
+
+            originChannels[(showChannels[rowNum].Port)-1].ChannelName = channelType;
+
+            SaveChannelToDB(_connectionString, showChannels[rowNum].Port, channelName, channelType);
+
+            Debug.WriteLine("바꿈! : "+showChannels[rowNum].ChannelName);
         }
 
-        public void SetChannelList(string inout, List<MatrixChannel> matrixChannels)
+        public void SetChannelList(DataTable dataTable, string channelType)
         {
-            List<MatrixChannel> channels = GetChannelListInfo(inout);
+            List<MatrixChannel> matrixChannels = new List<MatrixChannel>();
 
-            channels = matrixChannels;
+            foreach (DataRow row in dataTable.Rows)
+            {
+                matrixChannels.Add(new MatrixChannel
+                {
+                    Port = int.Parse(row["Port"].ToString()),
+                    ChannelName = row["Name"].ToString(),
+                    ChannelType = row["ChannelType"].ToString(),
+                    RouteNo = 0
+                });
+            }
+            List<MatrixChannel> showChannels = GetChannelListInfo(channelType);
+
+            for(int i = 0; i < showChannels.Count; i++)
+            {
+                if (showChannels[i].ChannelName != matrixChannels[i].ChannelName)
+                {
+                    Debug.WriteLine((i+1) +" 포트가 다름!");
+                }
+            }
         }
 
         #endregion
 
+        private List<MatrixChannel> GetOriginChannelListInfo(string inout)
+        {
+            List<MatrixChannel> channels = new List<MatrixChannel>();
+            if (inout == input)
+            {
+                channels = _matrix.InputChannel;
+            }
+            else if (inout == output)
+            {
+                channels = _matrix.OutputChannel;
+            }
+            else
+            {
+                return null;
+            }
+            return channels;
+        }
+
         #region LoadForDB Methods...
 
-        private async Task SaveChannelToDB()
+        private async Task SaveChannelToDB(string connectionString, int port, string channelName, string channelType)
         {
-            //대충 in,out 채널리스트 db에 저장하는 메서드
+            string query = "UPDATE tbl_matrix_sysinfo SET channelname = @channelname WHERE port = @port AND channeltype = @channeltype";
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                await connection.OpenAsync();
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    // 데이터 유형을 명시적으로 지정하는 것이 좋습니다. 예를 들어:
+                    command.Parameters.Add(new SqlParameter("@channelname", SqlDbType.VarChar)).Value = channelName;
+                    command.Parameters.Add(new SqlParameter("@port", SqlDbType.Int)).Value = port;
+                    command.Parameters.Add(new SqlParameter("@channeltype", SqlDbType.VarChar)).Value = channelType;
+
+                    // 데이터를 반환하지 않으므로 ExecuteNonQueryAsync 사용
+                    int rowsAffected = await command.ExecuteNonQueryAsync();
+
+                    // rowsAffected를 사용하여 결과를 처리하거나 로그에 기록할 수 있습니다.
+                    Debug.WriteLine($"{rowsAffected} rows updated.");
+                }
+
+            }
         }
        
         /// <summary>

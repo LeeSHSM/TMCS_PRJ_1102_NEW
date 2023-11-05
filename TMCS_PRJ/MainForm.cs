@@ -5,61 +5,54 @@ using System.Reflection;
 
 namespace TMCS_PRJ
 {
-    public static class ExtensionMethods
-    {
-        public static void DoubleBuffered(this Panel dgv, bool setting)
-        {
-            Type dgvType = dgv.GetType();
-            PropertyInfo pi = dgvType.GetProperty("DoubleBuffered", BindingFlags.Instance | BindingFlags.NonPublic);
-            pi.SetValue(dgv, setting, null);
-        }
-        public static void DoubleBuffered(this DataGridView dgv, bool setting)
-        {
-            Type dgvType = dgv.GetType();
-            PropertyInfo pi = dgvType.GetProperty("DoubleBuffered", BindingFlags.Instance | BindingFlags.NonPublic);
-            pi.SetValue(dgv, setting, null);
-        }
-    }
     public partial class MainForm : Form, MainView
     {
         public MainForm()
         {
             InitializeComponent();
-            DoubleBuffered = true;
-            this.SetStyle(ControlStyles.OptimizedDoubleBuffer | ControlStyles.UserPaint | ControlStyles.AllPaintingInWmPaint, true);
-            this.UpdateStyles();
-            pnMatrixFrame.DoubleBuffered(true);
         }
 
-        UserControl MainView.pnMatrixInOutSelectFrame
+        Panel MainView.pnMatrixInOutSelectFrame
         {
-            set
-            {
-                if (this.InvokeRequired)
-                {
-                    this.Invoke(new Action(() => SetMatrixMioFrame(value)));
-                }
-                else
-                {
-                    SetMatrixMioFrame(value);
-                }
-            }
+            get { return pnMioFrame; }
+
         }
 
-        UserControl MainView.pnMatrixFrame
+        Panel MainView.pnMatrixFrame
         {
-            set
-            {
-                if (this.InvokeRequired)
-                {
-                    this.Invoke(new Action(() => SetMatrixFrame(value)));
-                }
-                else
-                {
-                    SetMatrixFrame(value);
-                }
-            }
+            get { return pnMatrixFrame; }
         }
+
+
+
+        public void DockMatrixFrame(UserControl uc)
+        {
+
+            if (this.InvokeRequired)
+            {
+                this.Invoke(new Action(() => SetMatrixFrame(uc)));
+            }
+            else
+            {
+                SetMatrixFrame(uc);
+            }
+
+        }
+
+        public void AddMatrixInOutSelectFrame(UserControl uc)
+        {
+
+            if (this.InvokeRequired)
+            {
+                this.Invoke(new Action(() => SetMatrixMioFrame(uc)));
+            }
+            else
+            {
+                SetMatrixMioFrame(uc);
+            }
+
+        }
+
         private void SetMatrixMioFrame(UserControl value)
         {
             int pnMioFrameControlsCount = pnMioFrame.Controls.Count;
@@ -83,35 +76,46 @@ namespace TMCS_PRJ
             value.Dock = DockStyle.Fill;
         }
 
-
         Label lbl;
-        public void DragStarted(object sender,DragEventClass e)
+
+        private Rectangle previousDragRect = Rectangle.Empty;
+
+        public void DragStarted(object sender, DragEventClass e)
         {
             lbl = new Label();
+            lbl.Size = new Size(50, 50);
+
+            Point point = new Point(e.Location.X - (lbl.Width / 2), e.Location.Y - (lbl.Height / 2));
+
+            lbl.Location = this.PointToClient(point);
             this.Controls.Add(lbl);
-            Debug.WriteLine(e.Location.ToString());
             lbl.Text = e.Channel.ChannelName;
-             lbl.BackColor = Color.Red;
+            lbl.TextAlign = ContentAlignment.MiddleCenter;
+            lbl.BackColor = Color.Red;
             lbl.BringToFront();
-            lbl.Location = this.PointToClient(e.Location);
-            
         }
 
-        public void DragMove(object sender, DragEventClass e) 
-        { 
-            lbl.Location = this.PointToClient(e.Location);
-            lbl.Refresh();
+        public void DragMove(object sender, DragEventClass e)
+        {
+            this.Invalidate(previousDragRect);
+            Rectangle currentDragRect = lbl.Bounds;
+            this.Invalidate(currentDragRect);
+            this.Update();
+
+            previousDragRect = currentDragRect;
+
+            Point point = new Point(e.Location.X - (lbl.Width / 2), e.Location.Y - (lbl.Height / 2));
+            lbl.Location = this.PointToClient(point);
+
             Debug.WriteLine(e.Location.ToString());
         }
 
         public void DragEnded(object sender, DragEventClass e)
         {
+            MatrixFrameDragEnded(lbl, e);
             this.Controls.Remove(lbl);
             lbl?.Dispose();
         }
-
-
-
 
         #region Event Handles
         private void btnMatrixInput_Click(object sender, EventArgs e)
@@ -134,11 +138,14 @@ namespace TMCS_PRJ
             btnAddMioFrameClick(sender, e);
         }
 
+
+
         #endregion
 
         public event EventHandler Form_Load;
         public event EventHandler btnMatrixInputClick;
         public event EventHandler btnMatrixOutputClick;
         public event EventHandler btnAddMioFrameClick;
+        public event EventHandler<DragEventClass> MatrixFrameDragEnded;
     }
 }
