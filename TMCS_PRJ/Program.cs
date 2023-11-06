@@ -40,6 +40,8 @@ namespace TMCS_PRJ
 
             ApplicationContext context = new ApplicationContext { MainForm = loadingForm };
 
+
+
             progress?.Report(new ProgressReport { Message = "메인프레젠터 비동기 초기화 시작" });
             Task.Run(async () =>
             {                
@@ -58,23 +60,6 @@ namespace TMCS_PRJ
             });
 
             Application.Run(context);
-        }
-
-
-        private static void ShowLoadingScreen(MainForm mainForm)
-        {
-
-            // 로딩 화면 표시 로직
-        }
-
-        private static void HideLoadingScreen(MainForm mainForm)
-        {
-            // 로딩 화면 숨기는 로직
-        }
-
-        private static void UpdateUIAfterInitialization(MainForm mainForm)
-        {
-            // 초기화 후 UI 업데이트 로직
         }
     }
 }
