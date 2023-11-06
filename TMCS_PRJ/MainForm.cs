@@ -7,6 +7,27 @@ namespace TMCS_PRJ
 {
     public partial class MainForm : Form, MainView
     {
+        private Panel loadingPanel;
+        private PictureBox loadingPictureBox;
+
+        public string lblUpdate 
+        { 
+            get { return lblTest.Text; }
+            set 
+            {
+                if (InvokeRequired)
+                {
+                    lblTest.Invoke(new Action(() => lblTest.Text = value));
+                }
+                else
+                {
+                    lblTest.Text = value;
+                }
+            }
+        }
+
+
+
         public MainForm()
         {
             InitializeComponent();
@@ -23,8 +44,6 @@ namespace TMCS_PRJ
             get { return pnMatrixFrame; }
         }
 
-
-
         public void DockMatrixFrame(UserControl uc)
         {
 
@@ -39,7 +58,7 @@ namespace TMCS_PRJ
 
         }
 
-        public void AddMatrixInOutSelectFrame(UserControl uc)
+        public void AddMioFrame(UserControl uc)
         {
 
             if (this.InvokeRequired)
@@ -110,7 +129,7 @@ namespace TMCS_PRJ
 
         public void DragEnded(object sender, DragEventClass e)
         {
-            MatrixFrameDragEnded(lbl, e);
+            MatrixFrameDragEndedRequest(lbl, e);
             this.Controls.Remove(lbl);
             lbl?.Dispose();
         }
@@ -128,7 +147,7 @@ namespace TMCS_PRJ
 
         private void MainForm_Load(object sender, EventArgs e)
         {
-            Form_Load?.Invoke(sender, e);
+            FormLoad?.Invoke(sender, e);
         }
 
         private void btnAddMioFrame_Click(object sender, EventArgs e)
@@ -181,16 +200,16 @@ namespace TMCS_PRJ
         {
             MatrixInOutSelectFrame mioFrame = sender as MatrixInOutSelectFrame;
 
-            foreach(MatrixInOutSelectFrame mc in pnMioFrame.Controls)
+            foreach (MatrixInOutSelectFrame mc in pnMioFrame.Controls)
             {
-                if(mc == mioFrame)
+                if (mc == mioFrame)
                 {
                     pnMioFrame.Controls.Remove(mc);
                 }
             }
             int pnMioFrameControlsCount = 0;
             foreach (MatrixInOutSelectFrame mc in pnMioFrame.Controls)
-            {                
+            {
                 int maxColCount = 5;
                 int maxRowCount = 5;
                 int width = 20;
@@ -200,8 +219,6 @@ namespace TMCS_PRJ
                 int Y = ((pnMioFrameControlsCount++ / maxRowCount) * (mc.Height + height));
 
                 mc.Location = new Point(X, Y);
-
-
             }
         }
 
@@ -209,10 +226,10 @@ namespace TMCS_PRJ
 
         #endregion
 
-        public event EventHandler Form_Load;
+        public event EventHandler FormLoad;
         public event EventHandler btnMatrixInputClick;
         public event EventHandler btnMatrixOutputClick;
         public event EventHandler btnAddMioFrameClick;
-        public event EventHandler<DragEventClass> MatrixFrameDragEnded;
+        public event EventHandler<DragEventClass> MatrixFrameDragEndedRequest;
     }
 }

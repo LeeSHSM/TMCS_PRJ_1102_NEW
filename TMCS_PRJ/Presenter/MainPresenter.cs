@@ -6,6 +6,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace TMCS_PRJ
 {
@@ -13,36 +14,54 @@ namespace TMCS_PRJ
     {
         MainView _view;
         MatrixPresenter _matrixControl;
+        IProgress<ProgressReport> _progress;
 
+        public event Action init;
 
-        public MainPresenter(MainView view)
+        public void lblUpodate(string msg)
         {
-            _view = view;
-            _matrixControl = new MatrixPresenter(8, 8);
-            //나중에 ip관련정보, DB접속정보들은 xml파일로 분리하자...그래야 컴파일 없이 외부에서 수정가능할듯?
-            _matrixControl.SetConnectInfo(new RTVDMMatrixToIP(IPAddress.Parse("192.168.50.8"), 23));
-            _matrixControl.SetConnectDBInfo("Server=192.168.50.50;Database=TMCS;User Id=sa;password=tkdgus12#;");
-            _matrixControl.StartConnection();
+            _view.lblUpdate = msg;
+        }
 
+
+        public MainPresenter(MainView view, IProgress<ProgressReport> progress)
+        {
+            _progress = progress;
+            _view = view;
+            
+            _matrixControl = new MatrixPresenter(8, 8,progress);
             InitializeViewEvent();
+
+            //나중에 ip관련정보, DB접속정보들은 xml파일로 분리하자...그래야 컴파일 없이 외부에서 수정가능할듯?
+            _matrixControl.SetConnectInfo(new RTVDMMatrixToIP(GlobalSetting.MATRIX_IP,GlobalSetting.MATRIX_PORT));
+            _matrixControl.SetConnectDBInfo(GlobalSetting.MATRIX_DB);
+
+            _matrixControl.StartConnection();
         }
 
         private void InitializeViewEvent()
         {
-            _view.Form_Load += _view_Form_Load;
+            _view.FormLoad += _view_Form_Load;
             _view.btnMatrixInputClick += _view_btnInputClick;
             _view.btnMatrixOutputClick += _view_btnOutputClick;
             _view.btnAddMioFrameClick += _view_btnAddMioFrameClick;
-            _view.MatrixFrameDragEnded += _view_MatrixFrameDragEnded;
+            _view.MatrixFrameDragEndedRequest += _view_MatrixFrameDragEnded;
 
-            _matrixControl.DragEnded += _matrixControl_DragEnded;
-            _matrixControl.DragMoved += _matrixControl_DragMoved;
-            _matrixControl.DragStarted += _matrixControl_DragStarted;
+            _matrixControl.MFrameDragEnded += _matrixControl_DragEnded;
+            _matrixControl.MFrameDragMoved += _matrixControl_DragMoved;
+            _matrixControl.MFrameDragStarted += _matrixControl_DragStarted;
 
             _matrixControl.MioFrameResizeStarted += _matrixControl_MioFrameResizeStarted;
             _matrixControl.MioFrameResizeMoved += _matrixControl_MioFrameResizeMoved;
             _matrixControl.MioFrameResizeEnded += _matrixControl_MioFrameResizeEnded;
             _matrixControl.MioFrameDelete += _matrixControl_MioFrameDelete;
+        }
+
+        public async Task InitializeAsync()
+        {
+            _progress?.Report(new ProgressReport { Message = "매트릭스 초기화 시작" });
+            await _matrixControl.InitializeAsync();
+            _progress?.Report(new ProgressReport { Message = "매트릭스 초기화 완료" });
         }
 
         private void _matrixControl_MioFrameDelete(object? sender, EventArgs e)
@@ -187,7 +206,7 @@ namespace TMCS_PRJ
 
         private void _view_btnAddMioFrameClick(object? sender, EventArgs e)
         {
-            _view.AddMatrixInOutSelectFrame(_matrixControl.AddMatrixInOutFrame());
+            _view.AddMioFrame(_matrixControl.AddMatrixInOutFrame());
         }
 
         private void _view_btnOutputClick(object? sender, EventArgs e)

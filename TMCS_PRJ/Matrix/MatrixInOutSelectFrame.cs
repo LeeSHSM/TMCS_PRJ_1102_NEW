@@ -13,6 +13,61 @@ namespace TMCS_PRJ
 {
     public partial class MatrixInOutSelectFrame : UserControl, MatrixInOutSelectFrameView
     {
+        #region Properties
+
+        private MatrixChannel _matrixChannelOutput;
+        private MatrixChannel _matrixChannelInput;
+
+        /// <summary>
+        /// MioFrame 아웃채널정보 
+        /// </summary>
+        public MatrixChannel MatrixChannelOutput
+        {
+            get { return _matrixChannelOutput; }
+            set
+            {
+                _matrixChannelOutput = value;
+                if (InvokeRequired)
+                {
+                    this.Invoke(new Action(() => UpdateMatrixChannel(_matrixChannelOutput)));
+                }
+                else
+                {
+                    UpdateMatrixChannel(_matrixChannelOutput);
+                }
+
+                if(_matrixChannelInput.Port > 0)
+                {
+                    RouteNoChange?.Invoke(_matrixChannelInput, _matrixChannelOutput);
+                }
+            }
+        }
+
+        /// <summary>
+        /// MioFrame 인풋채널 정보 
+        /// </summary>
+        public MatrixChannel MatrixChannelInput
+        {
+            get { return _matrixChannelInput; }
+            set
+            {
+                _matrixChannelInput = value;
+                if (InvokeRequired)
+                {
+                    this.Invoke(new Action(() => UpdateMatrixChannel(_matrixChannelInput)));
+                }
+                else
+                {
+                    UpdateMatrixChannel(_matrixChannelInput);
+                }
+                RouteNoChange?.Invoke(_matrixChannelInput, _matrixChannelOutput);
+                Debug.WriteLine(_matrixChannelInput.Port + " : " + _matrixChannelOutput.Port);
+            }
+        }
+
+        #endregion
+
+        #region 초기화 Methods
         public MatrixInOutSelectFrame()
         {
             InitializeComponent();
@@ -34,10 +89,6 @@ namespace TMCS_PRJ
             InitiallzeEvent();
         }
 
-        private MatrixChannel _matrixChannelOutput;
-        private MatrixChannel _matrixChannelInput;
-
-
         private void InitiallzeEvent()
         {
             lblOutput.MouseDown += MioFrame_MouseDown;
@@ -47,45 +98,16 @@ namespace TMCS_PRJ
             lblInput.MouseDown += MioFrame_MouseDown;
             lblInput.MouseMove += MioFrame_MouseMove;
             lblInput.MouseUp += MioFrame_MouseUp;
-
-            //tableLayoutPanel1.MouseMove += MioFrame_MouseMove;
         }
 
-        public MatrixChannel MatrixChannelOutput
-        {
-            get { return _matrixChannelOutput; }
-            set
-            {
-                _matrixChannelOutput = value;
-                if (InvokeRequired)
-                {
-                    this.Invoke(new Action(() => UpdateMatrixChannel(_matrixChannelOutput)));
-                }
-                else
-                {
-                    UpdateMatrixChannel(_matrixChannelOutput);
-                }
-            }
-        }
-        public MatrixChannel MatrixChannelInput
-        {
-            get { return _matrixChannelInput; }
-            set
-            {
-                _matrixChannelInput = value;
-                if (InvokeRequired)
-                {
-                    this.Invoke(new Action(() => UpdateMatrixChannel(_matrixChannelInput)));
-                }
-                else
-                {
-                    UpdateMatrixChannel(_matrixChannelInput);
-                }
-                RouteNoChange?.Invoke(_matrixChannelInput.Port, _matrixChannelOutput.Port);
-                Debug.WriteLine(_matrixChannelInput.Port + " : " + _matrixChannelOutput.Port);
-            }
-        }
+        #endregion
 
+        #region Private Methods
+
+        /// <summary>
+        /// MioFrame 채널정보 변경시 라벨 텍스트 변경 메서드  
+        /// </summary>
+        /// <param name="mc"></param>
         private void UpdateMatrixChannel(MatrixChannel mc)
         {
             if (mc == _matrixChannelOutput)
@@ -98,11 +120,21 @@ namespace TMCS_PRJ
             }
         }
 
-        private const int GripSize = 10;
-        private bool _isGrip = false;
-        private bool _isClick = false;
-        private string _mioGripPosition = string.Empty;
+        #endregion
 
+        #region Event Handles
+
+        //MioFrame 크기조절 관련 전역변수
+        private const int GRIPSIZE = 10;                // 간격(마우스포인트 - 라벨 테두리 범위)
+        private bool _isGrip = false;                   // 크기조절 시작해도 되는지 확인
+        private bool _isClick = false;                  // 크기조절 시작확인
+        private string _mioGripPosition = string.Empty; // 크기조절시 상하좌우 등 위치확인
+
+        /// <summary>
+        /// MioFrame 크기조절 시작(MioResizeStarted) 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void MioFrame_MouseDown(object? sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left)
@@ -124,7 +156,6 @@ namespace TMCS_PRJ
             }
         }
 
-
         private void MioFrame_MouseMove(object? sender, MouseEventArgs e)
         {
             var control = sender as Control;
@@ -135,42 +166,42 @@ namespace TMCS_PRJ
 
             if (!_isClick)
             {
-                if (mousePosition.X < GripSize && mousePosition.Y < GripSize)
+                if (mousePosition.X < GRIPSIZE && mousePosition.Y < GRIPSIZE)
                 {
                     // 좌측 상단 모서리
                     control.Cursor = Cursors.SizeNWSE;
                     _mioGripPosition = "좌상";
                     _isGrip = true;
                 }
-                else if (mousePosition.X > controlBounds.Width - GripSize && mousePosition.Y > controlBounds.Height - GripSize)
+                else if (mousePosition.X > controlBounds.Width - GRIPSIZE && mousePosition.Y > controlBounds.Height - GRIPSIZE)
                 {
                     // 우측 하단 모서리
                     control.Cursor = Cursors.SizeNWSE;
                     _mioGripPosition = "우하";
                     _isGrip = true;
                 }
-                else if (mousePosition.X < GripSize && mousePosition.Y > controlBounds.Height - GripSize)
+                else if (mousePosition.X < GRIPSIZE && mousePosition.Y > controlBounds.Height - GRIPSIZE)
                 {
                     // 좌측 하단 모서리
                     control.Cursor = Cursors.SizeNESW;
                     _mioGripPosition = "좌하";
                     _isGrip = true;
                 }
-                else if (mousePosition.X > controlBounds.Width - GripSize && mousePosition.Y < GripSize)
+                else if (mousePosition.X > controlBounds.Width - GRIPSIZE && mousePosition.Y < GRIPSIZE)
                 {
                     // 우측 상단 모서리
                     control.Cursor = Cursors.SizeNESW;
                     _mioGripPosition = "우상";
                     _isGrip = true;
                 }
-                else if (mousePosition.X < GripSize || mousePosition.X > controlBounds.Width - GripSize)
+                else if (mousePosition.X < GRIPSIZE || mousePosition.X > controlBounds.Width - GRIPSIZE)
                 {
                     // 좌우측 모서리
                     control.Cursor = Cursors.SizeWE;
                     _mioGripPosition = "좌우";
                     _isGrip = true;
                 }
-                else if (mousePosition.Y < GripSize || mousePosition.Y > controlBounds.Height - GripSize)
+                else if (mousePosition.Y < GRIPSIZE || mousePosition.Y > controlBounds.Height - GRIPSIZE)
                 {
                     // 상하측 모서리
                     control.Cursor = Cursors.SizeNS;
@@ -185,7 +216,7 @@ namespace TMCS_PRJ
                     _isGrip = false;
                 }
             }
-            else
+            else if(_isGrip && _isClick)
             {
                 MioResizeMove(this, new MioFrameResizeEventClass(new Point(e.Location.X, e.Location.Y + lblOutput.Height), _mioGripPosition));
             }
@@ -215,19 +246,17 @@ namespace TMCS_PRJ
                 }
                 else if (lbl.Name == "lblOutput")
                 {
-
                     OutputClick?.Invoke(this, e);
                 }
             }
-
-
         }
-
 
         private void 삭제ToolStripMenuItem_Click(object sender, EventArgs e)
         {
             MioFrameDelete?.Invoke(this, e);
         }
+
+        #endregion
 
         public event EventHandler InputClick;
         public event EventHandler OutputClick;

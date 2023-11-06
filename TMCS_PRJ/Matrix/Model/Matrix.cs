@@ -9,9 +9,6 @@ namespace TMCS_PRJ
 {
     public class MatrixChannel
     {
-        public event EventHandler ChangeNameEvent;
-        public event EventHandler ChangeRouteNo;
-
         #region Properties
         private int _portNo;
         private string _channelName;
@@ -31,7 +28,6 @@ namespace TMCS_PRJ
             set
             {
                 _channelName = value;
-                ChangeNameEvent?.Invoke(this, EventArgs.Empty);
             }
         }
         public string ChannelType
@@ -51,7 +47,6 @@ namespace TMCS_PRJ
             set
             {
                 _routeNo = value;
-                ChangeRouteNo?.Invoke(this, EventArgs.Empty);
             }
         }
         #endregion

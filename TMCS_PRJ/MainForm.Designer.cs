@@ -35,6 +35,7 @@
             btnAddMioFrame = new Button();
             bbbb = new Button();
             pnMioFrame = new Panel();
+            lblTest = new Label();
             groupBox1.SuspendLayout();
             SuspendLayout();
             // 
@@ -98,25 +99,37 @@
             // 
             // pnMioFrame
             // 
-            pnMioFrame.Location = new Point(316, 228);
+            pnMioFrame.Location = new Point(316, 71);
             pnMioFrame.Name = "pnMioFrame";
             pnMioFrame.Size = new Size(701, 428);
             pnMioFrame.TabIndex = 3;
+            // 
+            // lblTest
+            // 
+            lblTest.AutoSize = true;
+            lblTest.Location = new Point(542, 613);
+            lblTest.Name = "lblTest";
+            lblTest.Size = new Size(39, 15);
+            lblTest.TabIndex = 4;
+            lblTest.Text = "label1";
             // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1470, 940);
+            Controls.Add(lblTest);
             Controls.Add(pnMioFrame);
             Controls.Add(bbbb);
             Controls.Add(btnAddMioFrame);
             Controls.Add(groupBox1);
             Name = "MainForm";
+            StartPosition = FormStartPosition.CenterScreen;
             Text = "Form1";
             Load += MainForm_Load;
             groupBox1.ResumeLayout(false);
             ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
@@ -128,5 +141,6 @@
         private Button btnAddMioFrame;
         private Button bbbb;
         private Panel pnMioFrame;
+        private Label lblTest;
     }
 }

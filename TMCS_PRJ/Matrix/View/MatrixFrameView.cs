@@ -10,6 +10,7 @@ namespace TMCS_PRJ
     public interface MatrixFrameView
     {
         string NowChannelType { get; set; }
+        MatrixChannel SelectedChannel { get; set; }
         void SetMatrixChannelList(DataTable dataTable);
         void ClearClickedCell();
 

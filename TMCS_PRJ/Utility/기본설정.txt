@@ -1,3 +1,12 @@
 ﻿DB구조
 	- Matrix in/out - port, channelname, channeltype, routeno
 	- Matrix View - 
+
+클래스 기본 구조
+	- Properties / 초기화 / Public / Private / Event(Private)(구독 / 찐 이벤트 순..) / Utility / Event(delegate...) 구조로 일단 정리하자 보기 편하네
+	- 각 항목안에서도 연관있는것들끼리, 메서드의 흐름대로 작성하자
+	- Properties 는 해당 클래스 전역해서 사용하는 변수만 넣고, 각 메서드에 임시로 필요한 전역변수는 해당 흐름의 메서드 최상단에 따로 선언
+
+23.11.05
+	- MioFrame 추가, 삭제, 크기조절, 드래그앤 드랍(MFrame-> MioFrame) 로직 추가
+	- 

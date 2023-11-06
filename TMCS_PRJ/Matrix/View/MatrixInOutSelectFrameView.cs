@@ -22,6 +22,6 @@ namespace TMCS_PRJ
 
         event delRouteNoChange RouteNoChange;
 
-        delegate void delRouteNoChange(int inputNo, int outputNo);
+        delegate void delRouteNoChange(MatrixChannel mcInput, MatrixChannel mcOutput);
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -8,8 +9,10 @@ namespace TMCS_PRJ
 {
     public class GlobalSetting
     {
-
         public static Logger Logger { get; } = new Logger();
+        public static readonly string MATRIX_DB = "Server=192.168.50.50;Database=TMCS;User Id=sa;password=tkdgus12#;";
+        public static readonly IPAddress MATRIX_IP = IPAddress.Parse("192.168.50.8");
+        public static readonly int MATRIX_PORT = 23;
         public enum ChannelType
         {
             INPUT,

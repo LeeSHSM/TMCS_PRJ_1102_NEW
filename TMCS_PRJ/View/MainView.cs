@@ -8,17 +8,17 @@ namespace TMCS_PRJ
 {
     public interface MainView
     {
-        event EventHandler Form_Load;
+        event EventHandler FormLoad;
         event EventHandler btnMatrixInputClick;
         event EventHandler btnMatrixOutputClick;
         event EventHandler btnAddMioFrameClick;
-        event EventHandler<DragEventClass> MatrixFrameDragEnded;
+        event EventHandler<DragEventClass> MatrixFrameDragEndedRequest;
 
         Panel pnMatrixFrame { get; }
         Panel pnMatrixInOutSelectFrame { get; }
 
         void DockMatrixFrame(UserControl uc);
-        void AddMatrixInOutSelectFrame(UserControl uc);
+
 
         void DragStarted(object sender, DragEventClass e);
         void DragMove(object sender, DragEventClass e);
@@ -27,7 +27,13 @@ namespace TMCS_PRJ
         void MioFrameResizeStarted(object sender, MioFrameResizeEventClass e);
         void MioFrameResizeMoved(object sender, MioFrameResizeEventClass e);
         void MioFrameResizeEnded(object sender, MioFrameResizeEventClass e);
+
+        void AddMioFrame(UserControl uc);
         void MioFrameDelete(object sender, EventArgs e);
+
+
+
+        string lblUpdate {  get; set; }
 
 
     }

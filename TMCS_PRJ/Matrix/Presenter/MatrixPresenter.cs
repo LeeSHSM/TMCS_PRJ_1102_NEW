@@ -11,47 +11,44 @@ namespace TMCS_PRJ
 {
     public class MatrixPresenter
     {
-        public MatrixPresenter(int inputCount, int outputCount)
-        {
-            _matrixFrame = new MatrixFrame();
-            _matrixManager = new MatrixManager(new Matrix(inputCount, outputCount));
-            _matrixFrameTotalManager = new MatrixFrameTotalManager();
-            CreateAsync();
-        }
-
-        public event EventHandler<DragEventClass> DragStarted;
-        public event EventHandler<DragEventClass> DragMoved;
-        public event EventHandler<DragEventClass> DragEnded;
-
-        public event EventHandler<MioFrameResizeEventClass> MioFrameResizeStarted;
-        public event EventHandler<MioFrameResizeEventClass> MioFrameResizeMoved;
-        public event EventHandler<MioFrameResizeEventClass> MioFrameResizeEnded;
-
-        public event EventHandler MioFrameDelete;
+        #region Properties
 
         private MatrixFrameView _matrixFrame;
         private List<MatrixInOutSelectFrameView> _matrixInOutFrame = new List<MatrixInOutSelectFrameView>();
-        
+
         private MatrixManager _matrixManager;
         private MatrixFrameTotalManager _matrixFrameTotalManager;
 
         private MatrixChannel _mappingChannel;
+        IProgress<ProgressReport> _progress;
 
-        private async Task CreateAsync()
+        #endregion
+
+        #region 초기화 Mewthods
+        public MatrixPresenter(int inputCount, int outputCount, IProgress<ProgressReport> progress)
         {
-            await InitializeAsync();
+            _progress = progress;
+            _matrixFrame = new MatrixFrame();
+            _matrixManager = new MatrixManager(new Matrix(inputCount, outputCount), progress);
+            _matrixFrameTotalManager = new MatrixFrameTotalManager();
+
+            InitializeEvent();
         }
 
         /// <summary>
         /// async 초기화
         /// </summary>
         /// <returns></returns>
-        private async Task InitializeAsync()
+        public async Task InitializeAsync()
         {
-            await _matrixManager.InitializeChannels(); // MatrixManager의 초기화가 완료될 때까지 기다립니다.
-            InitializeEvent();
-            //채널설정 초기화 끝나면 최초로 폼 전달역할
+            _progress?.Report(new ProgressReport { Message = "매트릭스매니저 초기화 시작" });
+            await _matrixManager.InitializeChannels(); // MatrixManager의 초기화가 완료될 때까지 기다립니다.            
+            _progress?.Report(new ProgressReport { Message = "매트릭스매니저 초기화 완료" });
             ChangeMatrixChannelList("INPUT");
+
+
+            //채널설정 초기화 끝나면 최초로 폼 전달역할
+
         }
 
         /// <summary>
@@ -68,82 +65,15 @@ namespace TMCS_PRJ
             _matrixFrame.DragStarted += _matrixFrame_DragStarted;
             _matrixFrame.DragMoved += _matrixFrame_DragMoved;
             _matrixFrame.DragEnded += _matrixFrame_DragEnded;
-            _matrixFrame.CellValueChange += _matrixFrame_CellValueChange1;
             _matrixFrame.CellValueChanged += _matrixFrame_CellValueChanged;
         }
-
-
-
-        /// <summary>
-        /// 매트릭스 프레임에서 이름이 변경됨!!
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void _matrixFrame_CellValueChanged(object? sender, EventArgs e)
-        {
-            DataGridView dgv = sender as DataGridView;
-            DataGridViewCellEventArgs dgvEvent = e as DataGridViewCellEventArgs;
-            int rowNum = dgvEvent.RowIndex;
-            string channelName = dgv.Rows[dgvEvent.RowIndex].Cells[1].Value.ToString();
-            string channelType = _matrixFrame.NowChannelType;
-
-            _matrixManager.SetChannel(rowNum, channelName , channelType);
-
-            MatrixChannel channel = _matrixManager.GetChannelInfo(rowNum, channelType);
-
-            foreach(MatrixInOutSelectFrame item in _matrixInOutFrame)
-            {
-                if(channelType == "INPUT")
-                {
-                    if(channel.Port == item.MatrixChannelInput.Port)
-                    {
-                        item.MatrixChannelInput = channel;
-                    }
-                    
-                }
-                else if(channelType == "OUTPUT")
-                {
-                    if (channel.Port == item.MatrixChannelOutput.Port)
-                    {
-                        item.MatrixChannelOutput = channel;
-                    }
-                }
-
-            }
-        }
-
-        private void _matrixFrame_CellValueChange1(int rowNum, string channelName)
-        {
-            //_matrixManager.SetChannel(rowNum, channelName, _matrixFrame.NowChannelType);
-        }
-
-        private void _matrixFrame_CellValueChange(object? sender, EventArgs e)
-        {
-            //DataGridView dgv = sender as DataGridView;
-
-            //DataTable dgvDt = (DataTable)dgv.DataSource;
-
-            //DataTable dt = new DataTable();
-            //dt.Columns.Add("Port");
-            //dt.Columns.Add("Name");
-            //dt.Columns.Add("ChannelType");
-
-            //foreach (DataRow dr in dgvDt.Rows)
-            //{
-            //    string[] strDr = dr[0].ToString().Split(' ');
-            //    DataRow dtdr = dt.NewRow();
-            //    dtdr["Port"] = strDr[1];
-            //    dtdr["Name"] = dr[1].ToString();
-            //    dtdr["ChannelType"] = strDr[0];
-            //    dt.Rows.Add(dtdr);
-            //}
-            //_matrixManager.SetChannelList(dt, _matrixFrame.NowChannelType);
-        }
-
+        #endregion
 
         #region Public Methods
+
         public void RequestDragEnded(object? sender, DragEventClass e)
         {
+            //progress?.Report(new ProgressReport { Message = "리퀘스트 드래그 엔디드!!" });
             MatrixInOutSelectFrame frame = sender as MatrixInOutSelectFrame;
             if (_mappingChannel.ChannelType == "INPUT")
             {
@@ -153,30 +83,6 @@ namespace TMCS_PRJ
             {
                 ChangeMatrixOutputInMioFrame(frame);
             }
-        }
-        public void StartConnection()
-        {
-            _matrixManager.StartConnect();
-        }
-
-
-        /// <summary>
-        /// MatrixManager 통신역할 인터페이스 할당 
-        /// </summary>
-        /// <param name="matrixConnectInfo"></param>
-        public void SetConnectInfo(MatrixConnectInfo matrixConnectInfo)
-        {
-            _matrixManager.ConnectInfo = matrixConnectInfo;
-        }
-
-        /// <summary>
-        /// DB접속정보 할당 
-        /// </summary>
-        /// <param name="connectionString"></param>
-        public void SetConnectDBInfo(string connectionString)
-        {
-            _matrixManager.ConnectionString = connectionString;
-            _matrixFrameTotalManager.ConnectionString = connectionString;
         }
 
         /// <summary>
@@ -195,7 +101,7 @@ namespace TMCS_PRJ
         public UserControl GetMatrixFrame()
         {
             UserControl uc = (UserControl)_matrixFrame;
-
+            
             return uc;
         }
 
@@ -205,135 +111,57 @@ namespace TMCS_PRJ
         /// <returns></returns>
         public MatrixInOutSelectFrame AddMatrixInOutFrame()
         {
-            MatrixInOutSelectFrame mc = new MatrixInOutSelectFrame();
-            mc.InputClick += Mc_InputClick;
-            mc.OutputClick += Mc_OutputClick;
-            mc.RouteNoChange += Mc_RouteNoChangeAsync;
-            mc.MioResizeStarted += Mc_MioResizeStarted;
-            mc.MioResizeMove += Mc_MioResizeMove;
-            mc.MioResizeFinished += Mc_MioResizeFinished;
-            mc.MioFrameDelete += Mc_MioFrameDelete;
+            MatrixInOutSelectFrame MioFrame = new MatrixInOutSelectFrame();
+            MioFrame.InputClick += MioFrame_InputClick;
+            MioFrame.OutputClick += MioFrame_OutputClick;
+            MioFrame.RouteNoChange += MioFrame_RouteNoChangeAsync;
+            MioFrame.MioResizeStarted += MioFrame_MioResizeStarted;
+            MioFrame.MioResizeMove += MioFrame_MioResizeMove;
+            MioFrame.MioResizeFinished += MioFrame_MioResizeFinished;
+            MioFrame.MioFrameDelete += MioFrame_MioFrameDelete;
 
-            _matrixInOutFrame.Add(mc);
+            _matrixInOutFrame.Add(MioFrame);
 
-            return mc;
+            return MioFrame;
         }
 
-        private void Mc_MioFrameDelete(object? sender, EventArgs e)
+
+
+
+
+        //-------------------------------------------- Matrix Manager 통신관련 메서드 --------------------------------------------
+        public void StartConnection()
         {
-            MatrixInOutSelectFrame mioFrame = sender as MatrixInOutSelectFrame;
-            if (_matrixInOutFrame.Contains(mioFrame)) // 리스트에 mioFrame이 실제로 있는지 확인
-            {
-                MioFrameDelete?.Invoke(sender, e);
-                _matrixInOutFrame.Remove(mioFrame); // mioFrame 객체를 리스트에서 제거
-            }
-            
+            _matrixManager.StartConnectAsync();
         }
 
-        private void Mc_MioResizeFinished(object? sender, MioFrameResizeEventClass e)
+        /// <summary>
+        /// MatrixManager 통신역할 인터페이스 할당 
+        /// </summary>
+        /// <param name="matrixConnectInfo"></param>
+        public void SetConnectInfo(MatrixConnectInfo matrixConnectInfo)
         {
-            MioFrameResizeEnded?.Invoke(sender, e);
+            _matrixManager.ConnectInfo = matrixConnectInfo;
         }
 
-        private void Mc_MioResizeMove(object? sender, MioFrameResizeEventClass e)
+        /// <summary>
+        /// DB접속정보 할당 
+        /// </summary>
+        /// <param name="connectionString"></param>
+        public void SetConnectDBInfo(string connectionString)
         {
-            MioFrameResizeMoved?.Invoke(sender, e);
+            _matrixManager.ConnectionString = connectionString;
+            _matrixManager.SetDB(connectionString);
+            _matrixFrameTotalManager.ConnectionString = connectionString;
         }
-
-        private void Mc_MioResizeStarted(object? sender, MioFrameResizeEventClass e)
-        {
-            MioFrameResizeStarted?.Invoke(sender, e);
-        }
-
-        public void DeleteMatrixInOutFrame(MatrixInOutSelectFrame mc)
-        {
-            //추가한 인아웃 프레임 삭제하는 메서드 추가
-        }
-        #endregion
-
-        #region 설정관련 Public Methods
 
         #endregion
 
-        #region Event Handles
-        //-----------------------매트릭스 인아웃프레임 영역-----------------------
+        #region Private Methods
 
-        //인아웃프레임 클릭!(아웃)
-        private void Mc_OutputClick(object? sender, EventArgs e)
-        {
-            MatrixInOutSelectFrame frame = sender as MatrixInOutSelectFrame;
-            ChangeMatrixOutputInMioFrame(frame);
-        }
-
-        //인아웃프레임 클릭!(인)
-        private void Mc_InputClick(object? sender, EventArgs e)
-        {
-            MatrixInOutSelectFrame frame = sender as MatrixInOutSelectFrame;
-            ChangeMatrixInputInMioFrame(frame);
-        }
-
-        //인아웃프레임에서 라우트정보 변경됨
-        private async void Mc_RouteNoChangeAsync(int inputNo, int outputNo)
-        {
-            if(await _matrixManager.GetStateAsync())
-            {
-                string routeChange = $"*255CI{inputNo:D2}O{outputNo:D2}!\r\n";
-                Debug.WriteLine("서버로 전송 : " +routeChange);
-                _matrixManager.SendMsgAsync(routeChange);
-            }
-            
-            //매트릭스에 바로 송신메세지 보내기
-        }
-
-        //----------------------매트릭스 프레임 영역----------------------------
-        // 드래그 시작 이벤트
-        private void _matrixFrame_DragStarted(object? sender, DragEventClass e)
-        {
-            DragStarted?.Invoke(_mappingChannel, e);
-        }
-
-        //드래그 중 이벤트
-        private void _matrixFrame_DragMoved(object? sender, DragEventClass e)
-        {
-            DragMoved?.Invoke(sender, e);
-        }
-
-        //드래그 끝 이벤트
-        private void _matrixFrame_DragEnded(object? sender, DragEventClass e)
-        {
-            DragEnded?.Invoke(sender, e);
-        }
-
-        //프레임 셀 클릭
-        private void MatrixFrame_CellClick(object? sender, EventArgs e)
-        {
-            MatrixChannel mc = sender as MatrixChannel;
-            _mappingChannel = mc;
-            if (mc != null)
-            {
-                Debug.WriteLine(mc.ChannelName);
-            }
-            else
-            {
-                Debug.WriteLine("mc == null");
-            }
-        }
-
-        //프레임 인아웃 채널 바꿔줌
-        private string MatrixFrame_ChangeMatrixChannelListClick(string channelType)
-        {
-            DataTable dt = CreateDataTableForMatrixChannelList(channelType);
-            _matrixFrame.SetMatrixChannelList(dt);
-
-            return channelType;
-        }
-        #endregion
-
-        #region Private
         // mioFrame 아웃채널 변경
         private void ChangeMatrixOutputInMioFrame(MatrixInOutSelectFrame mioFrame)
         {
-
             if (_mappingChannel == null || _mappingChannel.ChannelType != "OUTPUT")
             {
                 //MessageBox.Show("출력신호를 선택해주세요");
@@ -350,7 +178,6 @@ namespace TMCS_PRJ
                 }
             }
 
-
             foreach (MatrixInOutSelectFrame mc in _matrixInOutFrame)
             {
                 if (mc == mioFrame)
@@ -359,8 +186,8 @@ namespace TMCS_PRJ
                     _matrixFrame.ClearClickedCell();
                 }
             }
-
         }
+
         // mioFrame 인채널 변경
         private void ChangeMatrixInputInMioFrame(MatrixInOutSelectFrame mioFrame)
         {
@@ -387,6 +214,143 @@ namespace TMCS_PRJ
 
         #endregion
 
+        #region Event Handles
+        /// <summary>
+        /// 매트릭스 프레임에서 이름이 변경됨!!
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void _matrixFrame_CellValueChanged(object? sender, EventArgs e)
+        {
+            DataGridView dgv = sender as DataGridView;
+            DataGridViewCellEventArgs dgvEvent = e as DataGridViewCellEventArgs;
+            int rowNum = dgvEvent.RowIndex;
+            string channelName = dgv.Rows[dgvEvent.RowIndex].Cells[1].Value.ToString();
+            string channelType = _matrixFrame.NowChannelType;
+
+            _matrixManager.SetChannel(rowNum, channelName, channelType) ;
+
+            MatrixChannel channel = _matrixManager.GetChannelInfo(rowNum, channelType);
+
+            foreach(MatrixInOutSelectFrame item in _matrixInOutFrame)
+            {
+                if(channelType == "INPUT")
+                {
+                    if(channel.Port == item.MatrixChannelInput.Port)
+                    {
+                        item.MatrixChannelInput = channel;
+                    }
+                    
+                }
+                else if(channelType == "OUTPUT")
+                {
+                    if (channel.Port == item.MatrixChannelOutput.Port)
+                    {
+                        item.MatrixChannelOutput = channel;
+                    }
+                }
+            }
+        }
+
+        private void MioFrame_MioFrameDelete(object? sender, EventArgs e)
+        {
+            MatrixInOutSelectFrame mioFrame = sender as MatrixInOutSelectFrame;
+            if (_matrixInOutFrame.Contains(mioFrame)) // 리스트에 mioFrame이 실제로 있는지 확인
+            {
+                MioFrameDelete?.Invoke(sender, e);
+                _matrixInOutFrame.Remove(mioFrame); // mioFrame 객체를 리스트에서 제거
+            }            
+        }
+
+        //-------------------------------------------------매트릭스 인아웃프레임 영역------------------------------------------------
+
+        // MioFrame 크기조절 영역
+
+        private void MioFrame_MioResizeStarted(object? sender, MioFrameResizeEventClass e)
+        {
+            MioFrameResizeStarted?.Invoke(sender, e);
+        }
+
+        private void MioFrame_MioResizeMove(object? sender, MioFrameResizeEventClass e)
+        {
+            MioFrameResizeMoved?.Invoke(sender, e);
+        }
+
+        private void MioFrame_MioResizeFinished(object? sender, MioFrameResizeEventClass e)
+        {
+            MioFrameResizeEnded?.Invoke(sender, e);
+        }
+
+        // MioFrame 클릭 영역
+
+        private void MioFrame_OutputClick(object? sender, EventArgs e)
+        {
+            MatrixInOutSelectFrame frame = sender as MatrixInOutSelectFrame;
+            ChangeMatrixOutputInMioFrame(frame);
+        }
+
+        private void MioFrame_InputClick(object? sender, EventArgs e)
+        {
+            MatrixInOutSelectFrame frame = sender as MatrixInOutSelectFrame;
+            ChangeMatrixInputInMioFrame(frame);
+        }
+
+        // MioFrame RouteNo 변경
+        private async void MioFrame_RouteNoChangeAsync(MatrixChannel mcInput, MatrixChannel mcOutput)
+        {
+            await _matrixManager.UpdateRouteNoAsync(mcInput, mcOutput);
+        }
+
+        //-------------------------------------------------매트릭스 프레임 영역--------------------------------------------------
+        // 드래그 시작 이벤트
+        private void _matrixFrame_DragStarted(object? sender, DragEventClass e)
+        {
+            MFrameDragStarted?.Invoke(_mappingChannel, e);
+        }
+
+        //드래그 중 이벤트
+        private void _matrixFrame_DragMoved(object? sender, DragEventClass e)
+        {
+            MFrameDragMoved?.Invoke(sender, e);
+        }
+
+        //드래그 끝 이벤트
+        private void _matrixFrame_DragEnded(object? sender, DragEventClass e)
+        {
+            MFrameDragEnded?.Invoke(sender, e);
+        }
+
+        //프레임 셀 클릭
+        private void MatrixFrame_CellClick(object? sender, EventArgs e)
+        {
+            //MatrixChannel mc = sender as MatrixChannel;
+            DataGridView dgv = sender as DataGridView;
+            DataGridViewCellEventArgs dgvEvent = e as DataGridViewCellEventArgs;
+            if (dgv != null)
+            {
+                Debug.WriteLine(dgv.SelectedCells[0]);
+                var cell = dgv.SelectedCells[0];
+
+                _mappingChannel = _matrixManager.GetChannelInfo(cell.RowIndex, _matrixFrame.NowChannelType);
+            }
+            else if(dgv == null)
+            {
+                _mappingChannel = null;
+            }
+            _matrixFrame.SelectedChannel = _mappingChannel;
+        }
+
+        //MFrame In / Out 변경 및 채널타입 반환
+        private string MatrixFrame_ChangeMatrixChannelListClick(string channelType)
+        {
+            DataTable dt = CreateDataTableForMatrixChannelList(channelType);
+            _matrixFrame.SetMatrixChannelList(dt);
+
+            return channelType;
+        }
+        #endregion
+
+        #region Private
 
         /// <summary>
         /// Manager로부터 받아온 파일을 View에 뿌려주기위한 Methods 
@@ -410,6 +374,16 @@ namespace TMCS_PRJ
             }
             return dt;
         }
+        #endregion
 
+        public event EventHandler<DragEventClass> MFrameDragStarted;
+        public event EventHandler<DragEventClass> MFrameDragMoved;
+        public event EventHandler<DragEventClass> MFrameDragEnded;
+
+        public event EventHandler<MioFrameResizeEventClass> MioFrameResizeStarted;
+        public event EventHandler<MioFrameResizeEventClass> MioFrameResizeMoved;
+        public event EventHandler<MioFrameResizeEventClass> MioFrameResizeEnded;
+
+        public event EventHandler MioFrameDelete;
     }
 }

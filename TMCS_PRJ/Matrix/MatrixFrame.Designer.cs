@@ -49,26 +49,27 @@
             dgvMatrixChannelList.CellEndEdit += dgvMatrixChannelList_CellEndEdit;
             dgvMatrixChannelList.CellMouseUp += dgvMatrixChannelList_CellMouseUp;
             dgvMatrixChannelList.SelectionChanged += dgvMatrixChannelList_SelectionChanged;
+            dgvMatrixChannelList.Resize += dgvMatrixChannelList_Resize;
             // 
             // cms
             // 
             cms.Items.AddRange(new ToolStripItem[] { 이름바꾸기ToolStripMenuItem });
             cms.Name = "cmx";
-            cms.Size = new Size(181, 48);
+            cms.Size = new Size(135, 26);
             // 
             // 이름바꾸기ToolStripMenuItem
             // 
             이름바꾸기ToolStripMenuItem.Name = "이름바꾸기ToolStripMenuItem";
-            이름바꾸기ToolStripMenuItem.Size = new Size(180, 22);
+            이름바꾸기ToolStripMenuItem.Size = new Size(134, 22);
             이름바꾸기ToolStripMenuItem.Text = "이름바꾸기";
             이름바꾸기ToolStripMenuItem.Click += 이름바꾸기ToolStripMenuItem_Click;
             // 
-            // MatrixFrameControl
+            // MatrixFrame
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             Controls.Add(dgvMatrixChannelList);
-            Name = "MatrixFrameControl";
+            Name = "MatrixFrame";
             ((System.ComponentModel.ISupportInitialize)dgvMatrixChannelList).EndInit();
             cms.ResumeLayout(false);
             ResumeLayout(false);
