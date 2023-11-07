@@ -101,7 +101,7 @@
             // 
             pnMioFrame.Location = new Point(316, 71);
             pnMioFrame.Name = "pnMioFrame";
-            pnMioFrame.Size = new Size(701, 428);
+            pnMioFrame.Size = new Size(326, 202);
             pnMioFrame.TabIndex = 3;
             // 
             // lblTest
@@ -125,7 +125,8 @@
             Controls.Add(groupBox1);
             Name = "MainForm";
             StartPosition = FormStartPosition.CenterScreen;
-            Text = "Form1";
+            Text = "TMCS_PRJ";
+            Deactivate += MainForm_Deactivate;
             Load += MainForm_Load;
             groupBox1.ResumeLayout(false);
             ResumeLayout(false);
@@ -140,7 +141,7 @@
         private Panel pnMatrixFrame;
         private Button btnAddMioFrame;
         private Button bbbb;
-        private Panel pnMioFrame;
         private Label lblTest;
+        private Panel pnMioFrame;
     }
 }

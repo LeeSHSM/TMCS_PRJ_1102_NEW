@@ -2,6 +2,7 @@ using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Drawing.Drawing2D;
 using System.Reflection;
+using Timer = System.Windows.Forms.Timer;
 
 namespace TMCS_PRJ
 {
@@ -10,10 +11,10 @@ namespace TMCS_PRJ
         private Panel loadingPanel;
         private PictureBox loadingPictureBox;
 
-        public string lblUpdate 
-        { 
+        public string lblUpdate
+        {
             get { return lblTest.Text; }
-            set 
+            set
             {
                 if (InvokeRequired)
                 {
@@ -26,12 +27,17 @@ namespace TMCS_PRJ
             }
         }
 
-
-
         public MainForm()
         {
             InitializeComponent();
+            //this.SetStyle(ControlStyles.OptimizedDoubleBuffer | ControlStyles.UserPaint | ControlStyles.AllPaintingInWmPaint, true);
+            //this.UpdateStyles();
+
+            //this.DoubleBuffered = true;
+
         }
+
+
 
         Panel MainView.pnMatrixInOutSelectFrame
         {
@@ -55,7 +61,6 @@ namespace TMCS_PRJ
             {
                 SetMatrixFrame(uc);
             }
-
         }
 
         public void AddMioFrame(UserControl uc)
@@ -69,7 +74,6 @@ namespace TMCS_PRJ
             {
                 SetMatrixMioFrame(uc);
             }
-
         }
 
         private void SetMatrixMioFrame(UserControl value)
@@ -112,23 +116,34 @@ namespace TMCS_PRJ
             lbl.TextAlign = ContentAlignment.MiddleCenter;
             lbl.BackColor = Color.Red;
             lbl.BringToFront();
+
         }
 
         public void DragMove(object sender, DragEventClass e)
         {
-            this.Invalidate(previousDragRect);
             Rectangle currentDragRect = lbl.Bounds;
-            this.Invalidate(currentDragRect);
-            this.Update();
 
+            this.Invalidate(currentDragRect);  // 현재 위치의 영역을 다시 그립니다.
+            
+            this.Invalidate(previousDragRect); // 이전 위치의 영역을 다시 그립니다.            
             previousDragRect = currentDragRect;
 
+            this.Update();            
+
+            // 라벨 위치 업데이트
             Point point = new Point(e.Location.X - (lbl.Width / 2), e.Location.Y - (lbl.Height / 2));
             lbl.Location = this.PointToClient(point);
+
         }
 
         public void DragEnded(object sender, DragEventClass e)
         {
+            if(e == null)
+            {
+                this.Controls.Remove(lbl);
+                lbl?.Dispose();
+                return;
+            }
             MatrixFrameDragEndedRequest(lbl, e);
             this.Controls.Remove(lbl);
             lbl?.Dispose();
@@ -226,10 +241,31 @@ namespace TMCS_PRJ
 
         #endregion
 
+        private void MainForm_Deactivate(object sender, EventArgs e)
+        {
+            DragEnded(sender, null);
+        }
+
         public event EventHandler FormLoad;
         public event EventHandler btnMatrixInputClick;
         public event EventHandler btnMatrixOutputClick;
         public event EventHandler btnAddMioFrameClick;
         public event EventHandler<DragEventClass> MatrixFrameDragEndedRequest;
+
+        /// <summary>
+        /// 화면 깜빡임...티어링 등 금지..
+        /// </summary>
+        protected override CreateParams CreateParams
+        {
+            get
+            {
+                var cp = base.CreateParams;
+                cp.ExStyle |= 0x02000000;
+                return cp;
+            }
+        }
+
+
     }
+
 }

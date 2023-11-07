@@ -15,14 +15,13 @@ namespace TMCS_PRJ
         public LoadingForm()
         {
             InitializeComponent();
-            //pictureBox1.Controls.Add(lblInfoMessage);
-
+            lblInfo.Parent = pictureBox1;
+            lblInfo.BackColor = Color.Transparent;
         }
 
         public void Setlbl(string msg)
         {
-            //lblInfoMessage.Text = msg;
+            lblInfo.Text = msg;
         }
-
     }
 }

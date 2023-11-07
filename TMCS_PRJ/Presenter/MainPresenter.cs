@@ -60,8 +60,10 @@ namespace TMCS_PRJ
         public async Task InitializeAsync()
         {
             _progress?.Report(new ProgressReport { Message = "매트릭스 초기화 시작" });
+            //await Task.Delay(500);
             await _matrixControl.InitializeAsync();
             _progress?.Report(new ProgressReport { Message = "매트릭스 초기화 완료" });
+            //await Task.Delay(500);
         }
 
         private void _matrixControl_MioFrameDelete(object? sender, EventArgs e)

@@ -1,5 +1,6 @@
 ﻿using System.Data;
 using System.Diagnostics;
+using System.Reflection;
 
 namespace TMCS_PRJ
 {
@@ -45,6 +46,7 @@ namespace TMCS_PRJ
         {
             InitializeComponent();
             InitializeEvent();
+            dgvMatrixChannelList.GetType().GetProperty("DoubleBuffered", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(dgvMatrixChannelList, true, null);
         }
 
         private void InitializeEvent()
@@ -328,6 +330,7 @@ namespace TMCS_PRJ
         private void dgvMatrixChannelList_Resize(object sender, EventArgs e)
         {
             UpdateDgvMatrixChannelListLayOut();
+            Debug.WriteLine("????");
         }
 
         public event EventHandler CellClick;

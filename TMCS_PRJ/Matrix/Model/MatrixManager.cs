@@ -55,9 +55,11 @@ namespace TMCS_PRJ
                 _progress?.Report(new ProgressReport { Message = "인풋채널 초기화 시작" });
                 List<MatrixChannel> inputChannels = await LoadChannelAsync(input);
                 _progress?.Report(new ProgressReport { Message = "인풋채널 초기화 완료" });
+                //await Task.Delay(500);
                 _progress?.Report(new ProgressReport { Message = "아웃채널 초기화 시작" });
                 List<MatrixChannel> outputChannels = await LoadChannelAsync(output);
                 _progress?.Report(new ProgressReport { Message = "아웃채널 초기화 완료" });
+                //await Task.Delay(500);
 
                 _matrix.InputChannel = inputChannels;
                 _matrix.OutputChannel = outputChannels;

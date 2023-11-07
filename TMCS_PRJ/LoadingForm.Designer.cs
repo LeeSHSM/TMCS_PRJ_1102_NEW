@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             pictureBox1 = new PictureBox();
+            lblInfo = new Label();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             SuspendLayout();
             // 
@@ -43,11 +44,22 @@
             pictureBox1.TabIndex = 1;
             pictureBox1.TabStop = false;
             // 
+            // lblInfo
+            // 
+            lblInfo.Font = new Font("맑은 고딕", 14.25F, FontStyle.Regular, GraphicsUnit.Point);
+            lblInfo.Location = new Point(12, 470);
+            lblInfo.Name = "lblInfo";
+            lblInfo.Size = new Size(501, 52);
+            lblInfo.TabIndex = 2;
+            lblInfo.Text = "label1";
+            lblInfo.TextAlign = ContentAlignment.BottomLeft;
+            // 
             // LoadingForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(763, 562);
+            Controls.Add(lblInfo);
             Controls.Add(pictureBox1);
             FormBorderStyle = FormBorderStyle.None;
             Name = "LoadingForm";
@@ -59,5 +71,6 @@
 
         #endregion
         private PictureBox pictureBox1;
+        private Label lblInfo;
     }
 }

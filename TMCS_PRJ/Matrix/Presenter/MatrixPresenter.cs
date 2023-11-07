@@ -42,8 +42,10 @@ namespace TMCS_PRJ
         public async Task InitializeAsync()
         {
             _progress?.Report(new ProgressReport { Message = "매트릭스매니저 초기화 시작" });
+            //await Task.Delay(500);
             await _matrixManager.InitializeChannels(); // MatrixManager의 초기화가 완료될 때까지 기다립니다.            
             _progress?.Report(new ProgressReport { Message = "매트릭스매니저 초기화 완료" });
+            //await Task.Delay(500);
             ChangeMatrixChannelList("INPUT");
 
 
