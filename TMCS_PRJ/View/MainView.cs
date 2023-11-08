@@ -13,6 +13,7 @@ namespace TMCS_PRJ
         event EventHandler btnMatrixOutputClick;
         event EventHandler btnAddMioFrameClick;
         event EventHandler<DragEventClass> MatrixFrameDragEndedRequest;
+        event EventHandler EquipmentStatusClick;
 
         Panel pnMatrixFrame { get; }
         Panel pnMatrixInOutSelectFrame { get; }
@@ -30,6 +31,7 @@ namespace TMCS_PRJ
 
         void AddMioFrame(UserControl uc);
         void MioFrameDelete(object sender, EventArgs e);
+
 
 
 

@@ -44,6 +44,7 @@ namespace TMCS_PRJ
             _view.btnMatrixOutputClick += _view_btnOutputClick;
             _view.btnAddMioFrameClick += _view_btnAddMioFrameClick;
             _view.MatrixFrameDragEndedRequest += _view_MatrixFrameDragEnded;
+            _view.EquipmentStatusClick += _view_EquipmentStatusClick;
 
             _matrixControl.MFrameDragEnded += _matrixControl_DragEnded;
             _matrixControl.MFrameDragMoved += _matrixControl_DragMoved;
@@ -55,6 +56,13 @@ namespace TMCS_PRJ
             _matrixControl.MioFrameDelete += _matrixControl_MioFrameDelete;
         }
 
+        private void _view_EquipmentStatusClick(object? sender, EventArgs e)
+        {
+            EquipmentStatusForm equipmentStatusForm = new EquipmentStatusForm();
+            equipmentStatusForm.Setlbl(GlobalSetting.MATRIX_IP.ToString());
+            equipmentStatusForm.ShowDialog();            
+        }
+
         public async Task InitializeAsync()
         {
             _progress?.Report(new ProgressReport { Message = "매트릭스 초기화 시작" });
@@ -62,7 +70,8 @@ namespace TMCS_PRJ
             await _matrixControl.InitializeAsync();
             _progress?.Report(new ProgressReport { Message = "매트릭스 초기화 완료" });
             //await Task.Delay(500);
-            await _matrixControl.StartConnectionAsync();
+            //await _matrixControl.StartConnectionAsync();
+            _matrixControl.StartConnectionAsync();
         }
 
         private void _matrixControl_MioFrameDelete(object? sender, EventArgs e)
@@ -93,6 +102,8 @@ namespace TMCS_PRJ
 
         private void _view_MatrixFrameDragEnded(object? sender, DragEventClass e)
         {
+
+            #region 임시
             // 라벨을 기준으로 충돌체크
             //Label lbl = sender as Label;
             //if (lbl == null) return; // Early return if the sender is not a Label.
@@ -127,6 +138,7 @@ namespace TMCS_PRJ
             //{
             //    _matrixControl.RequestDragEnded(maxOverlapControl, e);
             //}
+            #endregion
 
             //마우스 포인트를 기준으로 충돌체크
             Point mousePositionOnForm = new Point(e.Location.X, e.Location.Y);

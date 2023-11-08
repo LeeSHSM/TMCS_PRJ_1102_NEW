@@ -30,11 +30,6 @@ namespace TMCS_PRJ
         public MainForm()
         {
             InitializeComponent();
-            //this.SetStyle(ControlStyles.OptimizedDoubleBuffer | ControlStyles.UserPaint | ControlStyles.AllPaintingInWmPaint, true);
-            //this.UpdateStyles();
-
-            //this.DoubleBuffered = true;
-
         }
 
 
@@ -124,21 +119,20 @@ namespace TMCS_PRJ
             Rectangle currentDragRect = lbl.Bounds;
 
             this.Invalidate(currentDragRect);  // 현재 위치의 영역을 다시 그립니다.
-            
+
             this.Invalidate(previousDragRect); // 이전 위치의 영역을 다시 그립니다.            
             previousDragRect = currentDragRect;
 
-            this.Update();            
+            this.Update();
 
             // 라벨 위치 업데이트
             Point point = new Point(e.Location.X - (lbl.Width / 2), e.Location.Y - (lbl.Height / 2));
             lbl.Location = this.PointToClient(point);
-
         }
 
         public void DragEnded(object sender, DragEventClass e)
         {
-            if(e == null)
+            if (e == null)
             {
                 this.Controls.Remove(lbl);
                 lbl?.Dispose();
@@ -245,12 +239,20 @@ namespace TMCS_PRJ
         {
             DragEnded(sender, null);
         }
+        EquipmentStatusForm uc = new EquipmentStatusForm();
+        private void 장비등록정보확인ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+            EquipmentStatusClick(sender, e);
+        }
 
         public event EventHandler FormLoad;
         public event EventHandler btnMatrixInputClick;
         public event EventHandler btnMatrixOutputClick;
         public event EventHandler btnAddMioFrameClick;
         public event EventHandler<DragEventClass> MatrixFrameDragEndedRequest;
+        public event EventHandler EquipmentStatusClick;
+        
 
         /// <summary>
         /// 화면 깜빡임...티어링 등 금지..

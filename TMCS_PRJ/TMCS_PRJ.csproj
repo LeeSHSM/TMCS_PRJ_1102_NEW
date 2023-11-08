@@ -9,7 +9,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Dlp\" />
+    <Compile Remove="Dlp\**" />
+    <EmbeddedResource Remove="Dlp\**" />
+    <None Remove="Dlp\**" />
   </ItemGroup>
 
   <ItemGroup>

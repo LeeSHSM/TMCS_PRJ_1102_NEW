@@ -25,13 +25,12 @@ namespace TMCS_PRJ
                 {
                     loadingForm.Setlbl(report.Message);
                     GlobalSetting.Logger.LogInfo(report.Message);
-                }
+                }   
 
                 if(report.Test != null)
                 {
                     view.lblUpdate = report.Test;
-                }
-                
+                }                
             });
 
             progress?.Report(new ProgressReport { Message = "메인프레젠터 로딩 시작" });

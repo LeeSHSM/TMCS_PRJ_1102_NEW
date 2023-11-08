@@ -435,26 +435,27 @@ namespace TMCS_PRJ
             _client = new TcpClient();            
            
             int retryCount = 0;
-            int maxRetryCount = 5;
+            int maxRetryCount = 1;
             while (retryCount < maxRetryCount)
             {
                 if (!(await GetState()))
                 {
                     try
                     {
+                        _progress?.Report(new ProgressReport { Message = $"매트릭스 서버 접속중..." });
                         await _client.ConnectAsync(Address, Port);
                         break;
                     }                 
                     catch
                     {
+                        retryCount++;
                         _progress?.Report(new ProgressReport { Message = $"재연결 시도 {retryCount}/{maxRetryCount}" });
                         // 연결 실패: 반복 횟수 증가
-                        retryCount++;
+                        
                         //GlobalSetting.Logger.LogError($"재연결 시도 {retryCount}/{maxRetryCount}");
                         Debug.WriteLine($"재연결 시도 {retryCount}/{maxRetryCount}");
                         // 재연결을 시도하기 전에 짧은 지연을 둘 수 있습니다.
-                        await Task.Delay(500); // 1초간 대기
-
+                        //await Task.Delay(500); // 1초간 대기
                     }
                 }
                 else
