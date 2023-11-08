@@ -132,9 +132,9 @@ namespace TMCS_PRJ
 
 
         //-------------------------------------------- Matrix Manager 통신관련 메서드 --------------------------------------------
-        public void StartConnection()
+        public async Task StartConnectionAsync()
         {
-            _matrixManager.StartConnectAsync();
+            await _matrixManager.StartConnectAsync();
         }
 
         /// <summary>

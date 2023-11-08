@@ -33,10 +33,8 @@ namespace TMCS_PRJ
             InitializeViewEvent();
 
             //나중에 ip관련정보, DB접속정보들은 xml파일로 분리하자...그래야 컴파일 없이 외부에서 수정가능할듯?
-            _matrixControl.SetConnectInfo(new RTVDMMatrixToIP(GlobalSetting.MATRIX_IP,GlobalSetting.MATRIX_PORT));
-            _matrixControl.SetConnectDBInfo(GlobalSetting.MATRIX_DB);
-
-            _matrixControl.StartConnection();
+            _matrixControl.SetConnectInfo(new RTVDMMatrixToIP(GlobalSetting.MATRIX_IP,GlobalSetting.MATRIX_PORT, progress));
+            _matrixControl.SetConnectDBInfo(GlobalSetting.MATRIX_DB);            
         }
 
         private void InitializeViewEvent()
@@ -64,6 +62,7 @@ namespace TMCS_PRJ
             await _matrixControl.InitializeAsync();
             _progress?.Report(new ProgressReport { Message = "매트릭스 초기화 완료" });
             //await Task.Delay(500);
+            await _matrixControl.StartConnectionAsync();
         }
 
         private void _matrixControl_MioFrameDelete(object? sender, EventArgs e)

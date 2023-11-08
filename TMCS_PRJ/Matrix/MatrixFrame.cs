@@ -330,7 +330,6 @@ namespace TMCS_PRJ
         private void dgvMatrixChannelList_Resize(object sender, EventArgs e)
         {
             UpdateDgvMatrixChannelListLayOut();
-            Debug.WriteLine("????");
         }
 
         public event EventHandler CellClick;

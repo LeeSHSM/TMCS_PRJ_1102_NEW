@@ -414,8 +414,10 @@ namespace TMCS_PRJ
 
     public class RTVDMMatrixToIP : MatrixConnectInfo
     {
-        public RTVDMMatrixToIP(IPAddress ip, int port)
+        IProgress<ProgressReport> _progress;
+        public RTVDMMatrixToIP(IPAddress ip, int port, IProgress<ProgressReport> progress)
         {
+            _progress = progress;
             Address = ip;
             Port = port;
         }
@@ -430,23 +432,59 @@ namespace TMCS_PRJ
 
         public async Task StartConnectAsync()
         {
-            try
-            { 
-                _client = new TcpClient();
-                await _client.ConnectAsync(Address, Port);
-                _stream = _client.GetStream();
-                _reader = new StreamReader(_stream);
-
-
-                _cts = new CancellationTokenSource();
-
-                // Start reading in a background task
-                ReceiveMessages(_cts.Token);
-            }
-            catch (Exception ex)
+            _client = new TcpClient();            
+           
+            int retryCount = 0;
+            int maxRetryCount = 5;
+            while (retryCount < maxRetryCount)
             {
-                Debug.WriteLine("연결실패 : " + ex.ToString());
+                if (!(await GetState()))
+                {
+                    try
+                    {
+                        await _client.ConnectAsync(Address, Port);
+                        break;
+                    }                 
+                    catch
+                    {
+                        _progress?.Report(new ProgressReport { Message = $"재연결 시도 {retryCount}/{maxRetryCount}" });
+                        // 연결 실패: 반복 횟수 증가
+                        retryCount++;
+                        //GlobalSetting.Logger.LogError($"재연결 시도 {retryCount}/{maxRetryCount}");
+                        Debug.WriteLine($"재연결 시도 {retryCount}/{maxRetryCount}");
+                        // 재연결을 시도하기 전에 짧은 지연을 둘 수 있습니다.
+                        await Task.Delay(500); // 1초간 대기
+
+                    }
+                }
+                else
+                {
+                    break;
+                }
             }
+            _stream = _client.GetStream();
+            _reader = new StreamReader(_stream);
+
+            _cts = new CancellationTokenSource();
+            ReceiveMessages(_cts.Token);
+
+            //try
+            //{ 
+            //    _client = new TcpClient();
+            //    await _client.ConnectAsync(Address, Port);
+            //    _stream = _client.GetStream();
+            //    _reader = new StreamReader(_stream);
+
+
+            //    _cts = new CancellationTokenSource();
+
+            //    // Start reading in a background task
+            //    ReceiveMessages(_cts.Token);
+            //}
+            //catch (Exception ex)
+            //{
+            //    Debug.WriteLine("연결실패 : " + ex.ToString());
+            //}
         }
 
         public async Task DisConnect()
