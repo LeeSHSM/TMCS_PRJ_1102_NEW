@@ -1,6 +1,8 @@
 ﻿using System.Data;
 using System.Diagnostics;
+using System.Drawing;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 
 namespace TMCS_PRJ
 {
@@ -51,10 +53,16 @@ namespace TMCS_PRJ
 
         private void InitializeEvent()
         {
+            dgvMatrixChannelList.SelectionChanged += DgvMatrixChannelList_SelectionChanged;
             dgvMatrixChannelList.MouseDown += DgvMatrixChannelList_MouseDown;
             dgvMatrixChannelList.MouseMove += DgvMatrixChannelList_MouseMove;
             dgvMatrixChannelList.MouseUp += DgvMatrixChannelList_MouseUp;
+            dgvMatrixChannelList.CellMouseUp += DgvMatrixChannelList_CellMouseUp;
+            dgvMatrixChannelList.Resize += DgvMatrixChannelList_Resize;
+            dgvMatrixChannelList.CellEndEdit += DgvMatrixChannelList_CellEndEdit;
         }
+
+
 
         #endregion
 
@@ -123,10 +131,7 @@ namespace TMCS_PRJ
                 // 여러 셀을 동시에 선택하지 못하게 설정
                 dgvMatrixChannelList.MultiSelect = false;
 
-
-
                 dgvMatrixChannelList.ColumnHeadersDefaultCellStyle.Font = new Font(dgvMatrixChannelList.ColumnHeadersDefaultCellStyle.Font, FontStyle.Bold);
-
 
                 // 각 컬럼의 텍스트를 중앙정렬
                 foreach (DataGridViewColumn column in dgvMatrixChannelList.Columns)
@@ -171,15 +176,35 @@ namespace TMCS_PRJ
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void dgvMatrixChannelList_SelectionChanged(object sender, EventArgs e)
+        private void DgvMatrixChannelList_SelectionChanged(object? sender, EventArgs e)
         {
             if (dgvMatrixChannelList.SelectedCells.Count > 0 && _nowChannelType != null && dgvMatrixChannelList.SelectedCells[0].ColumnIndex == 1) // 유효한 셀인지 확인
             {
-                CellClick?.Invoke(sender, e);
+                SelectedCellChanged?.Invoke(sender, e);
             }
             else if (dgvMatrixChannelList.SelectedCells.Count == 0 && _nowChannelType != null)
             {
-                CellClick?.Invoke(null, EventArgs.Empty);
+                SelectedCellChanged?.Invoke(null, EventArgs.Empty);
+            }
+        }
+
+        /// <summary>
+        /// 셀 우클릭 했을때 이벤트
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void DgvMatrixChannelList_CellMouseUp(object? sender, DataGridViewCellMouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right && e.RowIndex >= 0 && e.ColumnIndex == 1)
+            {
+                dgvMatrixChannelList.CurrentCell = dgvMatrixChannelList.Rows[e.RowIndex].Cells[e.ColumnIndex];
+
+                // DataGridView의 현재 좌표를 스크린 좌표로 변환합니다.
+                Point currentCellLocation = dgvMatrixChannelList.GetCellDisplayRectangle(e.ColumnIndex, e.RowIndex, false).Location;
+
+                currentCellLocation.Offset(e.X, e.Y);
+
+                cms.Show(dgvMatrixChannelList, currentCellLocation);
             }
         }
 
@@ -188,6 +213,7 @@ namespace TMCS_PRJ
         private bool _isDragMouseDown = false;      //드래드관련 마우스 다운
         private bool _isDragMouseMove = false;      //드래그관련 마우스 무브
         private Point? _pDragStartedPostion = null; //드래그관련 시작 마우스 위치
+        private Label _dragLbl;
 
         /// <summary>
         /// DragStarted 이벤트... 드래그 시작할때? 이건 마우스 좌클릭할때 무조건 동작 
@@ -203,6 +229,11 @@ namespace TMCS_PRJ
             }
         }
 
+
+
+
+        Form mainForm;
+
         /// <summary>
         /// DragMove 이벤트... 드래그 시작후 마우스 움직일때만 동작 
         /// </summary>
@@ -210,7 +241,13 @@ namespace TMCS_PRJ
         /// <param name="e"></param>
         private void DgvMatrixChannelList_MouseMove(object? sender, MouseEventArgs e)
         {
-            //dgvMatrixChannelList.Update();
+            Point point;
+            if (_isDragMouseMove)
+            {
+                point = this.PointToScreen(new Point(e.X - (_dragLbl.Width / 2), e.Y - (_dragLbl.Height / 2)));
+                _dragLbl.Location = mainForm.PointToClient(point);
+                return;
+            }
             if (_pDragStartedPostion.HasValue)
             {
                 Point startPoint = _pDragStartedPostion.Value;
@@ -218,13 +255,19 @@ namespace TMCS_PRJ
 
                 if (GetDistance(startPoint, nowPoint) >= 10)
                 {
-                    if (_isDragMouseDown)
-                    {
-                        _isDragMouseDown = false;
-                        _isDragMouseMove = true;
-                        DragStarted?.Invoke(this, new DragEventClass(startPoint, SelectedChannel));
-                    }
-                    DragMoved?.Invoke(this, new DragEventClass(nowPoint, SelectedChannel));
+                    _isDragMouseMove = true;
+
+                    mainForm = this.FindForm();
+                    _dragLbl = new Label();
+                    _dragLbl.Text = dgvMatrixChannelList.SelectedCells[0].Value.ToString();
+                    _dragLbl.TextAlign = ContentAlignment.MiddleCenter;
+                    point = this.PointToScreen(new Point(e.X - (_dragLbl.Width / 2), e.Y - (_dragLbl.Height / 2)));
+                    _dragLbl.Location = mainForm.PointToClient(point); // 위치 변환
+                    _dragLbl.BackColor = Color.Transparent;
+                    _dragLbl.BorderStyle = BorderStyle.FixedSingle;
+                    _dragLbl.Size = new Size(50, 50);
+                    mainForm.Controls.Add(_dragLbl);
+                    _dragLbl.BringToFront();
                 }
             }
         }
@@ -238,32 +281,21 @@ namespace TMCS_PRJ
         {
             if (_isDragMouseMove)
             {
-                DragEnded?.Invoke(this, new DragEventClass(MousePosition, SelectedChannel));
+                //Debug.WriteLine(dgvMatrixChannelList.SelectedCells[0].RowIndex);
+                MFrameToObjectDragEnded?.Invoke(dgvMatrixChannelList, e);
+                _dragLbl.Dispose();
             }
+
             _isDragMouseMove = false;
             _pDragStartedPostion = null;
-            _isDragMouseDown = false;
+            mainForm = null;
         }
 
-        /// <summary>
-        /// 셀 우클릭 했을때 이벤트
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void dgvMatrixChannelList_CellMouseUp(object sender, DataGridViewCellMouseEventArgs e)
+        private void DgvMatrixChannelList_Resize(object? sender, EventArgs e)
         {
-            if (e.Button == MouseButtons.Right && e.RowIndex >= 0 && e.ColumnIndex == 1)
-            {
-                dgvMatrixChannelList.CurrentCell = dgvMatrixChannelList.Rows[e.RowIndex].Cells[e.ColumnIndex];
-
-                // DataGridView의 현재 좌표를 스크린 좌표로 변환합니다.
-                Point currentCellLocation = dgvMatrixChannelList.GetCellDisplayRectangle(e.ColumnIndex, e.RowIndex, false).Location;
-
-                currentCellLocation.Offset(e.X, e.Y);
-
-                cms.Show(dgvMatrixChannelList, currentCellLocation);
-            }
+            UpdateDgvMatrixChannelListLayOut();
         }
+
 
         /// <summary>
         /// cms 이름바꾸기 클릭시 이벤트 
@@ -292,7 +324,7 @@ namespace TMCS_PRJ
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void dgvMatrixChannelList_CellEndEdit(object sender, DataGridViewCellEventArgs e)
+        private void DgvMatrixChannelList_CellEndEdit(object? sender, DataGridViewCellEventArgs e)
         {
             dgvMatrixChannelList.ReadOnly = true;
 
@@ -304,9 +336,7 @@ namespace TMCS_PRJ
                 dgvMatrixChannelList.Rows[rowIndex].Cells[columnIndex].Selected = true;
             }));
 
-            //CellValueChange?.Invoke(rowIndex, dgvMatrixChannelList.Rows[rowIndex].Cells[columnIndex].Value.ToString());
             CellValueChanged?.Invoke(sender, e);
-
         }
 
         #endregion
@@ -327,20 +357,10 @@ namespace TMCS_PRJ
         }
         #endregion
 
-        private void dgvMatrixChannelList_Resize(object sender, EventArgs e)
-        {
-            UpdateDgvMatrixChannelListLayOut();
-        }
 
-        public event EventHandler CellClick;
+        public event EventHandler SelectedCellChanged;
         public event EventHandler CellValueChanged;
         public event MatrixFrameView.delCellValueChange CellValueChange;
-
-        public event EventHandler<DragEventClass> DragStarted;
-        public event EventHandler<DragEventClass> DragMoved;
-        public event EventHandler<DragEventClass> DragEnded;
-
-
-
+        public event EventHandler MFrameToObjectDragEnded;
     }
 }

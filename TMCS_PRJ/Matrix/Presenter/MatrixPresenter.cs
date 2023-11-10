@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace TMCS_PRJ
 {
@@ -42,15 +43,10 @@ namespace TMCS_PRJ
         public async Task InitializeAsync()
         {
             _progress?.Report(new ProgressReport { Message = "매트릭스매니저 초기화 시작" });
-            //await Task.Delay(500);
             await _matrixManager.InitializeChannels(); // MatrixManager의 초기화가 완료될 때까지 기다립니다.            
             _progress?.Report(new ProgressReport { Message = "매트릭스매니저 초기화 완료" });
-            //await Task.Delay(500);
+
             ChangeMatrixChannelList("INPUT");
-
-
-            //채널설정 초기화 끝나면 최초로 폼 전달역할
-
         }
 
         /// <summary>
@@ -58,52 +54,19 @@ namespace TMCS_PRJ
         /// </summary>
         private void InitializeEvent()
         {
-            InitializeMatrixFrame();
+            _matrixFrame.SelectedCellChanged += MatrixFrame_SelectedCellChanged;
+            _matrixFrame.CellValueChanged += _matrixFrame_CellValueChanged;
+            _matrixFrame.MFrameToObjectDragEnded += _matrixFrame_MFrameToObjectDragEnded;
         }
 
-        private void InitializeMatrixFrame()
-        {
-            _matrixFrame.CellClick += MatrixFrame_CellClick;
-            _matrixFrame.DragStarted += _matrixFrame_DragStarted;
-            _matrixFrame.DragMoved += _matrixFrame_DragMoved;
-            _matrixFrame.DragEnded += _matrixFrame_DragEnded;
-            _matrixFrame.CellValueChanged += _matrixFrame_CellValueChanged;
-        }
         #endregion
 
         #region Public Methods
 
-        public void RequestDragEnded(object? sender, DragEventClass e)
-        {
-            //progress?.Report(new ProgressReport { Message = "리퀘스트 드래그 엔디드!!" });
-            MatrixInOutSelectFrame frame = sender as MatrixInOutSelectFrame;
-            if (_mappingChannel.ChannelType == "INPUT")
-            {
-                ChangeMatrixInputInMioFrame(frame);
-            }
-            else if (_mappingChannel.ChannelType == "OUTPUT")
-            {
-                ChangeMatrixOutputInMioFrame(frame);
-            }
-        }
-
-        /// <summary>
-        /// 프레임 채널리스트 변경하기
-        /// </summary>
-        /// <param name="channelType"></param>
-        public void ChangeMatrixChannelList(string channelType)
-        {
-            _matrixFrame.NowChannelType = MatrixFrame_ChangeMatrixChannelListClick(channelType);
-        }
-
-        /// <summary>
-        /// Frame 가져오기 
-        /// </summary>
-        /// <returns></returns>
         public UserControl GetMatrixFrame()
         {
             UserControl uc = (UserControl)_matrixFrame;
-            
+
             return uc;
         }
 
@@ -127,8 +90,19 @@ namespace TMCS_PRJ
             return MioFrame;
         }
 
-
-
+        /// <summary>
+        /// 프레임 채널리스트 변경하기
+        /// </summary>
+        /// <param name="channelType"></param>
+        public void ChangeMatrixChannelList(string channelType)
+        {
+            if(channelType != GlobalSetting.ChannelType.INPUT.ToString() &&
+                channelType != GlobalSetting.ChannelType.OUTPUT.ToString()) 
+            {
+                throw new ArgumentException("잘못된 값입니다.(INPUT or OUTPUT 만 사용가능)", nameof(channelType));
+            }
+            _matrixFrame.NowChannelType = GetChangedMatirxListInMframe(channelType);
+        }
 
 
         //-------------------------------------------- Matrix Manager 통신관련 메서드 --------------------------------------------
@@ -249,7 +223,7 @@ namespace TMCS_PRJ
                     if (channel.Port == item.MatrixChannelOutput.Port)
                     {
                         item.MatrixChannelOutput = channel;
-                    }
+                    } 
                 }
             }
         }
@@ -304,33 +278,19 @@ namespace TMCS_PRJ
         }
 
         //-------------------------------------------------매트릭스 프레임 영역--------------------------------------------------
-        // 드래그 시작 이벤트
-        private void _matrixFrame_DragStarted(object? sender, DragEventClass e)
+
+        private void _matrixFrame_MFrameToObjectDragEnded(object? sender, EventArgs e)
         {
-            MFrameDragStarted?.Invoke(_mappingChannel, e);
+
         }
 
-        //드래그 중 이벤트
-        private void _matrixFrame_DragMoved(object? sender, DragEventClass e)
-        {
-            MFrameDragMoved?.Invoke(sender, e);
-        }
-
-        //드래그 끝 이벤트
-        private void _matrixFrame_DragEnded(object? sender, DragEventClass e)
-        {
-            MFrameDragEnded?.Invoke(sender, e);
-        }
 
         //프레임 셀 클릭
-        private void MatrixFrame_CellClick(object? sender, EventArgs e)
+        private void MatrixFrame_SelectedCellChanged(object? sender, EventArgs e)
         {
-            //MatrixChannel mc = sender as MatrixChannel;
             DataGridView dgv = sender as DataGridView;
-            DataGridViewCellEventArgs dgvEvent = e as DataGridViewCellEventArgs;
             if (dgv != null)
             {
-                Debug.WriteLine(dgv.SelectedCells[0]);
                 var cell = dgv.SelectedCells[0];
 
                 _mappingChannel = _matrixManager.GetChannelInfo(cell.RowIndex, _matrixFrame.NowChannelType);
@@ -342,45 +302,78 @@ namespace TMCS_PRJ
             _matrixFrame.SelectedChannel = _mappingChannel;
         }
 
-        //MFrame In / Out 변경 및 채널타입 반환
-        private string MatrixFrame_ChangeMatrixChannelListClick(string channelType)
+        private void test()
         {
-            DataTable dt = CreateDataTableForMatrixChannelList(channelType);
+            //마우스 포인트를 기준으로 충돌체크
+            //Point mousePositionOnForm = new Point(e.Location.X, e.Location.Y);
+
+            //Control maxOverlapControl = null; // To keep track of the control with maximum overlap.
+            //int maxOverlapArea = 0; // To keep track of the maximum overlap area.
+
+            //foreach (Control con in _view.pnMatrixInOutSelectFrame.Controls)
+            //{
+            //    Point conLocation = ConvertToFormCoordinates(con.Parent, con);
+            //    Rectangle conBounds = new Rectangle(conLocation, con.Size);
+            //    Rectangle mouseBounds = new Rectangle(mousePositionOnForm, new Size(1, 1)); // Mouse position as a tiny rectangle.
+
+            //    if (mouseBounds.IntersectsWith(conBounds))
+            //    {
+            //        // Calculate the area of intersection
+            //        Rectangle intersection = Rectangle.Intersect(mouseBounds, conBounds);
+            //        int overlapArea = intersection.Width * intersection.Height;
+
+            //        // Check if this control has the maximum overlap so far
+            //        if (overlapArea > maxOverlapArea)
+            //        {
+            //            maxOverlapArea = overlapArea;
+            //            maxOverlapControl = con;
+            //        }
+            //    }
+            //}
+        }
+
+        //MFrame In / Out 변경 및 채널타입 반환
+
+
+        #endregion
+
+        #region Private
+
+        private string GetChangedMatirxListInMframe(string channelType)
+        {
+            DataTable dt = GetMatrixChannelListToDataTable(channelType);
             _matrixFrame.SetMatrixChannelList(dt);
 
             return channelType;
         }
-        #endregion
-
-        #region Private
 
         /// <summary>
         /// Manager로부터 받아온 파일을 View에 뿌려주기위한 Methods 
         /// </summary>
         /// <param name="channelType"></param>
         /// <returns></returns>
-        private DataTable CreateDataTableForMatrixChannelList(string channelType)
+        private DataTable GetMatrixChannelListToDataTable(string channelType)
         {
             DataTable dt = new DataTable();
-            DataTable List = _matrixManager.GetChannelListInfoToDataTable(channelType);
-            dt.Columns.Add("  구  분");
-            dt.Columns.Add("     소  스");
+            List<MatrixChannel> channels = _matrixManager.GetChannelListInfo(channelType);
 
-            foreach (DataRow row in List.Rows)
+            string col1 = "  구  분";
+            string col2 = "     소  스";
+
+            dt.Columns.Add(col1);
+            dt.Columns.Add(col2);
+
+            foreach(MatrixChannel channel in channels)
             {
                 DataRow dr = dt.NewRow();
-                string strTmp = row["ChannelType"].ToString() + " " + row["Port"];
-                dr["  구  분"] = strTmp;
-                dr["     소  스"] = row["Name"];
+                dr[col1] = $"{channel.ChannelType} {channel.Port}";
+                dr[col2] = $"{channel.ChannelName}";
                 dt.Rows.Add(dr);
             }
             return dt;
         }
         #endregion
 
-        public event EventHandler<DragEventClass> MFrameDragStarted;
-        public event EventHandler<DragEventClass> MFrameDragMoved;
-        public event EventHandler<DragEventClass> MFrameDragEnded;
 
         public event EventHandler<MioFrameResizeEventClass> MioFrameResizeStarted;
         public event EventHandler<MioFrameResizeEventClass> MioFrameResizeMoved;

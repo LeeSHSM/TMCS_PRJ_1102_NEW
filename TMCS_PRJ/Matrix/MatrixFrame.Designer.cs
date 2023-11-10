@@ -46,10 +46,6 @@
             dgvMatrixChannelList.RowTemplate.Height = 25;
             dgvMatrixChannelList.Size = new Size(150, 150);
             dgvMatrixChannelList.TabIndex = 0;
-            dgvMatrixChannelList.CellEndEdit += dgvMatrixChannelList_CellEndEdit;
-            dgvMatrixChannelList.CellMouseUp += dgvMatrixChannelList_CellMouseUp;
-            dgvMatrixChannelList.SelectionChanged += dgvMatrixChannelList_SelectionChanged;
-            dgvMatrixChannelList.Resize += dgvMatrixChannelList_Resize;
             // 
             // cms
             // 

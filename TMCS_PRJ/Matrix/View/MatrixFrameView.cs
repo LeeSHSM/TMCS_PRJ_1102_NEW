@@ -14,13 +14,10 @@ namespace TMCS_PRJ
         void SetMatrixChannelList(DataTable dataTable);
         void ClearClickedCell();
 
-        event EventHandler CellClick;
+        event EventHandler SelectedCellChanged;
         event delCellValueChange CellValueChange;
         event EventHandler CellValueChanged;
-
-        event EventHandler<DragEventClass> DragStarted;
-        event EventHandler<DragEventClass> DragMoved;
-        event EventHandler<DragEventClass> DragEnded;
+        event EventHandler MFrameToObjectDragEnded;
 
         delegate void delCellValueChange(int rowNum, string channelName);
         

@@ -94,54 +94,54 @@ namespace TMCS_PRJ
             value.Dock = DockStyle.Fill;
         }
 
-        Label lbl;
+        //Label lbl;
 
-        private Rectangle previousDragRect = Rectangle.Empty;
 
-        public void DragStarted(object sender, DragEventClass e)
-        {
-            lbl = new Label();
-            lbl.Size = new Size(50, 50);
 
-            Point point = new Point(e.Location.X - (lbl.Width / 2), e.Location.Y - (lbl.Height / 2));
+        //public void DragStarted(object sender, DragEventClass e)
+        //{
+            //lbl = new Label();
+            //lbl.Size = new Size(50, 50);
 
-            lbl.Location = this.PointToClient(point);
-            this.Controls.Add(lbl);
-            lbl.Text = e.Channel.ChannelName;
-            lbl.TextAlign = ContentAlignment.MiddleCenter;
-            lbl.BackColor = Color.Red;
-            lbl.BringToFront();
+            //Point point = new Point(e.Location.X - (lbl.Width / 2), e.Location.Y - (lbl.Height / 2));
 
-        }
+            //lbl.Location = this.PointToClient(point);
+            //this.Controls.Add(lbl);
+            //lbl.Text = e.Channel.ChannelName;
+            //lbl.TextAlign = ContentAlignment.MiddleCenter;
+            //lbl.BackColor = Color.Red;
+            //lbl.BringToFront();
 
-        public void DragMove(object sender, DragEventClass e)
-        {
-            Rectangle currentDragRect = lbl.Bounds;
+        //}
 
-            this.Invalidate(currentDragRect);  // 현재 위치의 영역을 다시 그립니다.
+        //public void DragMove(object sender, DragEventClass e)
+        //{
+            //Rectangle currentDragRect = lbl.Bounds;
 
-            this.Invalidate(previousDragRect); // 이전 위치의 영역을 다시 그립니다.            
-            previousDragRect = currentDragRect;
+            //this.Invalidate(currentDragRect);  // 현재 위치의 영역을 다시 그립니다.
 
-            this.Update();
+            //this.Invalidate(previousDragRect); // 이전 위치의 영역을 다시 그립니다.            
+            //previousDragRect = currentDragRect;
 
-            // 라벨 위치 업데이트
-            Point point = new Point(e.Location.X - (lbl.Width / 2), e.Location.Y - (lbl.Height / 2));
-            lbl.Location = this.PointToClient(point);
-        }
+            //this.Update();
 
-        public void DragEnded(object sender, DragEventClass e)
-        {
-            if (e == null)
-            {
-                this.Controls.Remove(lbl);
-                lbl?.Dispose();
-                return;
-            }
-            MatrixFrameDragEndedRequest(lbl, e);
-            this.Controls.Remove(lbl);
-            lbl?.Dispose();
-        }
+            //// 라벨 위치 업데이트
+            //Point point = new Point(e.Location.X - (lbl.Width / 2), e.Location.Y - (lbl.Height / 2));
+            //lbl.Location = this.PointToClient(point);
+        //}
+
+        //public void DragEnded(object sender, DragEventClass e)
+        //{
+        //    if (e == null)
+        //    {
+        //        this.Controls.Remove(lbl);
+        //        lbl?.Dispose();
+        //        return;
+        //    }
+        //    MatrixFrameDragEndedRequest(lbl, e);
+        //    this.Controls.Remove(lbl);
+        //    lbl?.Dispose();
+        //}
 
         #region Event Handles
         private void btnMatrixInput_Click(object sender, EventArgs e)
@@ -172,6 +172,7 @@ namespace TMCS_PRJ
             //Debug.WriteLine(point);
         }
 
+        private Rectangle previousDragRect = Rectangle.Empty;
         public void MioFrameResizeMoved(object sender, MioFrameResizeEventClass e)
         {
             MatrixInOutSelectFrame mioFrame = sender as MatrixInOutSelectFrame;
@@ -232,12 +233,11 @@ namespace TMCS_PRJ
         }
 
 
-
         #endregion
 
         private void MainForm_Deactivate(object sender, EventArgs e)
         {
-            DragEnded(sender, null);
+            
         }
         EquipmentStatusForm uc = new EquipmentStatusForm();
         private void 장비등록정보확인ToolStripMenuItem_Click(object sender, EventArgs e)
@@ -250,7 +250,6 @@ namespace TMCS_PRJ
         public event EventHandler btnMatrixInputClick;
         public event EventHandler btnMatrixOutputClick;
         public event EventHandler btnAddMioFrameClick;
-        public event EventHandler<DragEventClass> MatrixFrameDragEndedRequest;
         public event EventHandler EquipmentStatusClick;
         
 

@@ -10,6 +10,9 @@ namespace TMCS_PRJ
     public class MatrixChannel
     {
         #region Properties
+        public delegate void delMatrixChannelValueChanged(object sender);
+        public event delMatrixChannelValueChanged MatrixChannelValueChanged;
+
         private int _portNo;
         private string _channelName;
         private string _channelType;
@@ -20,6 +23,7 @@ namespace TMCS_PRJ
             set
             {
                 _portNo = value;
+                ChangedValue();
             }
         }
         public string ChannelName
@@ -28,6 +32,7 @@ namespace TMCS_PRJ
             set
             {
                 _channelName = value;
+                ChangedValue();
             }
         }
         public string ChannelType
@@ -36,6 +41,7 @@ namespace TMCS_PRJ
             set
             {
                 _channelType = value;
+                ChangedValue();
             }
         }
         /// <summary>
@@ -47,9 +53,15 @@ namespace TMCS_PRJ
             set
             {
                 _routeNo = value;
+                ChangedValue();
             }
         }
         #endregion
+
+        private void ChangedValue()
+        {
+            MatrixChannelValueChanged?.Invoke(this);
+        }
     }
 
     public class Matrix

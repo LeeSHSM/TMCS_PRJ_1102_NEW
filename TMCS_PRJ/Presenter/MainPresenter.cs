@@ -43,12 +43,11 @@ namespace TMCS_PRJ
             _view.btnMatrixInputClick += _view_btnInputClick;
             _view.btnMatrixOutputClick += _view_btnOutputClick;
             _view.btnAddMioFrameClick += _view_btnAddMioFrameClick;
-            _view.MatrixFrameDragEndedRequest += _view_MatrixFrameDragEnded;
             _view.EquipmentStatusClick += _view_EquipmentStatusClick;
 
-            _matrixControl.MFrameDragEnded += _matrixControl_DragEnded;
-            _matrixControl.MFrameDragMoved += _matrixControl_DragMoved;
-            _matrixControl.MFrameDragStarted += _matrixControl_DragStarted;
+            //_matrixControl.MFrameDragEnded += _matrixControl_DragEnded;
+            //_matrixControl.MFrameDragMoved += _matrixControl_DragMoved;
+            //_matrixControl.MFrameDragStarted += _matrixControl_DragStarted;
 
             _matrixControl.MioFrameResizeStarted += _matrixControl_MioFrameResizeStarted;
             _matrixControl.MioFrameResizeMoved += _matrixControl_MioFrameResizeMoved;
@@ -170,7 +169,7 @@ namespace TMCS_PRJ
             // If a control with maximum overlap is found and the overlap area is more than zero, call the method
             if (maxOverlapControl != null && maxOverlapArea > 0)
             {
-                _matrixControl.RequestDragEnded(maxOverlapControl, e);
+               
             }
         }
 
@@ -201,21 +200,6 @@ namespace TMCS_PRJ
             return rect1.IntersectsWith(rect2);
         }
 
-        private MatrixChannel mmm;
-        private void _matrixControl_DragStarted(object? sender, DragEventClass e)
-        {
-            _view.DragStarted(sender, e);
-        }
-
-        private void _matrixControl_DragMoved(object? sender, DragEventClass e)
-        {
-            _view.DragMove(sender, e);
-        }
-
-        private void _matrixControl_DragEnded(object? sender, DragEventClass e)
-        {
-            _view.DragEnded(sender, e);
-        }
 
         private void _view_btnAddMioFrameClick(object? sender, EventArgs e)
         {

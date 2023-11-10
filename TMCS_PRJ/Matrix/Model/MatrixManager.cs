@@ -55,21 +55,20 @@ namespace TMCS_PRJ
                 _progress?.Report(new ProgressReport { Message = "인풋채널 초기화 시작" });
                 List<MatrixChannel> inputChannels = await LoadChannelAsync(input);
                 _progress?.Report(new ProgressReport { Message = "인풋채널 초기화 완료" });
-                //await Task.Delay(500);
                 _progress?.Report(new ProgressReport { Message = "아웃채널 초기화 시작" });
                 List<MatrixChannel> outputChannels = await LoadChannelAsync(output);
                 _progress?.Report(new ProgressReport { Message = "아웃채널 초기화 완료" });
-                //await Task.Delay(500);
 
                 _matrix.InputChannel = inputChannels;
                 _matrix.OutputChannel = outputChannels;
-                _showInputChannels = inputChannels.ConvertAll(x => new MatrixChannel
-                {
-                    ChannelName = x.ChannelName,
-                    ChannelType = x.ChannelType,
-                    Port = x.Port,
-                    RouteNo = x.RouteNo
-                });
+                _showInputChannels = inputChannels;
+                //_showInputChannels = inputChannels.ConvertAll(x => new MatrixChannel
+                //{
+                //    ChannelName = x.ChannelName,
+                //    ChannelType = x.ChannelType,
+                //    Port = x.Port,
+                //    RouteNo = x.RouteNo
+                //});
                 _showOutputChannels = outputChannels.ConvertAll(x => new MatrixChannel
                 {
                     ChannelName = x.ChannelName,
@@ -88,13 +87,7 @@ namespace TMCS_PRJ
         public MatrixChannel GetChannelInfo(int rowNum, string channelType)
         {
             List<MatrixChannel> channels = GetChannelListInfo(channelType);
-            MatrixChannel channel = new MatrixChannel
-            {
-                ChannelName = channels[rowNum].ChannelName,
-                ChannelType = channels[rowNum].ChannelType,
-                Port = channels[rowNum].Port,
-                RouteNo = channels[rowNum].RouteNo
-            };
+            MatrixChannel channel = channels[rowNum];
             return channel;
         }
 
@@ -124,24 +117,24 @@ namespace TMCS_PRJ
         /// <summary>
         /// DataTable 형식으로 채널 전체정보 반환
         /// </summary>
-        public DataTable GetChannelListInfoToDataTable(string channelType)
-        {
-            List<MatrixChannel> channels = GetChannelListInfo(channelType);
+        //public DataTable GetChannelListInfoToDataTable(string channelType)
+        //{
+        //    List<MatrixChannel> channels = GetChannelListInfo(channelType);
 
-            DataTable dt = new DataTable();
-            dt.Columns.Add("Port");
-            dt.Columns.Add("Name");
-            dt.Columns.Add("ChannelType");
-            foreach (var channel in channels)
-            {
-                DataRow row = dt.NewRow();
-                row["Port"] = channel.Port;
-                row["Name"] = channel.ChannelName;
-                row["ChannelType"] = channel.ChannelType;
-                dt.Rows.Add(row);
-            }
-            return dt;
-        }
+        //    DataTable dt = new DataTable();
+        //    dt.Columns.Add("Port");
+        //    dt.Columns.Add("Name");
+        //    dt.Columns.Add("ChannelType");
+        //    foreach (var channel in channels)
+        //    {
+        //        DataRow row = dt.NewRow();
+        //        row["Port"] = channel.Port;
+        //        row["Name"] = channel.ChannelName;
+        //        row["ChannelType"] = channel.ChannelType;
+        //        dt.Rows.Add(row);
+        //    }
+        //    return dt;
+        //}
 
         public void SetChannel(int rowNum, string channelName, string channelType)
         {
