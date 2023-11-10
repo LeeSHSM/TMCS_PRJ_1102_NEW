@@ -29,11 +29,12 @@ namespace TMCS_PRJ
                 _matrixChannelOutput = value;
                 if (InvokeRequired)
                 {
-                    this.Invoke(new Action(() => UpdateMatrixChannel(_matrixChannelOutput)));
+                    this.Invoke(new Action(() => UpdateChannelText()));// UpdateMatrixChannel(_matrixChannelOutput)));
                 }
                 else
                 {
-                    UpdateMatrixChannel(_matrixChannelOutput);
+                    //UpdateMatrixChannel(_matrixChannelOutput);
+                    UpdateChannelText(); 
                 }
 
                 if(_matrixChannelInput.Port > 0)
@@ -54,11 +55,12 @@ namespace TMCS_PRJ
                 _matrixChannelInput = value;
                 if (InvokeRequired)
                 {
-                    this.Invoke(new Action(() => UpdateMatrixChannel(_matrixChannelInput)));
+                    this.Invoke(new Action(() => UpdateChannelText()));//UpdateMatrixChannel(_matrixChannelInput)));
                 }
                 else
                 {
-                    UpdateMatrixChannel(_matrixChannelInput);
+                    //UpdateMatrixChannel(_matrixChannelInput);
+                    UpdateChannelText();
                 }
                 RouteNoChange?.Invoke(_matrixChannelInput, _matrixChannelOutput);
                 Debug.WriteLine(_matrixChannelInput.Port + " : " + _matrixChannelOutput.Port);
@@ -101,6 +103,13 @@ namespace TMCS_PRJ
         }
 
         #endregion
+
+        public void UpdateChannelText()
+        {
+            lblOutput.Text = _matrixChannelOutput.ChannelName;
+            lblInput.Text = _matrixChannelInput.ChannelName;
+        }
+
 
         #region Private Methods
 

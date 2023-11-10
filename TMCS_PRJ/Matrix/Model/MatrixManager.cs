@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data;
 using System.Data.SqlClient;
 using System.Diagnostics;
@@ -114,9 +115,6 @@ namespace TMCS_PRJ
             return channels;
         }
 
-        /// <summary>
-        /// DataTable 형식으로 채널 전체정보 반환
-        /// </summary>
         //public DataTable GetChannelListInfoToDataTable(string channelType)
         //{
         //    List<MatrixChannel> channels = GetChannelListInfo(channelType);
@@ -136,14 +134,25 @@ namespace TMCS_PRJ
         //    return dt;
         //}
 
-        public void SetChannel(int rowNum, string channelName, string channelType)
+
+        /// <summary>
+        /// 채널이름바꾸는 메서드
+        /// </summary>
+        /// <param name="rowNum"></param>
+        /// <param name="channelName"></param>
+        /// <param name="channelType"></param>
+        public void UpdateChannelName(int rowNum, string channelName, string channelType)
         {
             Debug.WriteLine(rowNum + " " + channelName);
             List<MatrixChannel> showChannels = GetChannelListInfo(channelType);
             List<MatrixChannel> originChannels = GetOriginChannelListInfo(channelType);
+            Debug.WriteLine("변경전 : " + originChannels[(showChannels[rowNum].Port) - 1].ChannelName);
+
             showChannels[rowNum].ChannelName = channelName;
 
-            originChannels[(showChannels[rowNum].Port) - 1].ChannelName = channelType;
+            Debug.WriteLine("변경후 : " + originChannels[(showChannels[rowNum].Port) - 1].ChannelName);
+
+            //originChannels[(showChannels[rowNum].Port) - 1].ChannelName = channelName;
 
             SaveChannelToDB(_connectionString, showChannels[rowNum].Port, channelName, channelType);
 
@@ -258,6 +267,11 @@ namespace TMCS_PRJ
             return channels;
         }
 
+        public delegate void delMatrixChannelPropertyChanged(object sender);
+        public event delMatrixChannelPropertyChanged MatrixChannelPropertyChanged;
+
+        
+
         /// <summary>
         /// 채널정보 불러오기
         /// </summary>
@@ -274,8 +288,7 @@ namespace TMCS_PRJ
             }
 
             if(_connectionString == null)
-            {
-                
+            {                
                 return null;
             }
 
@@ -284,11 +297,23 @@ namespace TMCS_PRJ
             for (int port = 1; port <= _matrix.getChannelPortCount(channelType); port++)
             {
                 MatrixChannel channel = await GetMatrixChannelFromDBAsync(_connectionString, port, channelType);
+                channel.MatrixChannelValueChanged += Channel_MatrixChannelValueChanged;
                 mc.Add(channel);
             }
+            
 
             return mc;
         }
+
+        //--------------------------------------테스트중인 메서드----------------------------------
+
+        private void Channel_MatrixChannelValueChanged(object sender)
+        {
+            MatrixChannel channel = (MatrixChannel)sender;
+            Debug.WriteLine("체인지 벨류 테스트 : "+channel.ChannelName);
+            MatrixChannelPropertyChanged?.Invoke(sender);
+        }
+
         /// <summary>
         /// DB로부터 채널정보 개별 불러오기 
         /// </summary>

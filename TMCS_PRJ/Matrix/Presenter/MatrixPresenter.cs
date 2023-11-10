@@ -57,6 +57,8 @@ namespace TMCS_PRJ
             _matrixFrame.SelectedCellChanged += MatrixFrame_SelectedCellChanged;
             _matrixFrame.CellValueChanged += _matrixFrame_CellValueChanged;
             _matrixFrame.MFrameToObjectDragEnded += _matrixFrame_MFrameToObjectDragEnded;
+
+            
         }
 
         #endregion
@@ -79,15 +81,21 @@ namespace TMCS_PRJ
             MatrixInOutSelectFrame MioFrame = new MatrixInOutSelectFrame();
             MioFrame.InputClick += MioFrame_InputClick;
             MioFrame.OutputClick += MioFrame_OutputClick;
-            MioFrame.RouteNoChange += MioFrame_RouteNoChangeAsync;
-            MioFrame.MioResizeStarted += MioFrame_MioResizeStarted;
-            MioFrame.MioResizeMove += MioFrame_MioResizeMove;
-            MioFrame.MioResizeFinished += MioFrame_MioResizeFinished;
-            MioFrame.MioFrameDelete += MioFrame_MioFrameDelete;
+            //MioFrame.RouteNoChange += MioFrame_RouteNoChangeAsync;
+            //MioFrame.MioResizeStarted += MioFrame_MioResizeStarted;
+            //MioFrame.MioResizeMove += MioFrame_MioResizeMove;
+            //MioFrame.MioResizeFinished += MioFrame_MioResizeFinished;
+            //MioFrame.MioFrameDelete += MioFrame_MioFrameDelete;
+            MioFrame.MatrixChannelInput.MatrixChannelValueChanged += MatrixChannelInput_MatrixChannelValueChanged;
 
             _matrixInOutFrame.Add(MioFrame);
 
             return MioFrame;
+        }
+
+        private void MatrixChannelInput_MatrixChannelValueChanged(object sender)
+        {
+            Debug.WriteLine("테스트");
         }
 
         /// <summary>
@@ -204,12 +212,12 @@ namespace TMCS_PRJ
             string channelName = dgv.Rows[dgvEvent.RowIndex].Cells[1].Value.ToString();
             string channelType = _matrixFrame.NowChannelType;
 
-            _matrixManager.SetChannel(rowNum, channelName, channelType) ;
+            _matrixManager.UpdateChannelName(rowNum, channelName, channelType) ;
 
             MatrixChannel channel = _matrixManager.GetChannelInfo(rowNum, channelType);
 
             foreach(MatrixInOutSelectFrame item in _matrixInOutFrame)
-            {
+            {                
                 if(channelType == "INPUT")
                 {
                     if(channel.Port == item.MatrixChannelInput.Port)
