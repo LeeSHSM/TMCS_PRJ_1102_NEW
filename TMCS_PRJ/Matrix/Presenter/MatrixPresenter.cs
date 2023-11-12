@@ -45,8 +45,10 @@ namespace TMCS_PRJ
             _progress?.Report(new ProgressReport { Message = "매트릭스매니저 초기화 시작" });
             await _matrixManager.InitializeChannels(); // MatrixManager의 초기화가 완료될 때까지 기다립니다.            
             _progress?.Report(new ProgressReport { Message = "매트릭스매니저 초기화 완료" });
-
+            //await Task.Delay(500);
             ChangeMatrixChannelList("INPUT");
+            //채널설정 초기화 끝나면 최초로 폼 전달역할
+
         }
 
         /// <summary>
