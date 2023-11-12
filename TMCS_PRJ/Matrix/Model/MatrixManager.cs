@@ -34,10 +34,7 @@ namespace TMCS_PRJ
         public string ConnectionString { get => _connectionString; set => _connectionString = value; }
         public MatrixConnectInfo ConnectInfo { get => _connectInfo; set => _connectInfo = value; }
 
-        public void SetDB(string msg1)
-        {
-            _connectionString = msg1;
-        }
+
 
         #endregion
 
@@ -46,7 +43,9 @@ namespace TMCS_PRJ
         {
             _progress = progress;
             _matrix = matrix;
+            //InitializeEvent();
         }
+
 
         //초기화 메서드이나... Async 타입으로 MatrixManager을 외부에서 생성할때 같이 실행해줘야함.
         public async Task InitializeChannels()
@@ -63,6 +62,7 @@ namespace TMCS_PRJ
                 _matrix.InputChannel = inputChannels;
                 _matrix.OutputChannel = outputChannels;
                 _showInputChannels = inputChannels;
+                _showOutputChannels = outputChannels;
                 //_showInputChannels = inputChannels.ConvertAll(x => new MatrixChannel
                 //{
                 //    ChannelName = x.ChannelName,
@@ -70,14 +70,30 @@ namespace TMCS_PRJ
                 //    Port = x.Port,
                 //    RouteNo = x.RouteNo
                 //});
-                _showOutputChannels = outputChannels.ConvertAll(x => new MatrixChannel
+                //_showOutputChannels = outputChannels.ConvertAll(x => new MatrixChannel
+                //{
+                //    ChannelName = x.ChannelName,
+                //    ChannelType = x.ChannelType,
+                //    Port = x.Port,
+                //    RouteNo = x.RouteNo
+                //});
+
+                foreach(var channel in inputChannels)
                 {
-                    ChannelName = x.ChannelName,
-                    ChannelType = x.ChannelType,
-                    Port = x.Port,
-                    RouteNo = x.RouteNo
-                });
+                    channel.MatrixChannelValueChanged += Channel_MatrixChannelValueChanged;
+                }
+
+                foreach(var channel in outputChannels)
+                {
+                    channel.MatrixChannelValueChanged += Channel_MatrixChannelValueChanged;
+                }
+
             });
+        }
+
+        private void Channel_MatrixChannelValueChanged(object sender)
+        {
+            
         }
 
         #endregion
@@ -114,25 +130,6 @@ namespace TMCS_PRJ
             }
             return channels;
         }
-
-        //public DataTable GetChannelListInfoToDataTable(string channelType)
-        //{
-        //    List<MatrixChannel> channels = GetChannelListInfo(channelType);
-
-        //    DataTable dt = new DataTable();
-        //    dt.Columns.Add("Port");
-        //    dt.Columns.Add("Name");
-        //    dt.Columns.Add("ChannelType");
-        //    foreach (var channel in channels)
-        //    {
-        //        DataRow row = dt.NewRow();
-        //        row["Port"] = channel.Port;
-        //        row["Name"] = channel.ChannelName;
-        //        row["ChannelType"] = channel.ChannelType;
-        //        dt.Rows.Add(row);
-        //    }
-        //    return dt;
-        //}
 
 
         /// <summary>
@@ -214,6 +211,11 @@ namespace TMCS_PRJ
         #endregion
 
         #region 통신관련 Methods 
+
+        public void SetDB(string msg1)
+        {
+            _connectionString = msg1;
+        }
 
         public async Task StartConnectAsync()
         {
@@ -297,7 +299,7 @@ namespace TMCS_PRJ
             for (int port = 1; port <= _matrix.getChannelPortCount(channelType); port++)
             {
                 MatrixChannel channel = await GetMatrixChannelFromDBAsync(_connectionString, port, channelType);
-                channel.MatrixChannelValueChanged += Channel_MatrixChannelValueChanged;
+                //channel.MatrixChannelValueChanged += Channel_MatrixChannelValueChanged;
                 mc.Add(channel);
             }
             
@@ -307,12 +309,6 @@ namespace TMCS_PRJ
 
         //--------------------------------------테스트중인 메서드----------------------------------
 
-        private void Channel_MatrixChannelValueChanged(object sender)
-        {
-            MatrixChannel channel = (MatrixChannel)sender;
-            Debug.WriteLine("체인지 벨류 테스트 : "+channel.ChannelName);
-            MatrixChannelPropertyChanged?.Invoke(sender);
-        }
 
         /// <summary>
         /// DB로부터 채널정보 개별 불러오기 

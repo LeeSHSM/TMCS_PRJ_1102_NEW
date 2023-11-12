@@ -26,18 +26,16 @@ namespace TMCS_PRJ
             get { return _matrixChannelOutput; }
             set
             {
-                _matrixChannelOutput = value;
-                if (InvokeRequired)
+                if (_matrixChannelOutput != null)
                 {
-                    this.Invoke(new Action(() => UpdateChannelText()));// UpdateMatrixChannel(_matrixChannelOutput)));
-                }
-                else
-                {
-                    //UpdateMatrixChannel(_matrixChannelOutput);
-                    UpdateChannelText(); 
+                    _matrixChannelOutput.MatrixChannelValueChanged -= _matrixChannelInput_MatrixChannelValueChanged;
                 }
 
-                if(_matrixChannelInput.Port > 0)
+                _matrixChannelOutput = value;
+                _matrixChannelOutput.MatrixChannelValueChanged += _matrixChannelInput_MatrixChannelValueChanged;
+                UpdateChannelText(); ;
+
+                if (_matrixChannelInput.Port > 0)
                 {
                     RouteNoChange?.Invoke(_matrixChannelInput, _matrixChannelOutput);
                 }
@@ -52,18 +50,16 @@ namespace TMCS_PRJ
             get { return _matrixChannelInput; }
             set
             {
+                if (_matrixChannelInput != null)
+                {
+                    _matrixChannelInput.MatrixChannelValueChanged -= _matrixChannelInput_MatrixChannelValueChanged;
+                }
+
                 _matrixChannelInput = value;
-                if (InvokeRequired)
-                {
-                    this.Invoke(new Action(() => UpdateChannelText()));//UpdateMatrixChannel(_matrixChannelInput)));
-                }
-                else
-                {
-                    //UpdateMatrixChannel(_matrixChannelInput);
-                    UpdateChannelText();
-                }
+                _matrixChannelInput.MatrixChannelValueChanged += _matrixChannelInput_MatrixChannelValueChanged;
+                UpdateChannelText();
                 RouteNoChange?.Invoke(_matrixChannelInput, _matrixChannelOutput);
-                Debug.WriteLine(_matrixChannelInput.Port + " : " + _matrixChannelOutput.Port);
+
             }
         }
 
@@ -102,10 +98,20 @@ namespace TMCS_PRJ
             lblInput.MouseUp += MioFrame_MouseUp;
         }
 
+        private void _matrixChannelInput_MatrixChannelValueChanged(object sender)
+        {
+            UpdateChannelText();
+        }
+
         #endregion
 
         public void UpdateChannelText()
         {
+            if (InvokeRequired)
+            {
+                this.Invoke(new Action(() => UpdateChannelText()));
+            }
+
             lblOutput.Text = _matrixChannelOutput.ChannelName;
             lblInput.Text = _matrixChannelInput.ChannelName;
         }
@@ -153,11 +159,11 @@ namespace TMCS_PRJ
                     MatrixChannel mc = sender as MatrixChannel;
                     if (mc == _matrixChannelInput)
                     {
-                        MioResizeStarted(this, new MioFrameResizeEventClass(new Point(e.Location.X, e.Location.Y + lblOutput.Height), _mioGripPosition));
+                        MioResizeStarted?.Invoke(this, new MioFrameResizeEventClass(new Point(e.Location.X, e.Location.Y + lblOutput.Height), _mioGripPosition));
                     }
                     else
                     {
-                        MioResizeStarted(this, new MioFrameResizeEventClass(e.Location, _mioGripPosition));
+                        MioResizeStarted?.Invoke(this, new MioFrameResizeEventClass(e.Location, _mioGripPosition));
                     }
 
                     _isClick = true;
@@ -227,7 +233,7 @@ namespace TMCS_PRJ
             }
             else if(_isGrip && _isClick)
             {
-                MioResizeMove(this, new MioFrameResizeEventClass(new Point(e.Location.X, e.Location.Y + lblOutput.Height), _mioGripPosition));
+                MioResizeMove?.Invoke(this, new MioFrameResizeEventClass(new Point(e.Location.X, e.Location.Y + lblOutput.Height), _mioGripPosition));
             }
         }
 
@@ -241,7 +247,7 @@ namespace TMCS_PRJ
 
             if (_isGrip)
             {
-                MioResizeFinished(this, new MioFrameResizeEventClass(new Point(e.Location.X, e.Location.Y + lblOutput.Height), _mioGripPosition));
+                MioResizeFinished?.Invoke(this, new MioFrameResizeEventClass(new Point(e.Location.X, e.Location.Y + lblOutput.Height), _mioGripPosition));
                 _isGrip = false;
                 _isClick = false;
                 _mioGripPosition = string.Empty;

@@ -45,10 +45,8 @@ namespace TMCS_PRJ
             _progress?.Report(new ProgressReport { Message = "매트릭스매니저 초기화 시작" });
             await _matrixManager.InitializeChannels(); // MatrixManager의 초기화가 완료될 때까지 기다립니다.            
             _progress?.Report(new ProgressReport { Message = "매트릭스매니저 초기화 완료" });
-            //await Task.Delay(500);
-            ChangeMatrixChannelList("INPUT");
-            //채널설정 초기화 끝나면 최초로 폼 전달역할
 
+            ChangeMatrixChannelList("INPUT");  //채널설정 초기화 끝나면 최초로 폼 전달역할
         }
 
         /// <summary>
@@ -58,9 +56,7 @@ namespace TMCS_PRJ
         {
             _matrixFrame.SelectedCellChanged += MatrixFrame_SelectedCellChanged;
             _matrixFrame.CellValueChanged += _matrixFrame_CellValueChanged;
-            _matrixFrame.MFrameToObjectDragEnded += _matrixFrame_MFrameToObjectDragEnded;
-
-            
+            _matrixFrame.MFrameToObjectDragEnded += _matrixFrame_MFrameToObjectDragEnded;            
         }
 
         #endregion
@@ -88,16 +84,10 @@ namespace TMCS_PRJ
             //MioFrame.MioResizeMove += MioFrame_MioResizeMove;
             //MioFrame.MioResizeFinished += MioFrame_MioResizeFinished;
             //MioFrame.MioFrameDelete += MioFrame_MioFrameDelete;
-            MioFrame.MatrixChannelInput.MatrixChannelValueChanged += MatrixChannelInput_MatrixChannelValueChanged;
 
             _matrixInOutFrame.Add(MioFrame);
 
             return MioFrame;
-        }
-
-        private void MatrixChannelInput_MatrixChannelValueChanged(object sender)
-        {
-            Debug.WriteLine("테스트");
         }
 
         /// <summary>
@@ -150,7 +140,6 @@ namespace TMCS_PRJ
         {
             if (_mappingChannel == null || _mappingChannel.ChannelType != "OUTPUT")
             {
-                //MessageBox.Show("출력신호를 선택해주세요");
                 return;
             }
 
@@ -159,7 +148,6 @@ namespace TMCS_PRJ
                 if (_mappingChannel.Port == mc.MatrixChannelOutput.Port)
                 {
                     MessageBox.Show("이미 지정하셧습니다.");
-                    //check = true;
                     return;
                 }
             }
@@ -179,7 +167,6 @@ namespace TMCS_PRJ
         {
             if (_mappingChannel == null || _mappingChannel.ChannelType != "INPUT")
             {
-                //MessageBox.Show("입력신호를 선택해주세요");
                 return;
             }
             if (mioFrame.MatrixChannelOutput.Port == 0)
@@ -215,27 +202,6 @@ namespace TMCS_PRJ
             string channelType = _matrixFrame.NowChannelType;
 
             _matrixManager.UpdateChannelName(rowNum, channelName, channelType) ;
-
-            MatrixChannel channel = _matrixManager.GetChannelInfo(rowNum, channelType);
-
-            foreach(MatrixInOutSelectFrame item in _matrixInOutFrame)
-            {                
-                if(channelType == "INPUT")
-                {
-                    if(channel.Port == item.MatrixChannelInput.Port)
-                    {
-                        item.MatrixChannelInput = channel;
-                    }
-                    
-                }
-                else if(channelType == "OUTPUT")
-                {
-                    if (channel.Port == item.MatrixChannelOutput.Port)
-                    {
-                        item.MatrixChannelOutput = channel;
-                    } 
-                }
-            }
         }
 
         private void MioFrame_MioFrameDelete(object? sender, EventArgs e)
@@ -271,14 +237,14 @@ namespace TMCS_PRJ
 
         private void MioFrame_OutputClick(object? sender, EventArgs e)
         {
-            MatrixInOutSelectFrame frame = sender as MatrixInOutSelectFrame;
-            ChangeMatrixOutputInMioFrame(frame);
+            MatrixInOutSelectFrame MioFrame = sender as MatrixInOutSelectFrame;
+            ChangeMatrixOutputInMioFrame(MioFrame);
         }
 
         private void MioFrame_InputClick(object? sender, EventArgs e)
         {
-            MatrixInOutSelectFrame frame = sender as MatrixInOutSelectFrame;
-            ChangeMatrixInputInMioFrame(frame);
+            MatrixInOutSelectFrame MioFrame = sender as MatrixInOutSelectFrame;
+            ChangeMatrixInputInMioFrame(MioFrame);
         }
 
         // MioFrame RouteNo 변경
