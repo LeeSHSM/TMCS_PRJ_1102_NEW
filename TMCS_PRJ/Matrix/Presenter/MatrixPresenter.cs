@@ -103,7 +103,7 @@ namespace TMCS_PRJ
             {
                 throw new ArgumentException("잘못된 값입니다.(INPUT or OUTPUT 만 사용가능)", nameof(channelType));
             }
-            _matrixFrame.NowChannelType = GetChangedMatirxListInMframe(channelType);
+            _matrixFrame.ChannelType = GetChangedMatirxListInMframe(channelType);
         }
 
 
@@ -201,7 +201,7 @@ namespace TMCS_PRJ
             DataGridViewCellEventArgs dgvEvent = e as DataGridViewCellEventArgs;
             int rowNum = dgvEvent.RowIndex;
             string channelName = dgv.Rows[dgvEvent.RowIndex].Cells[1].Value.ToString();
-            string channelType = _matrixFrame.NowChannelType;
+            string channelType = _matrixFrame.ChannelType;
 
             _matrixManager.SetChannelNameAsync(rowNum, channelName, channelType) ;
         }
@@ -312,13 +312,12 @@ namespace TMCS_PRJ
             {
                 var cell = dgv.SelectedCells[0];
 
-                _mappingChannel = _matrixManager.GetChannelInfo(cell.RowIndex, _matrixFrame.NowChannelType);
+                _mappingChannel = _matrixManager.GetChannelInfo(cell.RowIndex, _matrixFrame.ChannelType);
             }
             else if(dgv == null)
             {
                 _mappingChannel = null;
             }
-            _matrixFrame.SelectedChannel = _mappingChannel;
         }
 
 

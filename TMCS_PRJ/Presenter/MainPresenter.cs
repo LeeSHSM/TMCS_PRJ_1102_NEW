@@ -51,11 +51,9 @@ namespace TMCS_PRJ
         public async Task InitializeAsync()
         {
             _progress?.Report(new ProgressReport { Message = "매트릭스 초기화 시작" });
-            //await Task.Delay(500);
             await _matrixControl.InitializeAsync();
             _progress?.Report(new ProgressReport { Message = "매트릭스 초기화 완료" });
-            //await Task.Delay(500);
-            //await _matrixControl.StartConnectionAsync();
+
             _matrixControl.StartConnectionAsync();
         }
 
@@ -68,35 +66,13 @@ namespace TMCS_PRJ
 
 
 
-        private void _matrixControl_MioFrameDelete(object? sender, EventArgs e)
-        {
-            _view.MioFrameDelete(sender, e);
-        }
-
-        //private void _matrixControl_MioFrameResizeEnded(object? sender, MioFrameResizeEventClass e)
-        //{
-        //    _view.MioFrameResizeEnded(sender, e);
-        //}
-
-        //private void _matrixControl_MioFrameResizeMoved(object? sender, MioFrameResizeEventClass e)
-        //{
-        //    _view.MioFrameResizeMoved(sender, e);
-        //}
-
-        //private void _matrixControl_MioFrameResizeStarted(object? sender, MioFrameResizeEventClass e)
-        //{
-        //    MatrixInOutSelectFrame mioFrame = sender as MatrixInOutSelectFrame;
-        //    Debug.WriteLine(mioFrame.Size);
-        //    _view.MioFrameResizeStarted(sender, e);
-        //}
-
 
 
         #region Event Handles
 
-        private void _view_btnAddMioFrameClick(object? sender, EventArgs e)
+        private void _view_Form_Load(object? sender, EventArgs e)
         {
-            _view.AddMioFrame(_matrixControl.AddMatrixInOutFrame());
+            _view.DockMatrixFrame(_matrixControl.GetMatrixFrame());
         }
 
         private void _view_btnOutputClick(object? sender, EventArgs e)
@@ -109,10 +85,17 @@ namespace TMCS_PRJ
             _matrixControl.ChangeMatrixChannelList("INPUT");
         }
 
-        private void _view_Form_Load(object? sender, EventArgs e)
+
+        private void _view_btnAddMioFrameClick(object? sender, EventArgs e)
         {
-            _view.DockMatrixFrame(_matrixControl.GetMatrixFrame());
+            _view.AddMioFrame(_matrixControl.AddMatrixInOutFrame());
         }
+
+        private void _matrixControl_MioFrameDelete(object? sender, EventArgs e)
+        {
+            _view.MioFrameDelete(sender, e);
+        }
+
         #endregion
     }
 }

@@ -17,14 +17,9 @@ namespace TMCS_PRJ
         private string _nowChannelType;
 
         /// <summary>
-        /// MFrame에서 선택된 채널 변수
-        /// </summary>
-        private MatrixChannel _selectedChannel;
-
-        /// <summary>
         /// MFrame 채널타입 설정변수
         /// </summary>
-        public string NowChannelType
+        public string ChannelType
         {
             get { return _nowChannelType; }
             set
@@ -33,12 +28,6 @@ namespace TMCS_PRJ
                 { throw new ArgumentException("Channel type must be either 'INPUT' or 'OUTPUT'", nameof(value)); }
                 _nowChannelType = value;
             }
-        }
-
-        public MatrixChannel SelectedChannel
-        {
-            get { return _selectedChannel; }
-            set { _selectedChannel = value; }
         }
 
         public Form GetMainForm()
