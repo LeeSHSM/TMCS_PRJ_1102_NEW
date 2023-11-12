@@ -22,7 +22,7 @@ namespace TMCS_PRJ
                 }
                 else
                 {
-                    lblTest.Text = value;
+                    lblTest.Text = value;                    
                 }
             }
         }

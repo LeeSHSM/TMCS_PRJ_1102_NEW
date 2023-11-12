@@ -26,18 +26,20 @@ namespace TMCS_PRJ
             get { return _matrixChannelOutput; }
             set
             {
-                if (_matrixChannelOutput != null)
+                if(_matrixChannelOutput != value)
                 {
-                    _matrixChannelOutput.MatrixChannelValueChanged -= _matrixChannelInput_MatrixChannelValueChanged;
-                }
+                    if (_matrixChannelOutput != null)
+                    {
+                        _matrixChannelOutput.MatrixChannelValueChanged -= _matrixChannelInput_MatrixChannelValueChanged;
+                    }
+                    _matrixChannelOutput = value;
+                    _matrixChannelOutput.MatrixChannelValueChanged += _matrixChannelInput_MatrixChannelValueChanged;
+                    UpdateChannelText(); 
 
-                _matrixChannelOutput = value;
-                _matrixChannelOutput.MatrixChannelValueChanged += _matrixChannelInput_MatrixChannelValueChanged;
-                UpdateChannelText(); ;
-
-                if (_matrixChannelInput.Port > 0)
-                {
-                    RouteNoChange?.Invoke(_matrixChannelInput, _matrixChannelOutput);
+                    if (_matrixChannelInput.Port > 0)
+                    {
+                        RouteNoChange?.Invoke(_matrixChannelInput, _matrixChannelOutput);
+                    }
                 }
             }
         }
@@ -49,18 +51,31 @@ namespace TMCS_PRJ
         {
             get { return _matrixChannelInput; }
             set
-            {
-                if (_matrixChannelInput != null)
+            {                
+                if (_matrixChannelInput != value)
                 {
-                    _matrixChannelInput.MatrixChannelValueChanged -= _matrixChannelInput_MatrixChannelValueChanged;
+                    if (_matrixChannelInput != null)
+                    {
+                        _matrixChannelInput.MatrixChannelValueChanged -= _matrixChannelInput_MatrixChannelValueChanged;
+                    }                    
+                    _matrixChannelInput = value;
+                    RouteNoChange?.Invoke(_matrixChannelInput, _matrixChannelOutput);
+                    _matrixChannelInput.MatrixChannelValueChanged += _matrixChannelInput_MatrixChannelValueChanged;
+                    UpdateChannelText();
                 }
-
-                _matrixChannelInput = value;
-                _matrixChannelInput.MatrixChannelValueChanged += _matrixChannelInput_MatrixChannelValueChanged;
-                UpdateChannelText();
-                RouteNoChange?.Invoke(_matrixChannelInput, _matrixChannelOutput);
-
             }
+        }
+
+        public Form GetMainForm()
+        {
+            return this.FindForm();
+        }
+
+        public Point GetPositionInForm()
+        {
+            Form parentForm = this.FindForm();
+            Point Position = this.PointToScreen(Point.Empty);
+            return parentForm.PointToClient(Position);
         }
 
         #endregion
@@ -105,6 +120,7 @@ namespace TMCS_PRJ
 
         #endregion
 
+        #region Private Methods
         public void UpdateChannelText()
         {
             if (InvokeRequired)
@@ -114,33 +130,14 @@ namespace TMCS_PRJ
 
             lblOutput.Text = _matrixChannelOutput.ChannelName;
             lblInput.Text = _matrixChannelInput.ChannelName;
-        }
-
-
-        #region Private Methods
-
-        /// <summary>
-        /// MioFrame 채널정보 변경시 라벨 텍스트 변경 메서드  
-        /// </summary>
-        /// <param name="mc"></param>
-        private void UpdateMatrixChannel(MatrixChannel mc)
-        {
-            if (mc == _matrixChannelOutput)
-            {
-                lblOutput.Text = mc.ChannelName;
-            }
-            else if (mc == _matrixChannelInput)
-            {
-                lblInput.Text = mc.ChannelName;
-            }
-        }
+        }        
 
         #endregion
 
         #region Event Handles
 
         //MioFrame 크기조절 관련 전역변수
-        private const int GRIPSIZE = 10;                // 간격(마우스포인트 - 라벨 테두리 범위)
+        private int GRIPSIZE = 10;                // 간격(마우스포인트 - 라벨 테두리 범위)
         private bool _isGrip = false;                   // 크기조절 시작해도 되는지 확인
         private bool _isClick = false;                  // 크기조절 시작확인
         private string _mioGripPosition = string.Empty; // 크기조절시 상하좌우 등 위치확인

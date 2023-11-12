@@ -41,6 +41,11 @@ namespace TMCS_PRJ
             set { _selectedChannel = value; }
         }
 
+        public Form GetMainForm()
+        {
+            return this.FindForm();
+        }
+
         #endregion
 
         #region 초기화 Methods 
@@ -281,7 +286,6 @@ namespace TMCS_PRJ
         {
             if (_isDragMouseMove)
             {
-                //Debug.WriteLine(dgvMatrixChannelList.SelectedCells[0].RowIndex);
                 MFrameToObjectDragEnded?.Invoke(dgvMatrixChannelList, e);
                 _dragLbl.Dispose();
             }
@@ -336,7 +340,7 @@ namespace TMCS_PRJ
                 dgvMatrixChannelList.Rows[rowIndex].Cells[columnIndex].Selected = true;
             }));
 
-            CellValueChanged?.Invoke(sender, e);
+            MatrixChannelNameChanged?.Invoke(sender, e);
         }
 
         #endregion
@@ -359,8 +363,7 @@ namespace TMCS_PRJ
 
 
         public event EventHandler SelectedCellChanged;
-        public event EventHandler CellValueChanged;
-        public event MatrixFrameView.delCellValueChange CellValueChange;
+        public event EventHandler MatrixChannelNameChanged;
         public event EventHandler MFrameToObjectDragEnded;
     }
 }

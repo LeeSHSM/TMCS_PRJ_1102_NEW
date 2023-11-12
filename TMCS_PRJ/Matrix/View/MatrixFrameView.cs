@@ -11,15 +11,17 @@ namespace TMCS_PRJ
     {
         string NowChannelType { get; set; }
         MatrixChannel SelectedChannel { get; set; }
+
+        Form GetMainForm();
+
+
         void SetMatrixChannelList(DataTable dataTable);
         void ClearClickedCell();
 
         event EventHandler SelectedCellChanged;
-        event delCellValueChange CellValueChange;
-        event EventHandler CellValueChanged;
+        event EventHandler MatrixChannelNameChanged;
         event EventHandler MFrameToObjectDragEnded;
 
-        delegate void delCellValueChange(int rowNum, string channelName);
         
     }
 }

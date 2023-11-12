@@ -63,20 +63,6 @@ namespace TMCS_PRJ
                 _matrix.OutputChannel = outputChannels;
                 _showInputChannels = inputChannels;
                 _showOutputChannels = outputChannels;
-                //_showInputChannels = inputChannels.ConvertAll(x => new MatrixChannel
-                //{
-                //    ChannelName = x.ChannelName,
-                //    ChannelType = x.ChannelType,
-                //    Port = x.Port,
-                //    RouteNo = x.RouteNo
-                //});
-                //_showOutputChannels = outputChannels.ConvertAll(x => new MatrixChannel
-                //{
-                //    ChannelName = x.ChannelName,
-                //    ChannelType = x.ChannelType,
-                //    Port = x.Port,
-                //    RouteNo = x.RouteNo
-                //});
 
                 foreach(var channel in inputChannels)
                 {
@@ -87,7 +73,6 @@ namespace TMCS_PRJ
                 {
                     channel.MatrixChannelValueChanged += Channel_MatrixChannelValueChanged;
                 }
-
             });
         }
 
@@ -151,9 +136,7 @@ namespace TMCS_PRJ
 
             //originChannels[(showChannels[rowNum].Port) - 1].ChannelName = channelName;
 
-            SaveChannelToDB(_connectionString, showChannels[rowNum].Port, channelName, channelType);
-
-            Debug.WriteLine("바꿈! : " + showChannels[rowNum].ChannelName);
+            //SaveChannelToDB(_connectionString, showChannels[rowNum].Port, channelName, channelType);
         }
 
         /// <summary>
@@ -167,8 +150,14 @@ namespace TMCS_PRJ
             {
                 if (originChannels[i].Port == mc.Port)
                 {
+                    int tt = originChannels[i].RouteNo;
+                    Debug.WriteLine("오리지널"+tt);
+                    Debug.WriteLine(_showOutputChannels[i].RouteNo);
                     originChannels[i] = mc; // i번 인덱스에 있는 리스트 항목을 mc로 업데이트
-                    SaveChannelToDBAsync(_connectionString, originChannels[i]);
+
+                    Debug.WriteLine("오리지널" + tt);
+                    Debug.WriteLine(_showOutputChannels[i].RouteNo);
+                    //SaveChannelToDBAsync(_connectionString, originChannels[i]);
                     break; // 하나의 매치만 기대한다면 찾은 후에 루프를 중단합니다
                 }
             }
@@ -482,24 +471,6 @@ namespace TMCS_PRJ
 
             _cts = new CancellationTokenSource();
             ReceiveMessages(_cts.Token);
-
-            //try
-            //{ 
-            //    _client = new TcpClient();
-            //    await _client.ConnectAsync(Address, Port);
-            //    _stream = _client.GetStream();
-            //    _reader = new StreamReader(_stream);
-
-
-            //    _cts = new CancellationTokenSource();
-
-            //    // Start reading in a background task
-            //    ReceiveMessages(_cts.Token);
-            //}
-            //catch (Exception ex)
-            //{
-            //    Debug.WriteLine("연결실패 : " + ex.ToString());
-            //}
         }
 
         public async Task DisConnect()
@@ -525,7 +496,7 @@ namespace TMCS_PRJ
 
             while (retryCount < maxRetryCount)
             {
-                if (!(await GetState()))
+                if (!await GetState())
                 {
                     await DisConnect();
 
@@ -549,16 +520,15 @@ namespace TMCS_PRJ
                 }
             }
 
-            if (await GetState())
+            try            
             {
                 // 연결된 상태에서 메시지 전송
                 byte[] asciiBytes = Encoding.ASCII.GetBytes(msg);
                 await _stream.WriteAsync(asciiBytes, 0, asciiBytes.Length);
             }
-            else
+            catch (Exception ex) 
             {
-                // 모든 재시도 후에도 연결에 실패한 경우
-                GlobalSetting.Logger.LogError("서버에 연결할 수 없습니다. 메시지를 전송하지 못했습니다.");                      
+                GlobalSetting.Logger.LogError("서버에 연결할 수 없습니다. 메시지를 전송하지 못했습니다." + ex);
             }
         }
 
@@ -614,7 +584,7 @@ namespace TMCS_PRJ
         public async Task ChangeRouteNoToMatrixAsync(int inputPort, int OutputPort)
         {
             string routeChange = $"*255CI{inputPort:D2}O{OutputPort:D2}!\r\n";
-            Debug.WriteLine("서버로 전송 : " + routeChange);
+            Debug.Write("서버로 전송 : " + routeChange);
             SendMsgAsync(routeChange);
         }
     }

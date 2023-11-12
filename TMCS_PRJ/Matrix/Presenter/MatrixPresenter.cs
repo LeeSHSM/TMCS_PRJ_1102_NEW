@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
+using System.Drawing;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -15,7 +16,7 @@ namespace TMCS_PRJ
         #region Properties
 
         private MatrixFrameView _matrixFrame;
-        private List<MatrixInOutSelectFrameView> _matrixInOutFrame = new List<MatrixInOutSelectFrameView>();
+        private List<MatrixInOutSelectFrameView> _matrixInOutFrames = new List<MatrixInOutSelectFrameView>();
 
         private MatrixManager _matrixManager;
         private MatrixFrameTotalManager _matrixFrameTotalManager;
@@ -55,7 +56,7 @@ namespace TMCS_PRJ
         private void InitializeEvent()
         {
             _matrixFrame.SelectedCellChanged += MatrixFrame_SelectedCellChanged;
-            _matrixFrame.CellValueChanged += _matrixFrame_CellValueChanged;
+            _matrixFrame.MatrixChannelNameChanged += _matrixFrame_CellValueChanged;
             _matrixFrame.MFrameToObjectDragEnded += _matrixFrame_MFrameToObjectDragEnded;            
         }
 
@@ -79,13 +80,14 @@ namespace TMCS_PRJ
             MatrixInOutSelectFrame MioFrame = new MatrixInOutSelectFrame();
             MioFrame.InputClick += MioFrame_InputClick;
             MioFrame.OutputClick += MioFrame_OutputClick;
-            //MioFrame.RouteNoChange += MioFrame_RouteNoChangeAsync;
+            MioFrame.RouteNoChange += MioFrame_RouteNoChangeAsync;
+
             //MioFrame.MioResizeStarted += MioFrame_MioResizeStarted;
             //MioFrame.MioResizeMove += MioFrame_MioResizeMove;
             //MioFrame.MioResizeFinished += MioFrame_MioResizeFinished;
             //MioFrame.MioFrameDelete += MioFrame_MioFrameDelete;
 
-            _matrixInOutFrame.Add(MioFrame);
+            _matrixInOutFrames.Add(MioFrame);
 
             return MioFrame;
         }
@@ -143,7 +145,7 @@ namespace TMCS_PRJ
                 return;
             }
 
-            foreach (MatrixInOutSelectFrame mc in _matrixInOutFrame)
+            foreach (MatrixInOutSelectFrame mc in _matrixInOutFrames)
             {
                 if (_mappingChannel.Port == mc.MatrixChannelOutput.Port)
                 {
@@ -152,7 +154,7 @@ namespace TMCS_PRJ
                 }
             }
 
-            foreach (MatrixInOutSelectFrame mc in _matrixInOutFrame)
+            foreach (MatrixInOutSelectFrame mc in _matrixInOutFrames)
             {
                 if (mc == mioFrame)
                 {
@@ -175,7 +177,7 @@ namespace TMCS_PRJ
                 return;
             }
 
-            foreach (MatrixInOutSelectFrame mc in _matrixInOutFrame)
+            foreach (MatrixInOutSelectFrame mc in _matrixInOutFrames)
             {
                 if (mc == mioFrame)
                 {
@@ -207,10 +209,10 @@ namespace TMCS_PRJ
         private void MioFrame_MioFrameDelete(object? sender, EventArgs e)
         {
             MatrixInOutSelectFrame mioFrame = sender as MatrixInOutSelectFrame;
-            if (_matrixInOutFrame.Contains(mioFrame)) // 리스트에 mioFrame이 실제로 있는지 확인
+            if (_matrixInOutFrames.Contains(mioFrame)) // 리스트에 mioFrame이 실제로 있는지 확인
             {
                 MioFrameDelete?.Invoke(sender, e);
-                _matrixInOutFrame.Remove(mioFrame); // mioFrame 객체를 리스트에서 제거
+                _matrixInOutFrames.Remove(mioFrame); // mioFrame 객체를 리스트에서 제거
             }            
         }
 
@@ -257,8 +259,49 @@ namespace TMCS_PRJ
 
         private void _matrixFrame_MFrameToObjectDragEnded(object? sender, EventArgs e)
         {
+            Form mainForm = _matrixFrame.GetMainForm();
+            Point formCoordinates = mainForm.PointToClient(Cursor.Position);
+            int width = 30;
+            int height = 30;
+            Rectangle mouseRect = new Rectangle(formCoordinates.X - (width), formCoordinates.Y - (height / 2), width, height);
+
+            MatrixInOutSelectFrame largestIntersectingFrame = null;
+            int largestArea = 0;
+
+            foreach (MatrixInOutSelectFrame mioFrame in _matrixInOutFrames)
+            {
+                Point mioFramePosition = mioFrame.GetPositionInForm();
+                Size mioFrameSize = mioFrame.Size;
+                Rectangle mioFrameRect = new Rectangle(mioFramePosition, mioFrameSize);
+
+                Rectangle intersection = Rectangle.Intersect(mouseRect, mioFrameRect);
+
+                // 겹치는 영역의 크기 계산
+                int area = intersection.Width * intersection.Height;
+                if (area > largestArea)
+                {
+                    largestArea = area;
+                    largestIntersectingFrame = mioFrame;
+                }
+            }
+
+            if (largestIntersectingFrame != null)
+            {
+                if(_mappingChannel.ChannelType == "INPUT")
+                {
+                    ChangeMatrixInputInMioFrame(largestIntersectingFrame);
+                }
+                else if(_mappingChannel.ChannelType == "OUTPUT")
+                {
+                    ChangeMatrixOutputInMioFrame(largestIntersectingFrame);
+                }
+            }
 
         }
+
+
+
+
 
 
         //프레임 셀 클릭
@@ -278,37 +321,6 @@ namespace TMCS_PRJ
             _matrixFrame.SelectedChannel = _mappingChannel;
         }
 
-        private void test()
-        {
-            //마우스 포인트를 기준으로 충돌체크
-            //Point mousePositionOnForm = new Point(e.Location.X, e.Location.Y);
-
-            //Control maxOverlapControl = null; // To keep track of the control with maximum overlap.
-            //int maxOverlapArea = 0; // To keep track of the maximum overlap area.
-
-            //foreach (Control con in _view.pnMatrixInOutSelectFrame.Controls)
-            //{
-            //    Point conLocation = ConvertToFormCoordinates(con.Parent, con);
-            //    Rectangle conBounds = new Rectangle(conLocation, con.Size);
-            //    Rectangle mouseBounds = new Rectangle(mousePositionOnForm, new Size(1, 1)); // Mouse position as a tiny rectangle.
-
-            //    if (mouseBounds.IntersectsWith(conBounds))
-            //    {
-            //        // Calculate the area of intersection
-            //        Rectangle intersection = Rectangle.Intersect(mouseBounds, conBounds);
-            //        int overlapArea = intersection.Width * intersection.Height;
-
-            //        // Check if this control has the maximum overlap so far
-            //        if (overlapArea > maxOverlapArea)
-            //        {
-            //            maxOverlapArea = overlapArea;
-            //            maxOverlapControl = con;
-            //        }
-            //    }
-            //}
-        }
-
-        //MFrame In / Out 변경 및 채널타입 반환
 
 
         #endregion
