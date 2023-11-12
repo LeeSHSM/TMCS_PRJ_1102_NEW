@@ -82,11 +82,6 @@ namespace TMCS_PRJ
             MioFrame.OutputClick += MioFrame_OutputClick;
             MioFrame.RouteNoChange += MioFrame_RouteNoChangeAsync;
 
-            //MioFrame.MioResizeStarted += MioFrame_MioResizeStarted;
-            //MioFrame.MioResizeMove += MioFrame_MioResizeMove;
-            //MioFrame.MioResizeFinished += MioFrame_MioResizeFinished;
-            //MioFrame.MioFrameDelete += MioFrame_MioFrameDelete;
-
             _matrixInOutFrames.Add(MioFrame);
 
             return MioFrame;
@@ -186,7 +181,6 @@ namespace TMCS_PRJ
                 }
             }
         }
-
         #endregion
 
         #region Event Handles
@@ -218,25 +212,8 @@ namespace TMCS_PRJ
 
         //-------------------------------------------------매트릭스 인아웃프레임 영역------------------------------------------------
 
-        // MioFrame 크기조절 영역
-
-        private void MioFrame_MioResizeStarted(object? sender, MioFrameResizeEventClass e)
-        {
-            MioFrameResizeStarted?.Invoke(sender, e);
-        }
-
-        private void MioFrame_MioResizeMove(object? sender, MioFrameResizeEventClass e)
-        {
-            MioFrameResizeMoved?.Invoke(sender, e);
-        }
-
-        private void MioFrame_MioResizeFinished(object? sender, MioFrameResizeEventClass e)
-        {
-            MioFrameResizeEnded?.Invoke(sender, e);
-        }
 
         // MioFrame 클릭 영역
-
         private void MioFrame_OutputClick(object? sender, EventArgs e)
         {
             MatrixInOutSelectFrame MioFrame = sender as MatrixInOutSelectFrame;
@@ -299,11 +276,6 @@ namespace TMCS_PRJ
 
         }
 
-
-
-
-
-
         //프레임 셀 클릭
         private void MatrixFrame_SelectedCellChanged(object? sender, EventArgs e)
         {
@@ -319,7 +291,6 @@ namespace TMCS_PRJ
                 _mappingChannel = null;
             }
         }
-
 
 
         #endregion

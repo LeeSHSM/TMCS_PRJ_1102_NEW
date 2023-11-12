@@ -207,7 +207,8 @@ namespace TMCS_PRJ
         private bool _isDragMouseDown = false;      //드래드관련 마우스 다운
         private bool _isDragMouseMove = false;      //드래그관련 마우스 무브
         private Point? _pDragStartedPostion = null; //드래그관련 시작 마우스 위치
-        private Label _dragLbl;
+        private Label _dragLbl;                     //드래그 라벨
+        Form mainForm;                              //부모폼 확인
 
         /// <summary>
         /// DragStarted 이벤트... 드래그 시작할때? 이건 마우스 좌클릭할때 무조건 동작 
@@ -222,11 +223,6 @@ namespace TMCS_PRJ
                 _pDragStartedPostion = MousePosition;
             }
         }
-
-
-
-
-        Form mainForm;
 
         /// <summary>
         /// DragMove 이벤트... 드래그 시작후 마우스 움직일때만 동작 
