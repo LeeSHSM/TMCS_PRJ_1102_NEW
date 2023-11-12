@@ -45,18 +45,7 @@ namespace TMCS_PRJ
             _view.btnAddMioFrameClick += _view_btnAddMioFrameClick;
             _view.EquipmentStatusClick += _view_EquipmentStatusClick;
 
-            //_matrixControl.MFrameDragEnded += _matrixControl_DragEnded;
-            //_matrixControl.MFrameDragMoved += _matrixControl_DragMoved;
-            //_matrixControl.MFrameDragStarted += _matrixControl_DragStarted
-
             _matrixControl.MioFrameDelete += _matrixControl_MioFrameDelete;
-        }
-
-        private void _view_EquipmentStatusClick(object? sender, EventArgs e)
-        {
-            EquipmentStatusForm equipmentStatusForm = new EquipmentStatusForm();
-            equipmentStatusForm.Setlbl(GlobalSetting.MATRIX_IP.ToString());
-            equipmentStatusForm.ShowDialog();            
         }
 
         public async Task InitializeAsync()
@@ -69,6 +58,15 @@ namespace TMCS_PRJ
             //await _matrixControl.StartConnectionAsync();
             _matrixControl.StartConnectionAsync();
         }
+
+        private void _view_EquipmentStatusClick(object? sender, EventArgs e)
+        {
+            EquipmentStatusForm equipmentStatusForm = new EquipmentStatusForm();
+            equipmentStatusForm.Setlbl(GlobalSetting.MATRIX_IP.ToString());
+            equipmentStatusForm.ShowDialog();            
+        }
+
+
 
         private void _matrixControl_MioFrameDelete(object? sender, EventArgs e)
         {

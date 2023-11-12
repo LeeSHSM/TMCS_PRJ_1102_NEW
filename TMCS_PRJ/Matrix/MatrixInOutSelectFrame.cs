@@ -58,10 +58,14 @@ namespace TMCS_PRJ
                     {
                         _matrixChannelInput.MatrixChannelValueChanged -= _matrixChannelInput_MatrixChannelValueChanged;
                     }                    
-                    _matrixChannelInput = value;
-                    RouteNoChange?.Invoke(_matrixChannelInput, _matrixChannelOutput);
+                    _matrixChannelInput = value;                    
                     _matrixChannelInput.MatrixChannelValueChanged += _matrixChannelInput_MatrixChannelValueChanged;
                     UpdateChannelText();
+
+                    if (_matrixChannelOutput.Port > 0)
+                    {
+                        RouteNoChange?.Invoke(_matrixChannelInput, _matrixChannelOutput);
+                    }                    
                 }
             }
         }
@@ -84,19 +88,19 @@ namespace TMCS_PRJ
         public MatrixInOutSelectFrame()
         {
             InitializeComponent();
-            _matrixChannelInput = new MatrixChannel
-            {
-                Port = 0,
-                ChannelName = "-",
-                ChannelType = "INPUT",
-                RouteNo = 0
-            };
-
             _matrixChannelOutput = new MatrixChannel
             {
                 Port = 0,
                 ChannelName = "-",
                 ChannelType = "OUTPUT",
+                RouteNo = 0
+            };
+
+            _matrixChannelInput = new MatrixChannel
+            {
+                Port = 0,
+                ChannelName = "-",
+                ChannelType = "INPUT",
                 RouteNo = 0
             };
             InitiallzeEvent();
@@ -126,6 +130,7 @@ namespace TMCS_PRJ
             if (InvokeRequired)
             {
                 this.Invoke(new Action(() => UpdateChannelText()));
+                return;
             }
 
             lblOutput.Text = _matrixChannelOutput.ChannelName;

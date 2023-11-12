@@ -195,7 +195,7 @@ namespace TMCS_PRJ
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void _matrixFrame_CellValueChanged(object? sender, EventArgs e)
+        private async void _matrixFrame_CellValueChanged(object? sender, EventArgs e)
         {
             DataGridView dgv = sender as DataGridView;
             DataGridViewCellEventArgs dgvEvent = e as DataGridViewCellEventArgs;
@@ -203,7 +203,7 @@ namespace TMCS_PRJ
             string channelName = dgv.Rows[dgvEvent.RowIndex].Cells[1].Value.ToString();
             string channelType = _matrixFrame.NowChannelType;
 
-            _matrixManager.UpdateChannelName(rowNum, channelName, channelType) ;
+            _matrixManager.SetChannelNameAsync(rowNum, channelName, channelType) ;
         }
 
         private void MioFrame_MioFrameDelete(object? sender, EventArgs e)
@@ -252,7 +252,7 @@ namespace TMCS_PRJ
         // MioFrame RouteNo 변경
         private async void MioFrame_RouteNoChangeAsync(MatrixChannel mcInput, MatrixChannel mcOutput)
         {
-            await _matrixManager.UpdateRouteNoAsync(mcInput, mcOutput);
+            await _matrixManager.SetRouteNoAsync(mcInput, mcOutput);
         }
 
         //-------------------------------------------------매트릭스 프레임 영역--------------------------------------------------

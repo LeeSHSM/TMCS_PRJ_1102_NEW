@@ -34,8 +34,6 @@ namespace TMCS_PRJ
         public string ConnectionString { get => _connectionString; set => _connectionString = value; }
         public MatrixConnectInfo ConnectInfo { get => _connectInfo; set => _connectInfo = value; }
 
-
-
         #endregion
 
         #region 초기화 Methods 
@@ -43,7 +41,6 @@ namespace TMCS_PRJ
         {
             _progress = progress;
             _matrix = matrix;
-            //InitializeEvent();
         }
 
 
@@ -76,9 +73,11 @@ namespace TMCS_PRJ
             });
         }
 
-        private void Channel_MatrixChannelValueChanged(object sender)
+        private async void Channel_MatrixChannelValueChanged(object sender)
         {
-            
+            MatrixChannel mc = (MatrixChannel)sender;
+            await SaveChannelToDBAsync(_connectionString,mc);
+            Debug.WriteLine("변경됨!!"+mc.ChannelName);
         }
 
         #endregion
@@ -123,78 +122,20 @@ namespace TMCS_PRJ
         /// <param name="rowNum"></param>
         /// <param name="channelName"></param>
         /// <param name="channelType"></param>
-        public void UpdateChannelName(int rowNum, string channelName, string channelType)
+        public async Task SetChannelNameAsync(int rowNum, string channelName, string channelType)
         {
-            Debug.WriteLine(rowNum + " " + channelName);
             List<MatrixChannel> showChannels = GetChannelListInfo(channelType);
-            List<MatrixChannel> originChannels = GetOriginChannelListInfo(channelType);
-            Debug.WriteLine("변경전 : " + originChannels[(showChannels[rowNum].Port) - 1].ChannelName);
-
             showChannels[rowNum].ChannelName = channelName;
-
-            Debug.WriteLine("변경후 : " + originChannels[(showChannels[rowNum].Port) - 1].ChannelName);
-
-            //originChannels[(showChannels[rowNum].Port) - 1].ChannelName = channelName;
 
             //SaveChannelToDB(_connectionString, showChannels[rowNum].Port, channelName, channelType);
         }
 
-        /// <summary>
-        /// mc 아웃전용... routno변경될때... 사용하는 메서드일듯?
-        /// </summary>
-        /// <param name="mc"></param>
-        public void SetChannel(MatrixChannel mc)
-        {
-            List<MatrixChannel> originChannels = GetOriginChannelListInfo(mc.ChannelType);
-            for (int i = 0; i < originChannels.Count; i++)
-            {
-                if (originChannels[i].Port == mc.Port)
-                {
-                    int tt = originChannels[i].RouteNo;
-                    Debug.WriteLine("오리지널"+tt);
-                    Debug.WriteLine(_showOutputChannels[i].RouteNo);
-                    originChannels[i] = mc; // i번 인덱스에 있는 리스트 항목을 mc로 업데이트
-
-                    Debug.WriteLine("오리지널" + tt);
-                    Debug.WriteLine(_showOutputChannels[i].RouteNo);
-                    //SaveChannelToDBAsync(_connectionString, originChannels[i]);
-                    break; // 하나의 매치만 기대한다면 찾은 후에 루프를 중단합니다
-                }
-            }
-        }
-
-        public void SetChannelList(DataTable dataTable, string channelType)
-        {
-            List<MatrixChannel> matrixChannels = new List<MatrixChannel>();
-
-            foreach (DataRow row in dataTable.Rows)
-            {
-                matrixChannels.Add(new MatrixChannel
-                {
-                    Port = int.Parse(row["Port"].ToString()),
-                    ChannelName = row["Name"].ToString(),
-                    ChannelType = row["ChannelType"].ToString(),
-                    RouteNo = 0
-                });
-            }
-            List<MatrixChannel> showChannels = GetChannelListInfo(channelType);
-
-            for (int i = 0; i < showChannels.Count; i++)
-            {
-                if (showChannels[i].ChannelName != matrixChannels[i].ChannelName)
-                {
-                    Debug.WriteLine((i + 1) + " 포트가 다름!");
-                }
-            }
-        }
-
-        public async Task UpdateRouteNoAsync(MatrixChannel mcInput, MatrixChannel mcOutput)
+        public async Task SetRouteNoAsync(MatrixChannel mcInput, MatrixChannel mcOutput)
         {
             if (await GetStateAsync())
             {
                 mcOutput.RouteNo = mcInput.Port;
-                SetChannel(mcOutput);
-                ChangeRouteNoToMatrixAsync(mcOutput.RouteNo, mcOutput.Port);
+                await ChangeRouteNoToMatrixAsync(mcOutput.RouteNo, mcOutput.Port);
             }
         }
         #endregion
@@ -228,8 +169,6 @@ namespace TMCS_PRJ
 
         private async Task ChangeRouteNoToMatrixAsync(int inputPort, int OutputPort)
         {
-            _progress?.Report(new ProgressReport { Test = $"{inputPort} : {OutputPort} 로 변경!" });
-            _progress?.Report(new ProgressReport { Message = $"{inputPort} : {OutputPort} 로 변경!" });
             await _connectInfo.ChangeRouteNoToMatrixAsync(inputPort, OutputPort);
         }
 
@@ -239,27 +178,6 @@ namespace TMCS_PRJ
         #region Private Methods
 
 
-
-        private List<MatrixChannel> GetOriginChannelListInfo(string inout)
-        {
-            List<MatrixChannel> channels = new List<MatrixChannel>();
-            if (inout == input)
-            {
-                channels = _matrix.InputChannel;
-            }
-            else if (inout == output)
-            {
-                channels = _matrix.OutputChannel;
-            }
-            else
-            {
-                return null;
-            }
-            return channels;
-        }
-
-        public delegate void delMatrixChannelPropertyChanged(object sender);
-        public event delMatrixChannelPropertyChanged MatrixChannelPropertyChanged;
 
         
 
@@ -287,7 +205,7 @@ namespace TMCS_PRJ
 
             for (int port = 1; port <= _matrix.getChannelPortCount(channelType); port++)
             {
-                MatrixChannel channel = await GetMatrixChannelFromDBAsync(_connectionString, port, channelType);
+                MatrixChannel channel = await GetMatrixChannelInDBAsync(_connectionString, port, channelType);
                 //channel.MatrixChannelValueChanged += Channel_MatrixChannelValueChanged;
                 mc.Add(channel);
             }
@@ -306,7 +224,7 @@ namespace TMCS_PRJ
         /// <param name="port"></param>
         /// <param name="channelType"></param>
         /// <returns></returns>
-        private async Task<MatrixChannel> GetMatrixChannelFromDBAsync(string connectionString, int port, string channelType)
+        private async Task<MatrixChannel> GetMatrixChannelInDBAsync(string connectionString, int port, string channelType)
         {
             // 기본값 설정
             string defaultName = "불러오기실패";
@@ -397,6 +315,10 @@ namespace TMCS_PRJ
         }
 
         #endregion
+
+
+
+
     }
     // 매트릭스 통신관련 인터페이스.... 추후 추가될수도 있음
     public interface MatrixConnectInfo
@@ -455,10 +377,8 @@ namespace TMCS_PRJ
                         _progress?.Report(new ProgressReport { Message = $"재연결 시도 {retryCount}/{maxRetryCount}" });
                         // 연결 실패: 반복 횟수 증가
                         
-                        //GlobalSetting.Logger.LogError($"재연결 시도 {retryCount}/{maxRetryCount}");
                         Debug.WriteLine($"재연결 시도 {retryCount}/{maxRetryCount}");
-                        // 재연결을 시도하기 전에 짧은 지연을 둘 수 있습니다.
-                        //await Task.Delay(500); // 1초간 대기
+
                     }
                 }
                 else
