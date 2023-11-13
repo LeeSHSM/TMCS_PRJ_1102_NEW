@@ -9,6 +9,7 @@ namespace TMCS_PRJ
     public interface MainView
     {
         event EventHandler FormLoad;
+        event EventHandler FormClose;
         event EventHandler btnMatrixInputClick;
         event EventHandler btnMatrixOutputClick;
         event EventHandler btnAddMioFrameClick;
@@ -17,11 +18,9 @@ namespace TMCS_PRJ
         Panel pnMatrixFrame { get; }
         Panel pnMatrixInOutSelectFrame { get; }
 
-        void DockMatrixFrame(UserControl uc);
+        void InitMioFrames(List<MatrixInOutSelectFrameView> MioFrames);
 
-        void MioFrameResizeStarted(object sender, MioFrameResizeEventClass e);
-        void MioFrameResizeMoved(object sender, MioFrameResizeEventClass e);
-        void MioFrameResizeEnded(object sender, MioFrameResizeEventClass e);
+        void InitMatrixFrame(UserControl uc);
 
         void AddMioFrame(UserControl uc);
         void MioFrameDelete(object sender, EventArgs e);

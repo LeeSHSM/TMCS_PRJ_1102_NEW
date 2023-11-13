@@ -8,23 +8,19 @@ namespace TMCS_PRJ
 {
     public interface MatrixInOutSelectFrameView
     {
+        MatrixInOutSelectFrame MioFrame { get; }
         MatrixChannel MatrixChannelInput { get; set; }
         MatrixChannel MatrixChannelOutput { get; set; }
 
-        Form GetMainForm();
+        string ParentId {  get; set; }
 
+        Form GetMainForm();
 
         Point GetPositionInForm();
 
         event EventHandler InputClick;
         event EventHandler OutputClick;
-
-        event EventHandler<MioFrameResizeEventClass> MioResizeStarted;
-        event EventHandler<MioFrameResizeEventClass> MioResizeMove;
-        event EventHandler<MioFrameResizeEventClass> MioResizeFinished;
-
         event EventHandler MioFrameDelete;
-
         event delRouteNoChange RouteNoChange;
 
         delegate void delRouteNoChange(MatrixChannel mcInput, MatrixChannel mcOutput);

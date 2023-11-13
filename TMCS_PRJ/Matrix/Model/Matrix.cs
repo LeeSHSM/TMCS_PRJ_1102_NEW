@@ -10,8 +10,8 @@ namespace TMCS_PRJ
     public class MatrixChannel
     {
         #region Properties
-        public delegate void delMatrixChannelValueChanged(object sender);
-        public event delMatrixChannelValueChanged MatrixChannelValueChanged;
+        
+        public event EventHandler MatrixChannelValueChanged;
 
         private int _portNo;
         private string _channelName;
@@ -60,7 +60,7 @@ namespace TMCS_PRJ
 
         private void ChangedValue()
         {
-            MatrixChannelValueChanged?.Invoke(this);
+            MatrixChannelValueChanged?.Invoke(this, EventArgs.Empty);
         }
     }
 

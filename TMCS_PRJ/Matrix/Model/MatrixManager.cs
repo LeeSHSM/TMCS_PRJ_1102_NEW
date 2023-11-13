@@ -73,7 +73,7 @@ namespace TMCS_PRJ
             });
         }
 
-        private async void Channel_MatrixChannelValueChanged(object sender)
+        private async void Channel_MatrixChannelValueChanged(object sender,EventArgs e)
         {
             MatrixChannel mc = (MatrixChannel)sender;
             await SaveChannelToDBAsync(_connectionString,mc);
@@ -85,9 +85,9 @@ namespace TMCS_PRJ
 
         #region Public Methods...
 
-        public MatrixChannel GetChannelInfo(int rowNum, string channelType)
+        public MatrixChannel GetChannel(int rowNum, string channelType)
         {
-            List<MatrixChannel> channels = GetChannelListInfo(channelType);
+            List<MatrixChannel> channels = GetChannelList(channelType);
             MatrixChannel channel = channels[rowNum];
             return channel;
         }
@@ -97,7 +97,7 @@ namespace TMCS_PRJ
         /// </summary>
         /// <param name="inout"></param>
         /// <returns></returns>
-        public List<MatrixChannel> GetChannelListInfo(string inout)
+        public List<MatrixChannel> GetChannelList(string inout)
         {
             List<MatrixChannel> channels = new List<MatrixChannel>();
             if (inout == input)
@@ -124,10 +124,8 @@ namespace TMCS_PRJ
         /// <param name="channelType"></param>
         public async Task SetChannelNameAsync(int rowNum, string channelName, string channelType)
         {
-            List<MatrixChannel> showChannels = GetChannelListInfo(channelType);
+            List<MatrixChannel> showChannels = GetChannelList(channelType);
             showChannels[rowNum].ChannelName = channelName;
-
-            //SaveChannelToDB(_connectionString, showChannels[rowNum].Port, channelName, channelType);
         }
 
         public async Task SetRouteNoAsync(MatrixChannel mcInput, MatrixChannel mcOutput)
@@ -141,11 +139,6 @@ namespace TMCS_PRJ
         #endregion
 
         #region 통신관련 Methods 
-
-        public void SetDB(string msg1)
-        {
-            _connectionString = msg1;
-        }
 
         public async Task StartConnectAsync()
         {
@@ -176,10 +169,6 @@ namespace TMCS_PRJ
 
 
         #region Private Methods
-
-
-
-        
 
         /// <summary>
         /// 채널정보 불러오기
@@ -267,29 +256,6 @@ namespace TMCS_PRJ
             };
         }
 
-        private async Task SaveChannelToDB(string connectionString, int port, string channelName, string channelType)
-        {
-            //일단 소스에 쿼리문 박고.. 추후에 EF Core 공부해서 수정하자
-            string query = "UPDATE tbl_matrix_sysinfo SET channelname = @channelname, routeno = @routeno WHERE port = @port AND channeltype = @channeltype";
-            using (SqlConnection connection = new SqlConnection(connectionString))
-            {
-                await connection.OpenAsync();
-                using (SqlCommand command = new SqlCommand(query, connection))
-                {
-                    // DB저장... 추후에 EF Core로 수정
-                    command.Parameters.Add(new SqlParameter("@channelname", SqlDbType.VarChar)).Value = channelName;
-                    command.Parameters.Add(new SqlParameter("@port", SqlDbType.Int)).Value = port;
-                    command.Parameters.Add(new SqlParameter("@channeltype", SqlDbType.VarChar)).Value = channelType;
-                    command.Parameters.Add(new SqlParameter("@routeno", SqlDbType.Int)).Value = 0;
-
-                    // 데이터를 반환하지 않으므로 ExecuteNonQueryAsync 사용
-                    int rowsAffected = await command.ExecuteNonQueryAsync();
-
-                    // rowsAffected를 사용하여 결과를 처리 추후 로그에 저장
-                    Debug.WriteLine($"{rowsAffected} rows updated.");
-                }
-            }
-        }
         private async Task SaveChannelToDBAsync(string connectionString, MatrixChannel mc)
         {
             //일단 소스에 쿼리문 박고.. 추후에 EF Core 공부해서 수정하자

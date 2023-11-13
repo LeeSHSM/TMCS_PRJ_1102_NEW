@@ -124,7 +124,7 @@
             menuStrip1.Items.AddRange(new ToolStripItem[] { 파일ToolStripMenuItem, 보기ToolStripMenuItem });
             menuStrip1.Location = new Point(0, 0);
             menuStrip1.Name = "menuStrip1";
-            menuStrip1.Size = new Size(1470, 24);
+            menuStrip1.Size = new Size(736, 24);
             menuStrip1.TabIndex = 5;
             menuStrip1.Text = "menuStrip1";
             // 
@@ -144,7 +144,7 @@
             // 장비등록정보확인ToolStripMenuItem
             // 
             장비등록정보확인ToolStripMenuItem.Name = "장비등록정보확인ToolStripMenuItem";
-            장비등록정보확인ToolStripMenuItem.Size = new Size(180, 22);
+            장비등록정보확인ToolStripMenuItem.Size = new Size(170, 22);
             장비등록정보확인ToolStripMenuItem.Text = "장비등록정보확인";
             장비등록정보확인ToolStripMenuItem.Click += 장비등록정보확인ToolStripMenuItem_Click;
             // 
@@ -153,7 +153,7 @@
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.Control;
-            ClientSize = new Size(1470, 940);
+            ClientSize = new Size(736, 534);
             Controls.Add(lblTest);
             Controls.Add(pnMioFrame);
             Controls.Add(bbbb);
@@ -164,7 +164,7 @@
             Name = "MainForm";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "TMCS_PRJ";
-            Deactivate += MainForm_Deactivate;
+            FormClosing += MainForm_FormClosing;
             Load += MainForm_Load;
             groupBox1.ResumeLayout(false);
             menuStrip1.ResumeLayout(false);

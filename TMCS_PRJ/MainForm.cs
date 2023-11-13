@@ -2,6 +2,7 @@ using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Drawing.Drawing2D;
 using System.Reflection;
+using System.Windows.Forms;
 using Timer = System.Windows.Forms.Timer;
 
 namespace TMCS_PRJ
@@ -22,7 +23,7 @@ namespace TMCS_PRJ
                 }
                 else
                 {
-                    lblTest.Text = value;                    
+                    lblTest.Text = value;
                 }
             }
         }
@@ -45,7 +46,7 @@ namespace TMCS_PRJ
             get { return pnMatrixFrame; }
         }
 
-        public void DockMatrixFrame(UserControl uc)
+        public void InitMatrixFrame(UserControl uc)
         {
 
             if (this.InvokeRequired)
@@ -69,6 +70,29 @@ namespace TMCS_PRJ
             {
                 SetMatrixMioFrame(uc);
             }
+        }
+
+        public void InitMioFrames(List<MatrixInOutSelectFrameView> MioFrames)
+        {
+            foreach (MatrixInOutSelectFrame mioFrame in MioFrames)
+            {
+
+                var parentControl = FindControlById(mioFrame.ParentId);
+                parentControl?.Controls.Add(mioFrame);
+
+            }
+        }
+
+        private Control FindControlById(string controlId)
+        {
+            foreach (Control control in this.Controls)
+            {
+                if (control.Name == controlId)
+                {
+                    return control;
+                }
+            }
+            return null;
         }
 
         private void SetMatrixMioFrame(UserControl value)
@@ -100,34 +124,34 @@ namespace TMCS_PRJ
 
         //public void DragStarted(object sender, DragEventClass e)
         //{
-            //lbl = new Label();
-            //lbl.Size = new Size(50, 50);
+        //lbl = new Label();
+        //lbl.Size = new Size(50, 50);
 
-            //Point point = new Point(e.Location.X - (lbl.Width / 2), e.Location.Y - (lbl.Height / 2));
+        //Point point = new Point(e.Location.X - (lbl.Width / 2), e.Location.Y - (lbl.Height / 2));
 
-            //lbl.Location = this.PointToClient(point);
-            //this.Controls.Add(lbl);
-            //lbl.Text = e.Channel.ChannelName;
-            //lbl.TextAlign = ContentAlignment.MiddleCenter;
-            //lbl.BackColor = Color.Red;
-            //lbl.BringToFront();
+        //lbl.Location = this.PointToClient(point);
+        //this.Controls.Add(lbl);
+        //lbl.Text = e.Channel.ChannelName;
+        //lbl.TextAlign = ContentAlignment.MiddleCenter;
+        //lbl.BackColor = Color.Red;
+        //lbl.BringToFront();
 
         //}
 
         //public void DragMove(object sender, DragEventClass e)
         //{
-            //Rectangle currentDragRect = lbl.Bounds;
+        //Rectangle currentDragRect = lbl.Bounds;
 
-            //this.Invalidate(currentDragRect);  // 현재 위치의 영역을 다시 그립니다.
+        //this.Invalidate(currentDragRect);  // 현재 위치의 영역을 다시 그립니다.
 
-            //this.Invalidate(previousDragRect); // 이전 위치의 영역을 다시 그립니다.            
-            //previousDragRect = currentDragRect;
+        //this.Invalidate(previousDragRect); // 이전 위치의 영역을 다시 그립니다.            
+        //previousDragRect = currentDragRect;
 
-            //this.Update();
+        //this.Update();
 
-            //// 라벨 위치 업데이트
-            //Point point = new Point(e.Location.X - (lbl.Width / 2), e.Location.Y - (lbl.Height / 2));
-            //lbl.Location = this.PointToClient(point);
+        //// 라벨 위치 업데이트
+        //Point point = new Point(e.Location.X - (lbl.Width / 2), e.Location.Y - (lbl.Height / 2));
+        //lbl.Location = this.PointToClient(point);
         //}
 
         //public void DragEnded(object sender, DragEventClass e)
@@ -164,48 +188,6 @@ namespace TMCS_PRJ
             btnAddMioFrameClick(sender, e);
         }
 
-        public void MioFrameResizeStarted(object sender, MioFrameResizeEventClass e)
-        {
-
-            //Point point = new Point(mouseE.Location.X, mouseE.Location.Y);
-            MatrixInOutSelectFrame mioFrame = sender as MatrixInOutSelectFrame;
-            //Debug.WriteLine(point);
-        }
-
-        private Rectangle previousDragRect = Rectangle.Empty;
-        public void MioFrameResizeMoved(object sender, MioFrameResizeEventClass e)
-        {
-            MatrixInOutSelectFrame mioFrame = sender as MatrixInOutSelectFrame;
-            this.Invalidate(previousDragRect);
-            Rectangle currentDragRect = mioFrame.Bounds;
-            this.Invalidate(currentDragRect);
-            this.Update();
-
-            switch (e.Position)
-            {
-                case "상하":
-                    mioFrame.Size = new Size(mioFrame.Width, e.Location.Y);
-                    break;
-                case "좌우":
-                    mioFrame.Size = new Size(e.Location.X, mioFrame.Height);
-                    break;
-                case "좌상":
-                    break;
-                case "우상":
-                    break;
-                case "좌하":
-                    break;
-                case "우하":
-                    mioFrame.Size = new Size(e.Location);
-                    break;
-            }
-        }
-
-        public void MioFrameResizeEnded(object sender, MioFrameResizeEventClass e)
-        {
-
-        }
-
         public void MioFrameDelete(object sender, EventArgs e)
         {
             MatrixInOutSelectFrame mioFrame = sender as MatrixInOutSelectFrame;
@@ -217,28 +199,24 @@ namespace TMCS_PRJ
                     pnMioFrame.Controls.Remove(mc);
                 }
             }
-            int pnMioFrameControlsCount = 0;
-            foreach (MatrixInOutSelectFrame mc in pnMioFrame.Controls)
-            {
-                int maxColCount = 5;
-                int maxRowCount = 5;
-                int width = 20;
-                int height = 30;
+            //int pnMioFrameControlsCount = 0;
+            //foreach (MatrixInOutSelectFrame mc in pnMioFrame.Controls)
+            //{
+            //    int maxColCount = 5;
+            //    int maxRowCount = 5;
+            //    int width = 20;
+            //    int height = 30;
 
-                int X = ((mc.Width + width) * ((pnMioFrameControlsCount) % maxColCount));
-                int Y = ((pnMioFrameControlsCount++ / maxRowCount) * (mc.Height + height));
+            //    int X = ((mc.Width + width) * ((pnMioFrameControlsCount) % maxColCount));
+            //    int Y = ((pnMioFrameControlsCount++ / maxRowCount) * (mc.Height + height));
 
-                mc.Location = new Point(X, Y);
-            }
+            //    mc.Location = new Point(X, Y);
+            //}
         }
 
 
         #endregion
 
-        private void MainForm_Deactivate(object sender, EventArgs e)
-        {
-            
-        }
         EquipmentStatusForm uc = new EquipmentStatusForm();
         private void 장비등록정보확인ToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -246,12 +224,18 @@ namespace TMCS_PRJ
             EquipmentStatusClick(sender, e);
         }
 
+        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            FormClose?.Invoke(this, e);
+        }
+
         public event EventHandler FormLoad;
+        public event EventHandler FormClose;
         public event EventHandler btnMatrixInputClick;
         public event EventHandler btnMatrixOutputClick;
         public event EventHandler btnAddMioFrameClick;
         public event EventHandler EquipmentStatusClick;
-        
+
 
         /// <summary>
         /// 화면 깜빡임...티어링 등 금지..
