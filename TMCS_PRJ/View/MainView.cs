@@ -22,6 +22,8 @@ namespace TMCS_PRJ
 
         void InitMatrixFrame(UserControl uc);
 
+        void InitDlpFrame(UserControl uc);
+
         void AddMioFrame(UserControl uc);
         void MioFrameDelete(object sender, EventArgs e);
 

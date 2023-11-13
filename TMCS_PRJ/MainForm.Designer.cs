@@ -40,6 +40,7 @@
             파일ToolStripMenuItem = new ToolStripMenuItem();
             보기ToolStripMenuItem = new ToolStripMenuItem();
             장비등록정보확인ToolStripMenuItem = new ToolStripMenuItem();
+            pnDlp = new Panel();
             groupBox1.SuspendLayout();
             menuStrip1.SuspendLayout();
             SuspendLayout();
@@ -85,7 +86,7 @@
             // 
             // btnAddMioFrame
             // 
-            btnAddMioFrame.Location = new Point(316, 37);
+            btnAddMioFrame.Location = new Point(316, 291);
             btnAddMioFrame.Name = "btnAddMioFrame";
             btnAddMioFrame.Size = new Size(75, 23);
             btnAddMioFrame.TabIndex = 1;
@@ -95,7 +96,7 @@
             // 
             // bbbb
             // 
-            bbbb.Location = new Point(409, 37);
+            bbbb.Location = new Point(397, 291);
             bbbb.Name = "bbbb";
             bbbb.Size = new Size(75, 23);
             bbbb.TabIndex = 2;
@@ -104,7 +105,7 @@
             // 
             // pnMioFrame
             // 
-            pnMioFrame.Location = new Point(316, 96);
+            pnMioFrame.Location = new Point(316, 320);
             pnMioFrame.Name = "pnMioFrame";
             pnMioFrame.Size = new Size(326, 202);
             pnMioFrame.TabIndex = 3;
@@ -124,7 +125,7 @@
             menuStrip1.Items.AddRange(new ToolStripItem[] { 파일ToolStripMenuItem, 보기ToolStripMenuItem });
             menuStrip1.Location = new Point(0, 0);
             menuStrip1.Name = "menuStrip1";
-            menuStrip1.Size = new Size(736, 24);
+            menuStrip1.Size = new Size(969, 24);
             menuStrip1.TabIndex = 5;
             menuStrip1.Text = "menuStrip1";
             // 
@@ -148,12 +149,20 @@
             장비등록정보확인ToolStripMenuItem.Text = "장비등록정보확인";
             장비등록정보확인ToolStripMenuItem.Click += 장비등록정보확인ToolStripMenuItem_Click;
             // 
+            // pnDlp
+            // 
+            pnDlp.Location = new Point(326, 37);
+            pnDlp.Name = "pnDlp";
+            pnDlp.Size = new Size(500, 210);
+            pnDlp.TabIndex = 6;
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.Control;
-            ClientSize = new Size(736, 534);
+            ClientSize = new Size(969, 570);
+            Controls.Add(pnDlp);
             Controls.Add(lblTest);
             Controls.Add(pnMioFrame);
             Controls.Add(bbbb);
@@ -187,5 +196,6 @@
         private ToolStripMenuItem 파일ToolStripMenuItem;
         private ToolStripMenuItem 보기ToolStripMenuItem;
         private ToolStripMenuItem 장비등록정보확인ToolStripMenuItem;
+        private Panel pnDlp;
     }
 }

@@ -59,6 +59,24 @@ namespace TMCS_PRJ
             }
         }
 
+        public void InitDlpFrame(UserControl uc)
+        {
+            if (this.InvokeRequired)
+            {
+                this.Invoke(new Action(() => SetDlpFrame(uc)));
+            }
+            else
+            {
+                SetDlpFrame(uc);
+            }
+        }
+
+        private void SetDlpFrame(UserControl uc)
+        {
+            pnDlp.Controls.Add(uc);
+            uc.Dock = DockStyle.Fill;
+        }
+
         public void AddMioFrame(UserControl uc)
         {
 
@@ -112,10 +130,10 @@ namespace TMCS_PRJ
 
         }
 
-        private void SetMatrixFrame(UserControl value)
+        private void SetMatrixFrame(UserControl uc)
         {
-            pnMatrixFrame.Controls.Add(value);
-            value.Dock = DockStyle.Fill;
+            pnMatrixFrame.Controls.Add(uc);
+            uc.Dock = DockStyle.Fill;
         }
 
         //Label lbl;

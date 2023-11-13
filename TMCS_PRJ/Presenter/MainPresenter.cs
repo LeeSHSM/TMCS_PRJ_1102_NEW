@@ -14,6 +14,8 @@ namespace TMCS_PRJ
     {
         MainView _view;
         MatrixPresenter _matrixControl;
+
+        DlpPresenter _dlpPresenter;
         IProgress<ProgressReport> _progress;
 
         public MainPresenter(MainView view, IProgress<ProgressReport> progress)
@@ -26,7 +28,10 @@ namespace TMCS_PRJ
 
             //나중에 ip관련정보, DB접속정보들은 xml파일로 분리하자...그래야 컴파일 없이 외부에서 수정가능할듯?
             _matrixControl.SetConnectInfo(new RTVDMMatrixToIP(GlobalSetting.MATRIX_IP,GlobalSetting.MATRIX_PORT, progress));
-            _matrixControl.SetConnectDBInfo(GlobalSetting.MATRIX_DB);            
+            _matrixControl.SetConnectDBInfo(GlobalSetting.MATRIX_DB);
+
+
+            _dlpPresenter = new DlpPresenter(2,4, progress);
         }
 
         /// <summary>
@@ -64,7 +69,9 @@ namespace TMCS_PRJ
             _view.InitMatrixFrame(_matrixControl.GetMatrixFrame());
             _view.InitMioFrames(_matrixControl.LoadMioFrames());
 
-            _matrixControl.ChangeMatrixChannelList("INPUT");            
+            _matrixControl.ChangeMatrixChannelList("INPUT");
+
+            _view.InitDlpFrame(_dlpPresenter.GetDlpFrame());
         }
 
         private void _view_FormClose(object? sender, EventArgs e)
