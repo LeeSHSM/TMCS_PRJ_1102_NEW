@@ -1,6 +1,6 @@
-﻿namespace TMCS_PRJ
+﻿namespace LshDlp
 {
-    partial class DlpFrame
+    internal partial class DlpFrame
     {
         /// <summary> 
         /// 필수 디자이너 변수입니다.
@@ -28,10 +28,32 @@
         /// </summary>
         private void InitializeComponent()
         {
-            components = new System.ComponentModel.Container();
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            picDlpFrame = new PictureBox();
+            ((System.ComponentModel.ISupportInitialize)picDlpFrame).BeginInit();
+            SuspendLayout();
+            // 
+            // picDlpFrame
+            // 
+            picDlpFrame.Dock = DockStyle.Fill;
+            picDlpFrame.Location = new Point(0, 0);
+            picDlpFrame.Margin = new Padding(0);
+            picDlpFrame.Name = "picDlpFrame";
+            picDlpFrame.Size = new Size(150, 150);
+            picDlpFrame.TabIndex = 0;
+            picDlpFrame.TabStop = false;
+            // 
+            // DlpFrame
+            // 
+            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleMode = AutoScaleMode.Font;
+            Controls.Add(picDlpFrame);
+            Name = "DlpFrame";
+            ((System.ComponentModel.ISupportInitialize)picDlpFrame).EndInit();
+            ResumeLayout(false);
         }
 
         #endregion
+
+        private PictureBox picDlpFrame;
     }
 }

@@ -1,48 +1,46 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Runtime.Intrinsics.Arm;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+﻿
 
-namespace TMCS_PRJ
+namespace LshDlp
 {
-    public partial class DlpFrame : UserControl,DlpFrameView
+    internal partial class DlpFrame : UserControl, DlpFrameView
     {
-        public event EventHandler LayoutRefresh;
-        public event EventHandler DlpClick;
+        internal event EventHandler DlpClick;
+        internal TableLayoutPanel _tlpDlpFrame;
+        private DlpStruct _dlpStruct;        
 
-        public TableLayoutPanel _tlpDlpFrame;
-
-        public DlpFrame()
+        internal DlpFrame(DlpStruct dlpStruct)
         {
             InitializeComponent();
+            this.DoubleBuffered = true;
+            this.SetStyle(ControlStyles.ResizeRedraw, true);
+            this.SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
+            _dlpStruct = dlpStruct;
+            Initialize();
         }
 
-        public void SetDlpFrame(DlpStruct dlpStruct)
+        private void Initialize()
         {
             _tlpDlpFrame = new TableLayoutPanel();
             _tlpDlpFrame.Dock = DockStyle.Fill;
-            this.Controls.Add(_tlpDlpFrame);
-            _tlpDlpFrame.RowCount = dlpStruct.RowCount;
-            _tlpDlpFrame.ColumnCount = dlpStruct.ColCount;
-            for (int i = 0; i < dlpStruct.RowCount; i++)
+            picDlpFrame.Controls.Add(_tlpDlpFrame);
+            _tlpDlpFrame.BackColor = Color.Black;
+            _tlpDlpFrame.RowCount = _dlpStruct.RowCount;
+            _tlpDlpFrame.ColumnCount = _dlpStruct.ColCount;
+
+            for (int i = 0; i < _dlpStruct.RowCount; i++)
             {
                 _tlpDlpFrame.RowStyles.Add(new RowStyle(SizeType.Percent, 100F / _tlpDlpFrame.RowCount));
             }
 
-            for (int i = 0; i < dlpStruct.ColCount; i++)
+            for (int i = 0; i < _dlpStruct.ColCount; i++)
             {
                 _tlpDlpFrame.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F / _tlpDlpFrame.ColumnCount));
             }
 
-            foreach (Dlp dlp in dlpStruct.Dlps)
+            foreach (Dlp dlp in _dlpStruct.Dlps)
             {
-                dlp.Text = dlp.Row.ToString() + " : " + dlp.Col.ToString();
+                dlp.Text = dlp.InputChannel.ChannelName;
+                dlp.MatrixPort = 0;
                 dlp.Dock = DockStyle.Fill;
                 dlp.Margin = new Padding(0, 0, 0, 0);
                 dlp.BorderStyle = BorderStyle.FixedSingle;
@@ -55,98 +53,129 @@ namespace TMCS_PRJ
             }
         }
 
-        private void mouseUp(object? sender, MouseEventArgs e)
+        void DlpFrameView.SetDlpFrame(string channelType)
         {
-           
+            if(channelType == "INPUT")
+            {
+                foreach (Dlp dlp in _dlpStruct.Dlps)
+                {
+                    UpdateDlpText(dlp, dlp.InputChannel.ChannelName);
+                }
+            }
+            else if(channelType == "OUTPUT")
+            {
+                foreach(Dlp dlp in _dlpStruct.Dlps)
+                {
+                    UpdateDlpText(dlp, "매트릭스 출력포트 : "+dlp.MatrixPort.ToString());
+                }
+            }
+        }
+
+
+        private void UpdateDlpText(Dlp dlp, string dlpName)
+        {
+            if (InvokeRequired)
+            {
+                // 라벨 컨트롤의 생성 스레드에 실행을 위임
+                dlp.Invoke(new Action(() => UpdateDlpText(dlp,dlpName)));
+            }
+            else
+            {
+                // 스레드가 안전하므로 UI 업데이트 실행
+                dlp.Text = dlpName;
+            }
+        }
+
+        private Control FindParentControl(Control control, Type senderType)
+        {
+            foreach (Control childControl in control.Controls)
+            {
+                if (childControl == null)
+                {
+                    return null;
+                }
+                if (childControl.GetType() == senderType)
+                {
+                    return control;
+                }
+                else
+                {
+                    return FindParentControl(childControl, senderType);
+                }
+            }
+            return null;
+        }
+
+        private bool _isMore10 = false;
+        private Point? _startPoint = null;
+        private PictureBox _picDragBox = null;
+
+        private void mouseDown(object? sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                _startPoint = this.PointToClient(MousePosition);
+            }
         }
 
         private void mouseMove(object? sender, MouseEventArgs e)
         {
-            
+            if (_startPoint.HasValue)
+            {
+                Point startPoint = _startPoint.Value;
+                Point nowPoint = this.PointToClient(MousePosition);
+                if (!_isMore10)
+                {
+                    if (GetDistance(startPoint, nowPoint) >= 10)
+                    {
+                        _isMore10 = true;
+                        InitDragPictureBox();
+                        InitDragBox();
+                        ShowDragPictureBox();
+                    }
+                }
+                else
+                {
+                    int x = startPoint.X;
+                    int y = startPoint.Y;
+                    int width = nowPoint.X - x;
+                    int height = nowPoint.Y - y;
+
+                    _picDragBox.Bounds = new Rectangle(x, y, width, height);
+                }
+            }
         }
 
-        private void mouseDown(object? sender, MouseEventArgs e)
+        private void InitDragPictureBox()
         {
-            
+            Bitmap bmp = new Bitmap(picDlpFrame.Width, picDlpFrame.Height);
+            picDlpFrame.DrawToBitmap(bmp, new Rectangle(0, 0, picDlpFrame.Width, picDlpFrame.Height));
+            picDlpFrame.Image = bmp;
         }
 
-        /// <summary>
-        /// 최초 실행시 화면구성해줄거!!
-        /// </summary>
-        //public void InitDLPFrame(List<DLP> dlps, int rowCount, int colCount)
-        //{
-        //    for (int i = 0; i < rowCount; i++)
-        //    {
-        //        DLPCover.RowStyles.Add(new RowStyle(SizeType.Percent, 100F / DLPCover.RowCount));
-        //    }
+        private void InitDragBox()
+        {
+            _picDragBox = new PictureBox();
+            _picDragBox.Size = new Size(0, 0);
+            _picDragBox.BackColor = Color.FromArgb(128, Color.Blue); // 반투명 파란색
+            picDlpFrame.Controls.Add(_picDragBox);
+        }
 
-        //    for (int i = 0; i < colCount; i++)
-        //    {
-        //        DLPCover.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F / DLPCover.ColumnCount));
-        //    }
-        //    foreach (DLP dlp in dlps)
-        //    {
-        //        dlp.Text = dlp.Row.ToString() + " : " + dlp.Col.ToString();
-        //        dlp.Dock = DockStyle.Fill;
-        //        dlp.Margin = new Padding(0, 0, 0, 0);
-        //        dlp.BorderStyle = BorderStyle.FixedSingle;
-        //        dlp.BackColor = Color.Red;
-        //        dlp.TextAlign = ContentAlignment.MiddleCenter;
-        //        dlp.MouseDown += mouseDown;
-        //        dlp.MouseMove += mouseMove;
-        //        dlp.MouseUp += mouseUp;
-        //        DLPCover.Controls.Add(dlp, dlp.Col, dlp.Row);
-        //    }
-        //}
+        private void ShowDragPictureBox()
+        {
+            _tlpDlpFrame.Visible = false;
+        }
 
-        //private bool _isClick = false;
-        //private Point? _startPoint = null;
-        //private Panel _dragPanel = null;
-        //private PictureBox _dragPictureBox = null;
-
-        //private void mouseDown(object sender, EventArgs e)
-        //{
-        //    MouseEventArgs mouse = (MouseEventArgs)e;
-        //    _isClick = true;
-
-        //    if (mouse.Button == MouseButtons.Left)
-        //    {
-        //        _startPoint = DLPCover.PointToClient(MousePosition);
-        //    }
-        //}
-
-        //private void mouseMove(object sender, EventArgs e)
-        //{
-        //    if (_startPoint.HasValue)
-        //    {
-        //        Point startPoint = _startPoint.Value;
-        //        Point nowPoint = DLPCover.PointToClient(MousePosition);
-
-        //        if (GetDistance(startPoint, nowPoint) >= 10)
-        //        {
-        //            if (_isClick)
-        //            {
-        //                _isClick = false;
-
-        //                InitDragPictureBox();
-
-        //                InitDragBox();
-
-        //                ShowDragPictureBox();
-        //            }
-
-        //            if (_dragPanel != null)
-        //            {
-        //                int x = startPoint.X;
-        //                int y = startPoint.Y;
-        //                int width = nowPoint.X - x;
-        //                int height = nowPoint.Y - y;
-
-        //                _dragPanel.Bounds = new Rectangle(x, y, width, height);
-        //            }
-        //        }
-        //    }
-        //}
+        private void mouseUp(object? sender, MouseEventArgs e)
+        {
+            _startPoint = null;
+            if (_isMore10)
+            {
+                _tlpDlpFrame.Visible = true;
+                _picDragBox.Dispose();                
+                _isMore10 = false;
+            }
+        }
 
         //private void mouseUp(object sender, EventArgs e)
         //{
@@ -215,10 +244,6 @@ namespace TMCS_PRJ
         //    _startPoint = null;
         //}
 
-        //public void OnLayoutRefresh(object sender, EventArgs e)
-        //{
-        //    LayoutRefresh(sender, e);
-        //}
 
         //public void RefreshDlp()
         //{
@@ -234,40 +259,20 @@ namespace TMCS_PRJ
         //    }
         //}
 
-        //private void ShowDragPictureBox()
-        //{
-        //    DLPCover.Visible = false;
-        //    DLPCover.Dock = DockStyle.None;
-        //    _dragPictureBox.Dock = DockStyle.Fill;
-        //    _dragPictureBox.Visible = true;
-        //    picDisplayCover.Controls.Add(_dragPictureBox);
-        //}
-        //private void InitDragPictureBox()
-        //{
-        //    _dragPictureBox = new PictureBox();
 
-        //    Bitmap bmp = new Bitmap(picDisplayCover.Width, picDisplayCover.Height);
-        //    picDisplayCover.DrawToBitmap(bmp, new Rectangle(0, 0, picDisplayCover.Width, picDisplayCover.Height));
-        //    _dragPictureBox.Image = bmp;
-        //    _dragPictureBox.Size = new Size(picDisplayCover.Width, picDisplayCover.Height);
-        //    _dragPictureBox.Location = new Point(0, 0);
-        //}
-        //private void InitDragBox()
-        //{
-        //    _dragPanel = new Panel();
-        //    _dragPanel.Size = new Size(0, 0);
-        //    _dragPanel.BackColor = Color.FromArgb(128, Color.Blue); // 반투명 파란색
-        //    _dragPictureBox.Controls.Add(_dragPanel);
-        //}
 
-        ///// <summary>
-        ///// 두 포인트 사이의 거리를 구하는 함수
-        ///// </summary>
-        //static double GetDistance(Point p1, Point p2)
-        //{
-        //    int dx = p2.X - p1.X;
-        //    int dy = p2.Y - p1.Y;
-        //    return Math.Sqrt(dx * dx + dy * dy);
-        //}
+
+
+        /// <summary>
+        /// 두 포인트 사이의 거리를 구하는 함수
+        /// </summary>
+        private static double GetDistance(Point p1, Point p2)
+        {
+            int dx = p2.X - p1.X;
+            int dy = p2.Y - p1.Y;
+            return Math.Sqrt(dx * dx + dy * dy);
+        }
+
+
     }
 }

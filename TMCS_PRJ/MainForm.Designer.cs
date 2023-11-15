@@ -30,17 +30,17 @@
         {
             groupBox1 = new GroupBox();
             btnMatrixOutput = new Button();
+            lblTest = new Label();
             btnMatrixInput = new Button();
             pnMatrixFrame = new Panel();
             btnAddMioFrame = new Button();
             bbbb = new Button();
             pnMioFrame = new Panel();
-            lblTest = new Label();
             menuStrip1 = new MenuStrip();
             파일ToolStripMenuItem = new ToolStripMenuItem();
             보기ToolStripMenuItem = new ToolStripMenuItem();
             장비등록정보확인ToolStripMenuItem = new ToolStripMenuItem();
-            pnDlp = new Panel();
+            pnDlpFrame = new Panel();
             groupBox1.SuspendLayout();
             menuStrip1.SuspendLayout();
             SuspendLayout();
@@ -48,6 +48,7 @@
             // groupBox1
             // 
             groupBox1.Controls.Add(btnMatrixOutput);
+            groupBox1.Controls.Add(lblTest);
             groupBox1.Controls.Add(btnMatrixInput);
             groupBox1.Controls.Add(pnMatrixFrame);
             groupBox1.Location = new Point(12, 37);
@@ -66,6 +67,15 @@
             btnMatrixOutput.Text = "출 력";
             btnMatrixOutput.UseVisualStyleBackColor = true;
             btnMatrixOutput.Click += btnMatrixOutput_Click;
+            // 
+            // lblTest
+            // 
+            lblTest.AutoSize = true;
+            lblTest.Location = new Point(101, 555);
+            lblTest.Name = "lblTest";
+            lblTest.Size = new Size(39, 15);
+            lblTest.TabIndex = 4;
+            lblTest.Text = "label1";
             // 
             // btnMatrixInput
             // 
@@ -107,25 +117,17 @@
             // 
             pnMioFrame.Location = new Point(316, 320);
             pnMioFrame.Name = "pnMioFrame";
-            pnMioFrame.Size = new Size(326, 202);
+            pnMioFrame.Size = new Size(827, 333);
             pnMioFrame.TabIndex = 3;
-            // 
-            // lblTest
-            // 
-            lblTest.AutoSize = true;
-            lblTest.Location = new Point(542, 613);
-            lblTest.Name = "lblTest";
-            lblTest.Size = new Size(39, 15);
-            lblTest.TabIndex = 4;
-            lblTest.Text = "label1";
             // 
             // menuStrip1
             // 
             menuStrip1.BackColor = Color.Silver;
+            menuStrip1.ImageScalingSize = new Size(20, 20);
             menuStrip1.Items.AddRange(new ToolStripItem[] { 파일ToolStripMenuItem, 보기ToolStripMenuItem });
             menuStrip1.Location = new Point(0, 0);
             menuStrip1.Name = "menuStrip1";
-            menuStrip1.Size = new Size(969, 24);
+            menuStrip1.Size = new Size(1199, 24);
             menuStrip1.TabIndex = 5;
             menuStrip1.Text = "menuStrip1";
             // 
@@ -149,26 +151,26 @@
             장비등록정보확인ToolStripMenuItem.Text = "장비등록정보확인";
             장비등록정보확인ToolStripMenuItem.Click += 장비등록정보확인ToolStripMenuItem_Click;
             // 
-            // pnDlp
+            // pnDlpFrame
             // 
-            pnDlp.Location = new Point(326, 37);
-            pnDlp.Name = "pnDlp";
-            pnDlp.Size = new Size(500, 210);
-            pnDlp.TabIndex = 6;
+            pnDlpFrame.Location = new Point(326, 37);
+            pnDlpFrame.Name = "pnDlpFrame";
+            pnDlpFrame.Size = new Size(500, 210);
+            pnDlpFrame.TabIndex = 6;
             // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.Control;
-            ClientSize = new Size(969, 570);
-            Controls.Add(pnDlp);
-            Controls.Add(lblTest);
+            ClientSize = new Size(1199, 696);
+            Controls.Add(pnDlpFrame);
             Controls.Add(pnMioFrame);
             Controls.Add(bbbb);
             Controls.Add(btnAddMioFrame);
             Controls.Add(groupBox1);
             Controls.Add(menuStrip1);
+            DoubleBuffered = true;
             MainMenuStrip = menuStrip1;
             Name = "MainForm";
             StartPosition = FormStartPosition.CenterScreen;
@@ -176,6 +178,7 @@
             FormClosing += MainForm_FormClosing;
             Load += MainForm_Load;
             groupBox1.ResumeLayout(false);
+            groupBox1.PerformLayout();
             menuStrip1.ResumeLayout(false);
             menuStrip1.PerformLayout();
             ResumeLayout(false);
@@ -190,12 +193,12 @@
         private Panel pnMatrixFrame;
         private Button btnAddMioFrame;
         private Button bbbb;
-        private Label lblTest;
         private Panel pnMioFrame;
         private MenuStrip menuStrip1;
         private ToolStripMenuItem 파일ToolStripMenuItem;
         private ToolStripMenuItem 보기ToolStripMenuItem;
         private ToolStripMenuItem 장비등록정보확인ToolStripMenuItem;
-        private Panel pnDlp;
+        private Panel pnDlpFrame;
+        private Label lblTest;
     }
 }

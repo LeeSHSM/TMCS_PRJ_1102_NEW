@@ -15,6 +15,11 @@ namespace TMCS_PRJ
         event EventHandler btnAddMioFrameClick;
         event EventHandler EquipmentStatusClick;
 
+        Form GetMainForm();
+
+        Control GetCollidedControl { get; }
+
+
         Panel pnMatrixFrame { get; }
         Panel pnMatrixInOutSelectFrame { get; }
 

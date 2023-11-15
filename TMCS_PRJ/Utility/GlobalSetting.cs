@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -18,6 +19,15 @@ namespace TMCS_PRJ
             INPUT,
             OUTPUT,
         }
+
+        public enum DBMatrixChannelInfo
+        {
+            channelname,
+            port,
+            channeltype,
+            routeno,
+        }
+
     }
 
     public class Logger

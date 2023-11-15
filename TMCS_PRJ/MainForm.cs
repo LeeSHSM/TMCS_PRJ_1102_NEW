@@ -9,9 +9,6 @@ namespace TMCS_PRJ
 {
     public partial class MainForm : Form, MainView
     {
-        private Panel loadingPanel;
-        private PictureBox loadingPictureBox;
-
         public string lblUpdate
         {
             get { return lblTest.Text; }
@@ -33,8 +30,30 @@ namespace TMCS_PRJ
             InitializeComponent();
         }
 
+        public Form GetMainForm()
+        {
+            return this;
+        }
 
 
+        public Control GetCollidedControl
+        {
+            get
+            {
+                Point formCoordinates = this.PointToClient(Cursor.Position);
+
+                foreach (Control control in this.Controls)
+                {
+                    if (control.Bounds.Contains(formCoordinates))
+                    {
+                        Debug.WriteLine(control.ToString());
+                        return control;
+                    }
+                }
+
+                return null;
+            }
+        }
         Panel MainView.pnMatrixInOutSelectFrame
         {
             get { return pnMioFrame; }
@@ -73,8 +92,11 @@ namespace TMCS_PRJ
 
         private void SetDlpFrame(UserControl uc)
         {
-            pnDlp.Controls.Add(uc);
+            Panel pn = new Panel();
+            pn.BackColor = Color.White;
+            pnDlpFrame.Controls.Add(uc);
             uc.Dock = DockStyle.Fill;
+            //uc.BackColor = Color.White;
         }
 
         public void AddMioFrame(UserControl uc)

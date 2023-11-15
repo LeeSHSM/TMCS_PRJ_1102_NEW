@@ -11,14 +11,8 @@ namespace TMCS_PRJ
     {
         #region Properties
 
-        /// <summary>
-        /// MFrame 채널타입 변수
-        /// </summary>
         private string _nowChannelType;
 
-        /// <summary>
-        /// MFrame 채널타입 설정변수
-        /// </summary>
         public string ChannelType
         {
             get { return _nowChannelType; }
@@ -30,7 +24,7 @@ namespace TMCS_PRJ
             }
         }
 
-        public Form GetMainForm()
+        public Form GetFindForm()
         {
             return this.FindForm();
         }
@@ -56,9 +50,9 @@ namespace TMCS_PRJ
             dgvMatrixChannelList.CellEndEdit += DgvMatrixChannelList_CellEndEdit;
         }
 
-
-
         #endregion
+
+
 
         #region Public Methods
 
@@ -66,7 +60,7 @@ namespace TMCS_PRJ
         /// dgv 내용물 채우는 메서드 
         /// </summary>
         /// <param name="dataTable"></param>
-        public void SetMatrixChannelList(DataTable dataTable)
+        public void SetMatrixFrameChannelList(DataTable dataTable)
         {
             if (this.InvokeRequired)
             {
@@ -204,7 +198,6 @@ namespace TMCS_PRJ
 
 
         //드래그 관련 전역변수
-        private bool _isDragMouseDown = false;      //드래드관련 마우스 다운
         private bool _isDragMouseMove = false;      //드래그관련 마우스 무브
         private Point? _pDragStartedPostion = null; //드래그관련 시작 마우스 위치
         private Label _dragLbl;                     //드래그 라벨
@@ -219,7 +212,6 @@ namespace TMCS_PRJ
         {
             if (e.Button == MouseButtons.Left)
             {
-                _isDragMouseDown = true;
                 _pDragStartedPostion = MousePosition;
             }
         }
@@ -271,8 +263,8 @@ namespace TMCS_PRJ
         {
             if (_isDragMouseMove)
             {
-                MFrameToObjectDragEnded?.Invoke(dgvMatrixChannelList, e);
                 _dragLbl.Dispose();
+                MFrameToObjectDragEnded?.Invoke(dgvMatrixChannelList, e);                
             }
 
             _isDragMouseMove = false;

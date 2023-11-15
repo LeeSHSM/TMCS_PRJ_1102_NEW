@@ -13,7 +13,6 @@ namespace TMCS_PRJ
     public class MatrixFrameTotalManager
     {
         private string _connectionString;
-        private Form mainform;
 
         public string ConnectionString { get => _connectionString; set => _connectionString = value; }
 

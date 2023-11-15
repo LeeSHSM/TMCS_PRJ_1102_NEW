@@ -4,10 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TMCS_PRJ
+namespace LshDlp
 {
-    public interface DlpFrameView
-    {
-        void SetDlpFrame(DlpStruct dlpStruct);
+    internal interface DlpFrameView
+    { 
+
+        internal void SetDlpFrame(string channelType);
     }
 }

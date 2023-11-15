@@ -17,8 +17,8 @@ namespace TMCS_PRJ
     public class MatrixManager
     {
         #region Properties
-        private string input = GlobalSetting.ChannelType.INPUT.ToString();
-        private string output = GlobalSetting.ChannelType.OUTPUT.ToString();
+        private readonly string INPUT = GlobalSetting.ChannelType.INPUT.ToString();
+        private readonly string OUTPUT = GlobalSetting.ChannelType.OUTPUT.ToString();
 
         private Matrix _matrix;
         private string _roomName;
@@ -29,7 +29,6 @@ namespace TMCS_PRJ
         private List<MatrixChannel> _showInputChannels;
         private List<MatrixChannel> _showOutputChannels;
 
-        public Matrix Matrix { get => _matrix; }
         public string RoomName { get => _roomName; set => _roomName = value; }
         public string ConnectionString { get => _connectionString; set => _connectionString = value; }
         public MatrixConnectInfo ConnectInfo { get => _connectInfo; set => _connectInfo = value; }
@@ -50,15 +49,15 @@ namespace TMCS_PRJ
             await Task.Run(async () =>
             {
                 _progress?.Report(new ProgressReport { Message = "인풋채널 초기화 시작" });
-                List<MatrixChannel> inputChannels = await LoadChannelAsync(input);
+                List<MatrixChannel> inputChannels = await LoadChannelAsync(INPUT);
                 _progress?.Report(new ProgressReport { Message = "인풋채널 초기화 완료" });
                 _progress?.Report(new ProgressReport { Message = "아웃채널 초기화 시작" });
-                List<MatrixChannel> outputChannels = await LoadChannelAsync(output);
+                List<MatrixChannel> outputChannels = await LoadChannelAsync(OUTPUT);
                 _progress?.Report(new ProgressReport { Message = "아웃채널 초기화 완료" });
 
                 _matrix.InputChannel = inputChannels;
                 _matrix.OutputChannel = outputChannels;
-                _showInputChannels = inputChannels;
+                _showInputChannels = inputChannels;     //사용자에게 전달할 리스트는 show 채널리스트로... 검색기능반영하기위함. 얕은복사로 이루어짐
                 _showOutputChannels = outputChannels;
 
                 foreach(var channel in inputChannels)
@@ -77,13 +76,13 @@ namespace TMCS_PRJ
         {
             MatrixChannel mc = (MatrixChannel)sender;
             await SaveChannelToDBAsync(_connectionString,mc);
-            Debug.WriteLine("변경됨!!"+mc.ChannelName);
         }
 
         #endregion
 
 
-        #region Public Methods...
+
+        #region 매트릭스 채널정보 받아오기 / 세팅하기 
 
         public MatrixChannel GetChannel(int rowNum, string channelType)
         {
@@ -92,29 +91,58 @@ namespace TMCS_PRJ
             return channel;
         }
 
-        /// <summary>
-        /// 리스트 형식으로 매트릭스의 채널정보 반환
-        /// </summary>
-        /// <param name="inout"></param>
-        /// <returns></returns>
-        public List<MatrixChannel> GetChannelList(string inout)
+        public List<MatrixChannel> GetChannelList(string channelType)
         {
             List<MatrixChannel> channels = new List<MatrixChannel>();
-            if (inout == input)
+            if (channelType == INPUT)
             {
                 channels = _showInputChannels;
             }
-            else if (inout == output)
+            else if (channelType == OUTPUT)
             {
                 channels = _showOutputChannels;
             }
             else
             {
-                return null;
+                throw new Exception($"channelType is only INPUT or OUTPUT!! Now ChannelType = {channelType} ");
             }
             return channels;
         }
 
+        private MatrixChannel GetOriChannel(int port, string channelType)
+        {
+            MatrixChannel mc = new MatrixChannel();
+
+            List<MatrixChannel> mcs = GetOriChannelList(channelType);
+
+            foreach (MatrixChannel item in mcs)
+            {
+                if (item.Port == port)
+                {
+                    mc = item;
+                    break;
+                }
+            }
+            return mc;
+        }
+
+        private List<MatrixChannel> GetOriChannelList(string channelType)
+        {
+            List<MatrixChannel> channels = new List<MatrixChannel>();
+            if (channelType == INPUT)
+            {
+                channels = _matrix.InputChannel;
+            }
+            else if (channelType == OUTPUT)
+            {
+                channels = _matrix.OutputChannel;
+            }
+            else
+            {
+                throw new Exception($"channelType is only INPUT or OUTPUT!! Now ChannelType = {channelType} ");
+            }
+            return channels;
+        }
 
         /// <summary>
         /// 채널이름바꾸는 메서드
@@ -122,10 +150,16 @@ namespace TMCS_PRJ
         /// <param name="rowNum"></param>
         /// <param name="channelName"></param>
         /// <param name="channelType"></param>
-        public async Task SetChannelNameAsync(int rowNum, string channelName, string channelType)
+        public void SetChannelName(int rowNum, string channelName, string channelType)
         {
             List<MatrixChannel> showChannels = GetChannelList(channelType);
             showChannels[rowNum].ChannelName = channelName;
+        }
+
+        public async Task SetRouteNoAsync(int outPort, MatrixChannel mcInput)
+        {
+            MatrixChannel mcOutput = GetOriChannel(outPort, OUTPUT);
+            await SetRouteNoAsync(mcInput, mcOutput);
         }
 
         public async Task SetRouteNoAsync(MatrixChannel mcInput, MatrixChannel mcOutput)
@@ -133,42 +167,12 @@ namespace TMCS_PRJ
             if (await GetStateAsync())
             {
                 mcOutput.RouteNo = mcInput.Port;
-                await ChangeRouteNoToMatrixAsync(mcOutput.RouteNo, mcOutput.Port);
+                await SetRouteNoToMatrixAsync(mcOutput.RouteNo, mcOutput.Port);
             }
-        }
-        #endregion
 
-        #region 통신관련 Methods 
-
-        public async Task StartConnectAsync()
-        {
-            await _connectInfo.StartConnectAsync();
+            Debug.WriteLine("출력 : " + mcOutput.Port + " / 입력 : " + mcInput.Port);
         }
 
-        public void DisConnect()
-        {
-            _connectInfo.DisConnect();
-        }
-
-        public Task<bool> GetStateAsync()
-        {
-            return _connectInfo.GetState();
-        }
-
-        public async Task SendMsgAsync(string msg)
-        {
-            await _connectInfo.SendMsgAsync(msg);
-        }
-
-        private async Task ChangeRouteNoToMatrixAsync(int inputPort, int OutputPort)
-        {
-            await _connectInfo.ChangeRouteNoToMatrixAsync(inputPort, OutputPort);
-        }
-
-        #endregion
-
-
-        #region Private Methods
 
         /// <summary>
         /// 채널정보 불러오기
@@ -185,8 +189,8 @@ namespace TMCS_PRJ
                 connectChecked++;
             }
 
-            if(_connectionString == null)
-            {                
+            if (_connectionString == null)
+            {
                 return null;
             }
 
@@ -198,13 +202,8 @@ namespace TMCS_PRJ
                 //channel.MatrixChannelValueChanged += Channel_MatrixChannelValueChanged;
                 mc.Add(channel);
             }
-            
-
             return mc;
         }
-
-        //--------------------------------------테스트중인 메서드----------------------------------
-
 
         /// <summary>
         /// DB로부터 채널정보 개별 불러오기 
@@ -282,8 +281,34 @@ namespace TMCS_PRJ
 
         #endregion
 
+        #region 통신관련 Methods 
 
+        public async Task StartConnectAsync()
+        {
+            await _connectInfo.StartConnectAsync();
+        }
 
+        public void DisConnect()
+        {
+            _connectInfo.DisConnect();
+        }
+
+        public Task<bool> GetStateAsync()
+        {
+            return _connectInfo.GetState();
+        }
+
+        public async Task SendMsgAsync(string msg)
+        {
+            await _connectInfo.SendMsgAsync(msg);
+        }
+
+        private async Task SetRouteNoToMatrixAsync(int inputPort, int OutputPort)
+        {
+            await _connectInfo.ChangeRouteNoToMatrixAsync(inputPort, OutputPort);
+        }
+
+        #endregion
 
     }
     // 매트릭스 통신관련 인터페이스.... 추후 추가될수도 있음

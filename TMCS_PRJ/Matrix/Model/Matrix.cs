@@ -58,6 +58,7 @@ namespace TMCS_PRJ
         }
         #endregion
 
+
         private void ChangedValue()
         {
             MatrixChannelValueChanged?.Invoke(this, EventArgs.Empty);
@@ -67,16 +68,14 @@ namespace TMCS_PRJ
     public class Matrix
     {
         #region Properties
-        private string input = GlobalSetting.ChannelType.INPUT.ToString();
-        private string output = GlobalSetting.ChannelType.OUTPUT.ToString();
+        private string INPUT = GlobalSetting.ChannelType.INPUT.ToString();
+        private string OUTPUT = GlobalSetting.ChannelType.OUTPUT.ToString();
 
         private int _inputChannelPortCount;
         private int _outputChannelPortCount;
         private List<MatrixChannel> _inputChannels;
         private List<MatrixChannel> _outputChannels;
 
-        public int InputChannelCount { get => _inputChannelPortCount; }
-        public int OutputChannelCount { get => _outputChannelPortCount; }
         public List<MatrixChannel> InputChannel { get => _inputChannels; set => _inputChannels = value; }
         public List<MatrixChannel> OutputChannel { get => _outputChannels; set => _outputChannels = value; }
         #endregion
@@ -91,11 +90,10 @@ namespace TMCS_PRJ
         }
         #endregion
 
-        #region Public Methods
         public int getChannelPortCount(string channelType)
         {
-            if(channelType == input) return _inputChannelPortCount;
-            if(channelType == output) return _outputChannelPortCount;
+            if(channelType == INPUT) return _inputChannelPortCount;
+            if(channelType == OUTPUT) return _outputChannelPortCount;
 
             return 0;
         }
@@ -107,10 +105,6 @@ namespace TMCS_PRJ
         {
             return _outputChannelPortCount;
         }
-        #endregion
 
-        #region Private Methods
-
-        #endregion
     }
 }
