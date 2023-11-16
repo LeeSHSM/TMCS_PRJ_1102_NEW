@@ -10,7 +10,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using static System.Runtime.InteropServices.JavaScript.JSType;
-using static TMCS_PRJ.GlobalSetting;
+using LshGlobalSetting;
 
 namespace TMCS_PRJ
 {
@@ -109,7 +109,7 @@ namespace TMCS_PRJ
             return channels;
         }
 
-        private MatrixChannel GetOriChannel(int port, string channelType)
+        public MatrixChannel GetOriChannel(int port, string channelType)
         {
             MatrixChannel mc = new MatrixChannel();
 
@@ -126,7 +126,7 @@ namespace TMCS_PRJ
             return mc;
         }
 
-        private List<MatrixChannel> GetOriChannelList(string channelType)
+        public List<MatrixChannel> GetOriChannelList(string channelType)
         {
             List<MatrixChannel> channels = new List<MatrixChannel>();
             if (channelType == INPUT)

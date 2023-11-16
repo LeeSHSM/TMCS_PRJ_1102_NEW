@@ -1,5 +1,7 @@
 ﻿using System.Diagnostics;
+using System.Runtime.Intrinsics.Arm;
 using LshDlp;
+using LshGlobalSetting;
 
 
 namespace TMCS_PRJ
@@ -19,7 +21,7 @@ namespace TMCS_PRJ
             _progress = progress;
             _view = view;
             
-            _matrixPresenter = new MatrixPresenter(8, 8,progress);            
+            _matrixPresenter = new MatrixPresenter(8, 8, progress);            
 
             //나중에 ip관련정보, DB접속정보들은 xml파일로 분리하자...그래야 컴파일 없이 외부에서 수정가능할듯?
             _matrixPresenter.SetConnectInfo(new RTVDMMatrixToIP(GlobalSetting.MATRIX_IP,GlobalSetting.MATRIX_PORT, progress));
@@ -47,6 +49,19 @@ namespace TMCS_PRJ
             _matrixPresenter.DragEnded += _matrixPresenter_DragEnded;
 
             _dlpPresenter.DlpRouteChanged += _dlpPresenter_DlpRouteChanged;
+            _dlpPresenter.DlpMatrixInfoRequest += _dlpPresenter_DlpMatrixInfoRequest;
+            _dlpPresenter.DlpClick += _dlpPresenter_DlpClick;
+        }
+
+
+
+        private List<MatrixChannel> _dlpPresenter_DlpMatrixInfoRequest()
+        {
+            List<MatrixChannel> mcs = new List<MatrixChannel>();
+
+            mcs = _matrixPresenter.GetInputList();
+
+            return mcs;
         }
 
         private async void _dlpPresenter_DlpRouteChanged(int dlpPort, MatrixChannel mc)
@@ -54,16 +69,33 @@ namespace TMCS_PRJ
             await _matrixPresenter.SetMatrixRouteAsync(dlpPort, mc);
         }
 
+        private void _dlpPresenter_DlpClick(object? sender, EventArgs e)
+        {
+            if(_selectedMatrixChannel == null)  
+            {
+                return;
+            }
+            Dlp dlp = sender as Dlp;
+
+            _dlpPresenter.SetMatrixChannelInDlp(dlp.DlpId, _selectedMatrixChannel);
+            _matrixPresenter.ClearSelectedMatrixChannel();
+        }
+
         private void _matrixPresenter_DragEnded(object? sender, EventArgs e)
         {
-            MouseEventArgs mouse = e as MouseEventArgs;
+            if (_view.GetCollidedControl == null)
+            {
+                _matrixPresenter.ClearSelectedMatrixChannel();
+                return;
+            }
+
+            Control useControl = FindParentControl(_view.GetCollidedControl, typeof(Dlp));
+            
 
             Form mainForm = _view.GetMainForm();
             Point formCoordinates = mainForm.PointToClient(Cursor.Position);
 
-            Debug.WriteLine(formCoordinates);
-
-            Control useControl = FindParentControl(_view.GetCollidedControl, typeof(Dlp));
+            Debug.WriteLine(formCoordinates);            
 
             if(useControl != null)
             {
@@ -85,6 +117,7 @@ namespace TMCS_PRJ
                     }
                 }
             }
+            _matrixPresenter.ClearSelectedMatrixChannel();
         }
 
         private Control FindParentControl(Control control, Type senderType)
@@ -120,6 +153,7 @@ namespace TMCS_PRJ
         public async Task InitializeAsync()
         {
             await _matrixPresenter.InitializeAsync();
+            await _dlpPresenter.InitializeAsync();
 
             _matrixPresenter.StartConnectionAsync(); //서버와 통신... 중요하긴한데 일단 백그라운드 실행
         }
@@ -141,6 +175,7 @@ namespace TMCS_PRJ
         private void _view_FormClose(object? sender, EventArgs e)
         {
             _matrixPresenter.SaveMatrixInfo();
+            _dlpPresenter.SaveDlpFrameInfo();
         }
 
         private void _view_btnOutputClick(object? sender, EventArgs e)

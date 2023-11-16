@@ -25,7 +25,19 @@ namespace LshDlp
 
         internal int RowCount { get => _rowCount; set => _rowCount = value; }
         internal int ColCount { get => _colCount; set => _colCount = value; }
-        internal List<Dlp> Dlps { get => _dlps; set => _dlps = value; }
+        internal List<Dlp> Dlps 
+        { 
+            get => _dlps;
+            set 
+            { 
+                _dlps = value;
+                foreach(var dlp in _dlps)
+                {
+                    //dlp.InputChannelChanged += Dlp_InputChannelChanged;
+                    //dlp.InputChannelValueChanged += Dlp_InputChannelValueChanged;
+                }
+            }
+        }
 
         private void InitializeDlp()
         {

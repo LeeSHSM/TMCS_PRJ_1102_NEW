@@ -1,12 +1,16 @@
 ﻿
 
+using System.Diagnostics;
+
 namespace LshDlp
 {
     internal partial class DlpFrame : UserControl, DlpFrameView
     {
-        internal event EventHandler DlpClick;
+        public event EventHandler DlpClick;
+
         internal TableLayoutPanel _tlpDlpFrame;
-        private DlpStruct _dlpStruct;        
+        private DlpStruct _dlpStruct;
+
 
         internal DlpFrame(DlpStruct dlpStruct)
         {
@@ -17,6 +21,7 @@ namespace LshDlp
             _dlpStruct = dlpStruct;
             Initialize();
         }
+
 
         private void Initialize()
         {
@@ -40,7 +45,6 @@ namespace LshDlp
             foreach (Dlp dlp in _dlpStruct.Dlps)
             {
                 dlp.Text = dlp.InputChannel.ChannelName;
-                dlp.MatrixPort = 0;
                 dlp.Dock = DockStyle.Fill;
                 dlp.Margin = new Padding(0, 0, 0, 0);
                 dlp.BorderStyle = BorderStyle.FixedSingle;
@@ -55,29 +59,44 @@ namespace LshDlp
 
         void DlpFrameView.SetDlpFrame(string channelType)
         {
-            if(channelType == "INPUT")
+            if (channelType == "INPUT")
             {
                 foreach (Dlp dlp in _dlpStruct.Dlps)
                 {
                     UpdateDlpText(dlp, dlp.InputChannel.ChannelName);
                 }
             }
-            else if(channelType == "OUTPUT")
+            else if (channelType == "OUTPUT")
             {
-                foreach(Dlp dlp in _dlpStruct.Dlps)
+                foreach (Dlp dlp in _dlpStruct.Dlps)
                 {
-                    UpdateDlpText(dlp, "매트릭스 출력포트 : "+dlp.MatrixPort.ToString());
+                    UpdateDlpText(dlp, "매트릭스 출력포트 : " + dlp.MatrixPort.ToString());
                 }
             }
         }
 
+        void DlpFrameView.UpdateDlpTest()
+        {
+            foreach (Dlp dlp in _dlpStruct.Dlps)
+            {
+                if (InvokeRequired)
+                {
+                    dlp.Invoke(new Action(() => dlp.Text = dlp.InputChannel.ChannelName));
+                }
+                else
+                {
+                    // 스레드가 안전하므로 UI 업데이트 실행
+                    dlp.Text = dlp.InputChannel.ChannelName;
+                }
+            }
+        }
 
         private void UpdateDlpText(Dlp dlp, string dlpName)
         {
             if (InvokeRequired)
             {
                 // 라벨 컨트롤의 생성 스레드에 실행을 위임
-                dlp.Invoke(new Action(() => UpdateDlpText(dlp,dlpName)));
+                dlp.Invoke(new Action(() => UpdateDlpText(dlp, dlpName)));
             }
             else
             {
@@ -168,100 +187,33 @@ namespace LshDlp
 
         private void mouseUp(object? sender, MouseEventArgs e)
         {
-            _startPoint = null;
-            if (_isMore10)
+            if (_startPoint.HasValue)
             {
-                _tlpDlpFrame.Visible = true;
-                _picDragBox.Dispose();                
-                _isMore10 = false;
+                _startPoint = null;
+                if (_isMore10)
+                {
+                    _tlpDlpFrame.Visible = true;
+                    _picDragBox.Dispose();
+                    _isMore10 = false;
+                }
+
+                if (e.Button == MouseButtons.Right)
+                {
+                    cms.Show(MousePosition);
+                }
+                else if (e.Button == MouseButtons.Left)
+                {
+                    DlpClick?.Invoke(sender, e);
+                }
+            }
+            else if (!_startPoint.HasValue)
+            {
+                if (e.Button == MouseButtons.Right)
+                {
+                    cms.Show(MousePosition);
+                }
             }
         }
-
-        //private void mouseUp(object sender, EventArgs e)
-        //{
-        //    if (_dragPanel != null)
-        //    {
-        //        // 비교할 판넬 설정
-        //        Rectangle panelBounds = _dragPanel.Bounds;
-
-        //        // 현재 패널 안에 있는 모든 라벨을 가져옵니다.
-        //        List<DLP> dLPs = DLPCover.Controls.OfType<DLP>().ToList();
-        //        List<DLP> overlappingDlps = new List<DLP>();
-
-        //        // 각 라벨에 대해 패널과 겹치는지 확인합니다.
-        //        foreach (DLP dLP in dLPs)
-        //        {
-        //            // 라벨의 Bounds를 가져옵니다.
-        //            Rectangle labelBounds = dLP.Bounds;
-
-        //            // 라벨이 패널과 겹치는지 확인
-        //            if (panelBounds.IntersectsWith(labelBounds))
-        //            {
-        //                overlappingDlps.Add(dLP);
-        //            }
-        //        }
-
-        //        if (overlappingDlps.Count > 1 && !overlappingDlps[0].DragChecked)
-        //        {
-        //            //클릭시점을 기준으로 베이스 될 dlp선택
-        //            var baseDlp = overlappingDlps[0];
-        //            baseDlp.DragChecked = true;
-        //            baseDlp.BackColor = Color.White;
-
-        //            foreach (DLP dlp in overlappingDlps.Skip(1))
-        //            {
-        //                // 그룹 내의 첫 번째 컨트롤을 기준으로 합니다.
-        //                dlp.Visible = false;
-        //                dlp.Dock = DockStyle.None;
-        //                if (baseDlp.Row == dlp.Row)
-        //                {
-        //                    DLPCover.SetColumnSpan(baseDlp, DLPCover.GetColumnSpan(baseDlp) + 1);
-        //                }
-        //                else if (baseDlp.Col == dlp.Col)
-        //                {
-        //                    DLPCover.SetRowSpan(baseDlp, DLPCover.GetRowSpan(baseDlp) + 1);
-        //                }
-        //            }
-        //        }
-        //    }
-        //    else
-        //    {
-        //        DlpClick(sender, e);
-        //    }
-
-        //    // 드래그박스 관련 초기화
-        //    if (_dragPictureBox != null)
-        //    {
-        //        _dragPictureBox.Dock = DockStyle.None;
-        //        _dragPictureBox.Visible = false;
-        //        DLPCover.Visible = true;
-        //        DLPCover.Dock = DockStyle.Fill;
-        //        _dragPictureBox.Image.Dispose();
-        //        _dragPictureBox.Dispose();
-        //        _dragPictureBox = null;
-        //        _dragPanel = null;
-        //    }
-        //    _startPoint = null;
-        //}
-
-
-        //public void RefreshDlp()
-        //{
-        //    foreach (DLP dlp in DLPCover.Controls)
-        //    {
-        //        DLPCover.SetRowSpan(dlp, 1);
-        //        DLPCover.SetColumnSpan(dlp, 1);
-        //        DLPCover.SetCellPosition(dlp, new TableLayoutPanelCellPosition(dlp.Col, dlp.Row));
-        //        dlp.Dock = DockStyle.Fill;
-        //        dlp.BackColor = Color.Red;
-        //        dlp.Visible = true;
-        //        dlp.DragChecked = false;
-        //    }
-        //}
-
-
-
-
 
         /// <summary>
         /// 두 포인트 사이의 거리를 구하는 함수
@@ -273,6 +225,56 @@ namespace LshDlp
             return Math.Sqrt(dx * dx + dy * dy);
         }
 
+        private void 출력포트확인ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SetOutput();
+        }
+        Button lbl2;
+        private void SetOutput()
+        {
+            
+            foreach (Dlp dlp in _dlpStruct.Dlps)
+            {
+                dlp.BackColor = Color.White;
+                dlp.Text = "출력포트 : " + dlp.MatrixPort.ToString();                
+            }
+            lbl2 = new Button();
+            this.Controls.Add(lbl2);
+            lbl2.BringToFront();
+            lbl2.BackColor = Color.Black;
+            lbl2.AutoSize = false;
+            lbl2.ForeColor = Color.White;
+            lbl2.Size = new Size(100, 40);
+            lbl2.Location = new Point(
+                (this.ClientSize.Width - lbl2.Width) / 2,
+                (this.ClientSize.Height - lbl2.Height) / 2
+            );
+            lbl2.Text = "복 귀";
+            lbl2.MouseDown += Lbl_MouseDown;
+        }
 
+        private void Lbl_MouseDown(object? sender, MouseEventArgs e)
+        {
+            lbl2.Dispose();
+            foreach (Dlp dlp in _dlpStruct.Dlps)
+            {
+                if (InvokeRequired)
+                {
+                    dlp.Invoke(new Action(() => dlp.Text = dlp.InputChannel.ChannelName));
+                    dlp.BackColor = Color.Red;
+                }
+                else
+                {
+                    // 스레드가 안전하므로 UI 업데이트 실행
+                    dlp.Text = dlp.InputChannel.ChannelName;
+                    dlp.BackColor = Color.Red;
+                }                
+            }            
+        }
+
+        private void 전체출력포트변경ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }

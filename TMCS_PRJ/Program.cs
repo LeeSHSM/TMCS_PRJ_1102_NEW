@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Windows.Forms;
+using LshGlobalSetting;
 
 namespace TMCS_PRJ
 {

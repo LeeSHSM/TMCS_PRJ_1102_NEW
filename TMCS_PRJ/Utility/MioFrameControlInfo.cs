@@ -4,13 +4,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TMCS_PRJ
+namespace LshGlobalSetting
 {
-    public class UserControlInfo
+    public class MioFrameControlInfo
     {
         public string ParentId { get; set; }
         public Point Location { get; set; }
         public Size Size { get; set; }
         public DockStyle DockStyle { get; set; }
+        public int inputPort {  get; set; }
+        public int outputPort { get; set; }
     }
 }

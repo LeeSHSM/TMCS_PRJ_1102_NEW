@@ -10,6 +10,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using LshGlobalSetting;
 
 namespace TMCS_PRJ
 {
@@ -24,7 +25,7 @@ namespace TMCS_PRJ
         private List<MatrixInOutSelectFrameView> _mioFrames = new List<MatrixInOutSelectFrameView>();
 
         private MatrixManager _matrixManager;
-        private MatrixFrameTotalManager _matrixFrameTotalManager;
+        private MatrixFrameFileManager _matrixFrameTotalManager;
 
         private MatrixChannel? _mappingChannel;
         IProgress<ProgressReport> _progress;
@@ -37,7 +38,7 @@ namespace TMCS_PRJ
             _progress = progress;
             _mFrame = new MatrixFrame();
             _matrixManager = new MatrixManager(new Matrix(inputCount, outputCount), progress);
-            _matrixFrameTotalManager = new MatrixFrameTotalManager();
+            _matrixFrameTotalManager = new MatrixFrameFileManager();
 
             InitializeEvent();            
         }
@@ -144,6 +145,11 @@ namespace TMCS_PRJ
             _mFrame.SetMatrixFrameChannelList(dt);            
         }
 
+        public void ClearSelectedMatrixChannel()
+        {
+            _mFrame.ClearClickedCell();
+        }
+
         //------------------------------------------MioFrame----------------------------------------------------------
 
         // mioFrame 아웃채널 변경
@@ -168,7 +174,7 @@ namespace TMCS_PRJ
                 if (mc == mioFrame)
                 {
                     mc.MatrixChannelOutput = _mappingChannel;
-                    _mFrame.ClearClickedCell();
+                    ClearSelectedMatrixChannel();
                 }
             }
         }
@@ -190,8 +196,7 @@ namespace TMCS_PRJ
             {
                 if (mc == mioFrame)
                 {
-                    mc.MatrixChannelInput = _mappingChannel;
-                    _mFrame.ClearClickedCell();
+                    mc.MatrixChannelInput = _mappingChannel;                    
                 }
             }
         }
@@ -206,6 +211,14 @@ namespace TMCS_PRJ
         public async Task SetMatrixRouteAsync(int outPort, MatrixChannel mc )
         {
             await _matrixManager.SetRouteNoAsync(outPort, mc);
+        }
+
+        public List<MatrixChannel> GetInputList()
+        {
+            List<MatrixChannel> mcs = _matrixManager.GetOriChannelList("INPUT");    
+
+            return mcs;
+
         }
 
 
@@ -258,7 +271,8 @@ namespace TMCS_PRJ
             else if(_mappingChannel.ChannelType == "OUTPUT")
             {
                 SetMatrixOutputInMioFrame(MioFrame);
-            }            
+            }
+            ClearSelectedMatrixChannel();
         }
 
 
@@ -326,11 +340,13 @@ namespace TMCS_PRJ
                 {
                     SetMatrixOutputInMioFrame(largestIntersectingFrame);
                 }
+                ClearSelectedMatrixChannel();
             }
             else
             {
                 DragEnded?.Invoke(sender, e);
             }
+            
         }
 
         //프레임 셀 클릭

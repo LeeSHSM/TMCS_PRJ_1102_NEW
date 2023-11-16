@@ -14,6 +14,7 @@ namespace LshDlp
         public event EventHandler? DlpInputChannelValueChanged;
 
         private DlpStruct _dlpStruct;
+
         internal DlpManager(DlpStruct dlpStruct)
         {
             _dlpStruct = dlpStruct;
@@ -68,6 +69,27 @@ namespace LshDlp
         {
             Dlp dlp = GetDlp(dlpId);
             dlp.InputChannel = mcInput;
+        }
+
+        internal void MatchingDlpInputListWithMatrix(List<MatrixChannel> mcs, List<DlpFrameControlInfo> dlps)
+        {
+            foreach (DlpFrameControlInfo dlp in dlps)
+            {
+                Dlp matchingDlp = _dlpStruct.Dlps.FirstOrDefault(x => x.DlpId == dlp.DlpId);
+                matchingDlp.TileMode = dlp.TileMode;
+                matchingDlp.Row = dlp.Row;
+                matchingDlp.Col = dlp.Col;
+                matchingDlp.MatrixPort = dlp.MatrixPort;  
+                
+                foreach (MatrixChannel mcInput in mcs)
+                {
+                    if (dlp.InputChannelPort == mcInput.Port)
+                    {
+                        matchingDlp.InputChannel = mcInput;
+                        break;
+                    }
+                }
+            }
         }
 
 

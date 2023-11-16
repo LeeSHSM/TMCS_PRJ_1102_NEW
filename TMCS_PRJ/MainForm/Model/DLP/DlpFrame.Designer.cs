@@ -28,8 +28,13 @@
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
             picDlpFrame = new PictureBox();
+            cms = new ContextMenuStrip(components);
+            출력포트확인ToolStripMenuItem = new ToolStripMenuItem();
+            출력포트변경ToolStripMenuItem = new ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)picDlpFrame).BeginInit();
+            cms.SuspendLayout();
             SuspendLayout();
             // 
             // picDlpFrame
@@ -42,6 +47,25 @@
             picDlpFrame.TabIndex = 0;
             picDlpFrame.TabStop = false;
             // 
+            // cms
+            // 
+            cms.Items.AddRange(new ToolStripItem[] { 출력포트확인ToolStripMenuItem, 출력포트변경ToolStripMenuItem });
+            cms.Name = "cms";
+            cms.Size = new Size(181, 70);
+            // 
+            // 출력포트확인ToolStripMenuItem
+            // 
+            출력포트확인ToolStripMenuItem.Name = "출력포트확인ToolStripMenuItem";
+            출력포트확인ToolStripMenuItem.Size = new Size(180, 22);
+            출력포트확인ToolStripMenuItem.Text = "출력포트 확인하기";
+            출력포트확인ToolStripMenuItem.Click += 출력포트확인ToolStripMenuItem_Click;
+            // 
+            // 출력포트변경ToolStripMenuItem1
+            // 
+            출력포트변경ToolStripMenuItem.Name = "출력포트변경ToolStripMenuItem";
+            출력포트변경ToolStripMenuItem.Size = new Size(180, 22);
+            출력포트변경ToolStripMenuItem.Text = "출력포트 변경";
+            // 
             // DlpFrame
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -49,11 +73,15 @@
             Controls.Add(picDlpFrame);
             Name = "DlpFrame";
             ((System.ComponentModel.ISupportInitialize)picDlpFrame).EndInit();
+            cms.ResumeLayout(false);
             ResumeLayout(false);
         }
 
         #endregion
 
         private PictureBox picDlpFrame;
+        private ContextMenuStrip cms;
+        private ToolStripMenuItem 출력포트확인ToolStripMenuItem;
+        private ToolStripMenuItem 출력포트변경ToolStripMenuItem;
     }
 }

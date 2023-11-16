@@ -7,10 +7,11 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml.Serialization;
+using LshGlobalSetting;
 
 namespace TMCS_PRJ
 {
-    public class MatrixFrameTotalManager
+    public class MatrixFrameFileManager
     {
         private string _connectionString;
 
@@ -18,10 +19,10 @@ namespace TMCS_PRJ
 
         public void SaveMatrixInOutFramesInfo(List<MatrixInOutSelectFrameView> MioFrames)
         {
-            List<MatrixInOutFrameUserControlInfo> mioFramesInfo = new List<MatrixInOutFrameUserControlInfo>();
+            List<MioFrameControlInfo> mioFramesInfo = new List<MioFrameControlInfo>();
             foreach (MatrixInOutSelectFrame mioFrame in MioFrames)
             {
-                MatrixInOutFrameUserControlInfo mioFrameInfo = new MatrixInOutFrameUserControlInfo();
+                MioFrameControlInfo mioFrameInfo = new MioFrameControlInfo();
                 mioFrameInfo.ParentId = mioFrame.Parent.Name;
                 mioFrameInfo.DockStyle = mioFrame.Dock;
                 mioFrameInfo.Location = mioFrame.Location;
@@ -39,9 +40,9 @@ namespace TMCS_PRJ
             SaveUserControlsToXml(mioFramesInfo, filePath);
         }
 
-        private void SaveUserControlsToXml(List<MatrixInOutFrameUserControlInfo> controls, string filePath)
+        private void SaveUserControlsToXml(List<MioFrameControlInfo> controls, string filePath)
         {
-            var serializer = new XmlSerializer(typeof(List<MatrixInOutFrameUserControlInfo>));
+            var serializer = new XmlSerializer(typeof(List<MioFrameControlInfo>));
             using (var stream = new FileStream(filePath, FileMode.Create))
             {
                 serializer.Serialize(stream, controls);
@@ -61,14 +62,14 @@ namespace TMCS_PRJ
             // XML 파일이 존재하는지 확인
             if (File.Exists(filePath))
             {
-                XmlSerializer serializer = new XmlSerializer(typeof(List<MatrixInOutFrameUserControlInfo>));
+                XmlSerializer serializer = new XmlSerializer(typeof(List<MioFrameControlInfo>));
 
                 // 파일을 비동기 모드로 열기
                 using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, true))
                 {
                     // XML 데이터를 비동기적으로 List<MatrixInOutFrameUserControlInfo> 타입으로 역직렬화
-                    List<MatrixInOutFrameUserControlInfo> mioFramesInfo =
-                        (List<MatrixInOutFrameUserControlInfo>)await Task.Run(() => serializer.Deserialize(fs));
+                    List<MioFrameControlInfo> mioFramesInfo =
+                        (List<MioFrameControlInfo>)await Task.Run(() => serializer.Deserialize(fs));
 
                     // MatrixInOutFrameUserControlInfo 객체들을 MatrixInOutSelectFrameView 객체로 변환
                     foreach (var mioFrameInfo in mioFramesInfo)

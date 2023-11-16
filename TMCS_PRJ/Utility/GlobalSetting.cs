@@ -6,7 +6,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TMCS_PRJ
+namespace LshGlobalSetting
 {
     public class GlobalSetting
     {
@@ -59,7 +59,7 @@ namespace TMCS_PRJ
         {
             lock (ojb)
             {
-                string logMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} [{logLevel}] {message}";
+                string logMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss.ffff} [{logLevel}] {message}";
                 File.AppendAllText(logFilePath, logMessage + Environment.NewLine);
             }
         }

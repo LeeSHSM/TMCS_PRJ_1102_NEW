@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿
 using TMCS_PRJ;
-using static TMCS_PRJ.GlobalSetting;
+using LshGlobalSetting;
+using System.Linq.Expressions;
 
 namespace LshDlp
 {
@@ -14,25 +10,48 @@ namespace LshDlp
         public delegate void delDlpRouteChanged(int dlpMatrixPort, MatrixChannel mc);
         public event delDlpRouteChanged? DlpRouteChanged;
 
+        public delegate List<MatrixChannel> delMatrixInfoRequest();
+        public event delMatrixInfoRequest? DlpMatrixInfoRequest;
+
+        public event EventHandler DlpClick;
+
         IProgress<ProgressReport> _progress;
 
         private DlpFrameView _dlpFrame;
         private DlpManager _dlpManager;
+        private DlpFrameFileManager _dlpFrameFileManager;
 
         private string _dlpChannelType;
 
         public DlpPresenter(int row, int col, IProgress<ProgressReport> progress) 
         {            
             _dlpManager = new DlpManager(new DlpStruct(row, col));
+            _dlpFrameFileManager = new DlpFrameFileManager();
             _dlpFrame = new DlpFrame(_dlpManager.GetDlpStruct());
+
             _progress = progress;
             InitializeDlpFrame();
             InitializeEvent();
+        }
 
-            for(int i = 1; i < 9; i++)
+        public async Task InitializeAsync()
+        {
+            List<DlpFrameControlInfo> dlpsInfo  = await _dlpFrameFileManager.LoadDlpsInfoAsync();
+            List<MatrixChannel> matrixChannels = DlpMatrixInfoRequest?.Invoke();            
+
+            if (dlpsInfo.Count > 0)
             {
-                _dlpManager.SetDlpMatrixPort(i, i);
+                _dlpManager.MatchingDlpInputListWithMatrix(matrixChannels,dlpsInfo);
             }
+            else
+            {
+                for (int i = 1; i < 9; i++)
+                {
+                    _dlpManager.SetDlpMatrixPort(i, i);
+                }
+            }
+            _dlpFrame.UpdateDlpTest();
+            _dlpManager.DlpInputChannelChanged += _dlpManager_DlpInputChannelChanged;
 
         }
 
@@ -43,8 +62,9 @@ namespace LshDlp
 
         private void InitializeEvent()
         {
-            _dlpManager.DlpInputChannelChanged += _dlpManager_DlpInputChannelChanged;
+            //_dlpManager.DlpInputChannelChanged += _dlpManager_DlpInputChannelChanged;
             _dlpManager.DlpInputChannelValueChanged += _dlpManager_DlpInputChannelValueChanged;
+            _dlpFrame.DlpClick += _dlpFrame_DlpClick;
         }
 
         public void SetDlpChannelType(string channelType)
@@ -63,6 +83,17 @@ namespace LshDlp
         public void SetMatrixChannelInDlp(int dlpId, MatrixChannel mcInput)
         {
             _dlpManager.SetDlpInputChannel(dlpId, mcInput);          
+        }
+
+        public void SaveDlpFrameInfo()
+        {
+            _dlpFrameFileManager.SaveDlpsInfo(_dlpManager.GetDlpStruct());
+        }
+
+        private void _dlpFrame_DlpClick(object? sender, EventArgs e)
+        {
+            Dlp dlp = sender as Dlp;
+            DlpClick?.Invoke(dlp, EventArgs.Empty);
         }
 
         private void _dlpManager_DlpInputChannelChanged(object? sender, EventArgs e)
