@@ -227,18 +227,12 @@ namespace LshDlp
 
         private void 출력포트확인ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            SetOutput();
-        }
-        Button lbl2;
-        private void SetOutput()
-        {
-            
             foreach (Dlp dlp in _dlpStruct.Dlps)
             {
                 dlp.BackColor = Color.White;
-                dlp.Text = "출력포트 : " + dlp.MatrixPort.ToString();                
+                dlp.Text = "출력포트 : " + dlp.MatrixPort.ToString();
             }
-            lbl2 = new Button();
+            Button lbl2 = new Button();
             this.Controls.Add(lbl2);
             lbl2.BringToFront();
             lbl2.BackColor = Color.Black;
@@ -250,27 +244,27 @@ namespace LshDlp
                 (this.ClientSize.Height - lbl2.Height) / 2
             );
             lbl2.Text = "복 귀";
-            lbl2.MouseDown += Lbl_MouseDown;
-        }
 
-        private void Lbl_MouseDown(object? sender, MouseEventArgs e)
-        {
-            lbl2.Dispose();
-            foreach (Dlp dlp in _dlpStruct.Dlps)
+            lbl2.MouseDown += (sender, e) =>
             {
-                if (InvokeRequired)
+                lbl2.Dispose();
+                foreach (Dlp dlp in _dlpStruct.Dlps)
                 {
-                    dlp.Invoke(new Action(() => dlp.Text = dlp.InputChannel.ChannelName));
-                    dlp.BackColor = Color.Red;
+                    if (InvokeRequired)
+                    {
+                        dlp.Invoke(new Action(() => dlp.Text = dlp.InputChannel.ChannelName));
+                        dlp.BackColor = Color.Red;
+                    }
+                    else
+                    {
+                        // 스레드가 안전하므로 UI 업데이트 실행
+                        dlp.Text = dlp.InputChannel.ChannelName;
+                        dlp.BackColor = Color.Red;
+                    }
                 }
-                else
-                {
-                    // 스레드가 안전하므로 UI 업데이트 실행
-                    dlp.Text = dlp.InputChannel.ChannelName;
-                    dlp.BackColor = Color.Red;
-                }                
-            }            
-        }
+            };
+        }                
+
 
         private void 전체출력포트변경ToolStripMenuItem_Click(object sender, EventArgs e)
         {

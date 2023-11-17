@@ -81,7 +81,6 @@ namespace TMCS_PRJ
         #endregion
 
 
-
         #region 매트릭스 채널정보 받아오기 / 세팅하기 
 
         public MatrixChannel GetChannel(int rowNum, string channelType)

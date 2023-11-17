@@ -57,8 +57,8 @@ namespace TMCS_PRJ
             get { return _matrixChannelInput; }
             set
             {                
-                if (_matrixChannelInput != value)
-                {
+                //if (_matrixChannelInput != value)
+                //{
                     if (_matrixChannelInput != null)
                     {
                         _matrixChannelInput.MatrixChannelValueChanged -= _matrixChannelInput_MatrixChannelValueChanged;
@@ -71,7 +71,7 @@ namespace TMCS_PRJ
                     {
                         RouteNoChange?.Invoke(_matrixChannelInput, _matrixChannelOutput);
                     }                    
-                }
+                //}
             }
         }
 

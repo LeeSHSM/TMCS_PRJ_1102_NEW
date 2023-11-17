@@ -269,12 +269,38 @@ namespace TMCS_PRJ
             FormClose?.Invoke(this, e);
         }
 
+        private void bbbb_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void Camera_Load(object sender, EventArgs e)
+        {
+            cameraLoad?.Invoke(sender, e);
+        }
+
+
+        private void Camera_MouseDown(object sender, MouseEventArgs e)
+        {
+            test?.Invoke(sender, e);
+        }
+
+        private void carmeraControler_Load(object sender, EventArgs e)
+        {
+            CameraControlerLoad?.Invoke(sender, e);
+        }
+
         public event EventHandler FormLoad;
         public event EventHandler FormClose;
         public event EventHandler btnMatrixInputClick;
         public event EventHandler btnMatrixOutputClick;
         public event EventHandler btnAddMioFrameClick;
         public event EventHandler EquipmentStatusClick;
+
+        public event EventHandler test;
+
+        public event EventHandler cameraLoad;
+        public event EventHandler CameraControlerLoad;
 
 
         /// <summary>

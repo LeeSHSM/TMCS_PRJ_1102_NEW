@@ -15,6 +15,10 @@ namespace TMCS_PRJ
         event EventHandler btnAddMioFrameClick;
         event EventHandler EquipmentStatusClick;
 
+        event EventHandler test;
+        event EventHandler cameraLoad;
+        event EventHandler CameraControlerLoad;
+
         Form GetMainForm();
 
         Control GetCollidedControl { get; }

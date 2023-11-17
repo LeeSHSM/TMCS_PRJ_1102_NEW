@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Runtime.Intrinsics.Arm;
+using LshCamera;
 using LshDlp;
 using LshGlobalSetting;
 
@@ -14,6 +15,8 @@ namespace TMCS_PRJ
         MatrixChannel? _selectedMatrixChannel;
 
         DlpPresenter _dlpPresenter;
+
+        CameraPresenter _cameraPresenter;
         IProgress<ProgressReport> _progress;
 
         public MainPresenter(MainView view, IProgress<ProgressReport> progress)
@@ -28,6 +31,8 @@ namespace TMCS_PRJ
             _matrixPresenter.SetConnectDBInfo(GlobalSetting.MATRIX_DB);
 
             _dlpPresenter = new DlpPresenter(2,4, progress);
+
+            _cameraPresenter = new CameraPresenter();
 
             InitializeViewEvent();
         }
@@ -44,6 +49,8 @@ namespace TMCS_PRJ
             _view.btnAddMioFrameClick += _view_btnAddMioFrameClick;
             _view.EquipmentStatusClick += _view_EquipmentStatusClick;
 
+            _view.test += _view_test;
+
             _matrixPresenter.MioFrameDelete += _matrixControl_MioFrameDelete;
             _matrixPresenter.MatrixSelectedChanged += _matrixControl_MatrixSelectedChanged;
             _matrixPresenter.DragEnded += _matrixPresenter_DragEnded;
@@ -51,10 +58,30 @@ namespace TMCS_PRJ
             _dlpPresenter.DlpRouteChanged += _dlpPresenter_DlpRouteChanged;
             _dlpPresenter.DlpMatrixInfoRequest += _dlpPresenter_DlpMatrixInfoRequest;
             _dlpPresenter.DlpClick += _dlpPresenter_DlpClick;
+
+            _view.cameraLoad += _view_cameraSet;
+            _view.CameraControlerLoad += _view_CameraControlerLoad;
         }
 
+        private void _view_CameraControlerLoad(object? sender, EventArgs e)
+        {
+            CameraControlerView cameraControler = sender as CameraControlerView;
+            _cameraPresenter.set
+        }
 
+        private void _view_cameraSet(object? sender, EventArgs e)
+        {
+            CameraType camera = sender as CameraType;
+            _cameraPresenter.SetCamera(camera);
+        }
 
+        private void _view_test(object? sender, EventArgs e)
+        {
+            CameraType camera = sender as CameraType;
+            _cameraPresenter.test(camera);
+        }
+
+        //dlp에서 매트릭스정보 요청
         private List<MatrixChannel> _dlpPresenter_DlpMatrixInfoRequest()
         {
             List<MatrixChannel> mcs = new List<MatrixChannel>();
@@ -64,14 +91,16 @@ namespace TMCS_PRJ
             return mcs;
         }
 
+        //dlp에서 dlp라우트 변경이벤트
         private async void _dlpPresenter_DlpRouteChanged(int dlpPort, MatrixChannel mc)
         {
             await _matrixPresenter.SetMatrixRouteAsync(dlpPort, mc);
         }
 
+        //dlp에서 dlp클릭함
         private void _dlpPresenter_DlpClick(object? sender, EventArgs e)
         {
-            if(_selectedMatrixChannel == null)  
+            if(_selectedMatrixChannel == null || _selectedMatrixChannel.ChannelType != "INPUT")  
             {
                 return;
             }
@@ -83,23 +112,19 @@ namespace TMCS_PRJ
 
         private void _matrixPresenter_DragEnded(object? sender, EventArgs e)
         {
-            if (_view.GetCollidedControl == null)
+            if (_view.GetCollidedControl == null || _selectedMatrixChannel == null)
             {
                 _matrixPresenter.ClearSelectedMatrixChannel();
                 return;
             }
-
-            Control useControl = FindParentControl(_view.GetCollidedControl, typeof(Dlp));
-            
-
             Form mainForm = _view.GetMainForm();
             Point formCoordinates = mainForm.PointToClient(Cursor.Position);
 
-            Debug.WriteLine(formCoordinates);            
+            Control dlpParentControl = FindParentControl(_view.GetCollidedControl, typeof(Dlp));   
 
-            if(useControl != null)
+            if(dlpParentControl != null && _selectedMatrixChannel.ChannelType == "INPUT")
             {
-                foreach(Dlp dlp in useControl.Controls)
+                foreach(Dlp dlp in dlpParentControl.Controls)
                 {
                     Point screenCoordinates = dlp.PointToScreen(Point.Empty);
 

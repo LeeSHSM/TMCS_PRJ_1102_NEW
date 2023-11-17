@@ -218,11 +218,7 @@ namespace TMCS_PRJ
             List<MatrixChannel> mcs = _matrixManager.GetOriChannelList("INPUT");    
 
             return mcs;
-
         }
-
-
-
 
         //-------------------------------------------- Matrix Manager 통신 메서드 --------------------------------------------
 

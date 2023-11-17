@@ -62,7 +62,6 @@ namespace LshDlp
 
         private void InitializeEvent()
         {
-            //_dlpManager.DlpInputChannelChanged += _dlpManager_DlpInputChannelChanged;
             _dlpManager.DlpInputChannelValueChanged += _dlpManager_DlpInputChannelValueChanged;
             _dlpFrame.DlpClick += _dlpFrame_DlpClick;
         }
