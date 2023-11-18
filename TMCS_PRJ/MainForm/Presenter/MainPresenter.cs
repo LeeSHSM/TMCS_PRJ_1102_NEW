@@ -3,6 +3,7 @@ using System.Runtime.Intrinsics.Arm;
 using LshCamera;
 using LshDlp;
 using LshGlobalSetting;
+using LshMatrix;
 
 
 namespace TMCS_PRJ
@@ -24,11 +25,11 @@ namespace TMCS_PRJ
             _progress = progress;
             _view = view;
             
-            _matrixPresenter = new MatrixPresenter(8, 8, progress);            
+            //_matrixPresenter = new MatrixPresenter(8, 8, progress);            
 
-            //나중에 ip관련정보, DB접속정보들은 xml파일로 분리하자...그래야 컴파일 없이 외부에서 수정가능할듯?
-            _matrixPresenter.SetConnectInfo(new RTVDMMatrixToIP(GlobalSetting.MATRIX_IP,GlobalSetting.MATRIX_PORT, progress));
-            _matrixPresenter.SetConnectDBInfo(GlobalSetting.MATRIX_DB);
+            ////나중에 ip관련정보, DB접속정보들은 xml파일로 분리하자...그래야 컴파일 없이 외부에서 수정가능할듯?
+            //_matrixPresenter.SetConnectInfo(new RTVDMMatrixToIP(GlobalSetting.MATRIX_IP,GlobalSetting.MATRIX_PORT, progress));
+            //_matrixPresenter.SetConnectDBInfo(GlobalSetting.MATRIX_DB);
 
             _dlpPresenter = new DlpPresenter(2,4, progress);
 
@@ -49,24 +50,21 @@ namespace TMCS_PRJ
             _view.btnAddMioFrameClick += _view_btnAddMioFrameClick;
             _view.EquipmentStatusClick += _view_EquipmentStatusClick;
 
-            _view.test += _view_test;
 
-            _matrixPresenter.MioFrameDelete += _matrixControl_MioFrameDelete;
-            _matrixPresenter.MatrixSelectedChanged += _matrixControl_MatrixSelectedChanged;
-            _matrixPresenter.DragEnded += _matrixPresenter_DragEnded;
+            //_matrixPresenter.MioFrameDelete += _matrixControl_MioFrameDelete;
+            //_matrixPresenter.MatrixSelectedChanged += _matrixControl_MatrixSelectedChanged;
+            //_matrixPresenter.DragEnded += _matrixPresenter_DragEnded;
 
-            _dlpPresenter.DlpRouteChanged += _dlpPresenter_DlpRouteChanged;
-            _dlpPresenter.DlpMatrixInfoRequest += _dlpPresenter_DlpMatrixInfoRequest;
+            //_dlpPresenter.DlpRouteChanged += _dlpPresenter_DlpRouteChanged;
+            //_dlpPresenter.DlpMatrixInfoRequest += _dlpPresenter_DlpMatrixInfoRequest;
             _dlpPresenter.DlpClick += _dlpPresenter_DlpClick;
 
-            _view.cameraLoad += _view_cameraSet;
-            _view.CameraControlerLoad += _view_CameraControlerLoad;
         }
 
         private void _view_CameraControlerLoad(object? sender, EventArgs e)
         {
             CameraControlerView cameraControler = sender as CameraControlerView;
-            _cameraPresenter.set
+            //_cameraPresenter.set
         }
 
         private void _view_cameraSet(object? sender, EventArgs e)
@@ -106,7 +104,7 @@ namespace TMCS_PRJ
             }
             Dlp dlp = sender as Dlp;
 
-            _dlpPresenter.SetMatrixChannelInDlp(dlp.DlpId, _selectedMatrixChannel);
+            //_dlpPresenter.SetMatrixChannelInDlp(dlp.DlpId, _selectedMatrixChannel);
             _matrixPresenter.ClearSelectedMatrixChannel();
         }
 

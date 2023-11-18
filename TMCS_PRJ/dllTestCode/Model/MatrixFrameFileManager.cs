@@ -9,7 +9,7 @@ using System.Windows.Forms;
 using System.Xml.Serialization;
 using LshGlobalSetting;
 
-namespace TMCS_PRJ
+namespace LshMatrix
 {
     public class MatrixFrameFileManager
     {

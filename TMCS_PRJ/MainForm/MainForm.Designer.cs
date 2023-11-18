@@ -30,20 +30,15 @@
         {
             groupBox1 = new GroupBox();
             btnMatrixOutput = new Button();
-            lblTest = new Label();
             btnMatrixInput = new Button();
             pnMatrixFrame = new Panel();
             btnAddMioFrame = new Button();
-            bbbb = new Button();
             pnMioFrame = new Panel();
             menuStrip1 = new MenuStrip();
             파일ToolStripMenuItem = new ToolStripMenuItem();
             보기ToolStripMenuItem = new ToolStripMenuItem();
             장비등록정보확인ToolStripMenuItem = new ToolStripMenuItem();
             pnDlpFrame = new Panel();
-            samsungCamera1 = new SamsungCamera();
-            lgCamera1 = new LGCamera();
-            carmeraControler1 = new CarmeraControler();
             groupBox1.SuspendLayout();
             menuStrip1.SuspendLayout();
             SuspendLayout();
@@ -51,7 +46,6 @@
             // groupBox1
             // 
             groupBox1.Controls.Add(btnMatrixOutput);
-            groupBox1.Controls.Add(lblTest);
             groupBox1.Controls.Add(btnMatrixInput);
             groupBox1.Controls.Add(pnMatrixFrame);
             groupBox1.Location = new Point(12, 37);
@@ -70,15 +64,6 @@
             btnMatrixOutput.Text = "출 력";
             btnMatrixOutput.UseVisualStyleBackColor = true;
             btnMatrixOutput.Click += btnMatrixOutput_Click;
-            // 
-            // lblTest
-            // 
-            lblTest.AutoSize = true;
-            lblTest.Location = new Point(101, 555);
-            lblTest.Name = "lblTest";
-            lblTest.Size = new Size(39, 15);
-            lblTest.TabIndex = 4;
-            lblTest.Text = "label1";
             // 
             // btnMatrixInput
             // 
@@ -106,16 +91,6 @@
             btnAddMioFrame.Text = "출력추가!!";
             btnAddMioFrame.UseVisualStyleBackColor = true;
             btnAddMioFrame.Click += btnAddMioFrame_Click;
-            // 
-            // bbbb
-            // 
-            bbbb.Location = new Point(397, 291);
-            bbbb.Name = "bbbb";
-            bbbb.Size = new Size(75, 23);
-            bbbb.TabIndex = 2;
-            bbbb.Text = "button1";
-            bbbb.UseVisualStyleBackColor = true;
-            bbbb.Click += bbbb_Click;
             // 
             // pnMioFrame
             // 
@@ -162,53 +137,14 @@
             pnDlpFrame.Size = new Size(474, 235);
             pnDlpFrame.TabIndex = 6;
             // 
-            // samsungCamera1
-            // 
-            samsungCamera1.CameraId = 33;
-            samsungCamera1.CameraName = null;
-            samsungCamera1.InputPort = 0;
-            samsungCamera1.Location = new Point(840, 59);
-            samsungCamera1.Name = "samsungCamera1";
-            samsungCamera1.OutputPort = 0;
-            samsungCamera1.Size = new Size(93, 50);
-            samsungCamera1.TabIndex = 7;
-            samsungCamera1.Load += Camera_Load;
-            samsungCamera1.MouseDown += Camera_MouseDown;
-            // 
-            // lgCamera1
-            // 
-            lgCamera1.CameraId = 99;
-            lgCamera1.CameraName = null;
-            lgCamera1.InputPort = 0;
-            lgCamera1.Location = new Point(840, 173);
-            lgCamera1.Name = "lgCamera1";
-            lgCamera1.OutputPort = 0;
-            lgCamera1.Size = new Size(90, 80);
-            lgCamera1.TabIndex = 10;
-            lgCamera1.Load += Camera_Load;
-            lgCamera1.MouseDown += Camera_MouseDown;
-            // 
-            // carmeraControler1
-            // 
-            carmeraControler1.BackColor = Color.Black;
-            carmeraControler1.Location = new Point(546, 320);
-            carmeraControler1.Name = "carmeraControler1";
-            carmeraControler1.Size = new Size(387, 280);
-            carmeraControler1.TabIndex = 11;
-            carmeraControler1.Load += carmeraControler_Load;
-            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.Control;
             ClientSize = new Size(1199, 696);
-            Controls.Add(carmeraControler1);
-            Controls.Add(lgCamera1);
-            Controls.Add(samsungCamera1);
             Controls.Add(pnDlpFrame);
             Controls.Add(pnMioFrame);
-            Controls.Add(bbbb);
             Controls.Add(btnAddMioFrame);
             Controls.Add(groupBox1);
             Controls.Add(menuStrip1);
@@ -220,7 +156,6 @@
             FormClosing += MainForm_FormClosing;
             Load += MainForm_Load;
             groupBox1.ResumeLayout(false);
-            groupBox1.PerformLayout();
             menuStrip1.ResumeLayout(false);
             menuStrip1.PerformLayout();
             ResumeLayout(false);
@@ -234,16 +169,11 @@
         private Button btnMatrixInput;
         private Panel pnMatrixFrame;
         private Button btnAddMioFrame;
-        private Button bbbb;
         private Panel pnMioFrame;
         private MenuStrip menuStrip1;
         private ToolStripMenuItem 파일ToolStripMenuItem;
         private ToolStripMenuItem 보기ToolStripMenuItem;
         private ToolStripMenuItem 장비등록정보확인ToolStripMenuItem;
         private Panel pnDlpFrame;
-        private Label lblTest;
-        private SamsungCamera samsungCamera1;
-        private LGCamera lgCamera1;
-        private CarmeraControler carmeraControler1;
     }
 }

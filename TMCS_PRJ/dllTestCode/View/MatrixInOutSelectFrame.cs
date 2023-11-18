@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace TMCS_PRJ
+namespace LshMatrix
 {
     public partial class MatrixInOutSelectFrame : UserControl, IMioFrame
     {

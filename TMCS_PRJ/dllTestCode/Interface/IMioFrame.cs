@@ -4,9 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TMCS_PRJ
-{
-    public interface IMioFrame
+namespace LshMatrix
+{    public interface IMioFrame
     {
         MatrixInOutSelectFrame MioFrame { get; }
         MatrixChannel MatrixChannelInput { get; set; }

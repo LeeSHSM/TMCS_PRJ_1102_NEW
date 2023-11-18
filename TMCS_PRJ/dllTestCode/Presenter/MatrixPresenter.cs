@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using LshGlobalSetting;
 
-namespace TMCS_PRJ
+namespace LshMatrix
 {
     public class MatrixPresenter
     {

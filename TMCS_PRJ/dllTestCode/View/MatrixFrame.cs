@@ -4,7 +4,7 @@ using System.Drawing;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
-namespace TMCS_PRJ
+namespace LshMatrix
 {
 
     public partial class MatrixFrame : UserControl, IMFrame

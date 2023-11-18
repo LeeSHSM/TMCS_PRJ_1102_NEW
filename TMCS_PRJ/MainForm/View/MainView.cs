@@ -8,39 +8,22 @@ namespace TMCS_PRJ
 {
     public interface MainView
     {
+        Form GetMainForm();
+        Control GetCollidedControl { get; }
+
+
+        void InitMioFrames(List<IMioFrame> MioFrames);
+        void InitMatrixFrame(UserControl uc);
+        void InitDlpFrame(UserControl uc);
+        void AddMioFrame(UserControl uc);
+        void MioFrameDelete(object sender, EventArgs e);
+
         event EventHandler FormLoad;
         event EventHandler FormClose;
         event EventHandler btnMatrixInputClick;
         event EventHandler btnMatrixOutputClick;
         event EventHandler btnAddMioFrameClick;
         event EventHandler EquipmentStatusClick;
-
-        event EventHandler test;
-        event EventHandler cameraLoad;
-        event EventHandler CameraControlerLoad;
-
-        Form GetMainForm();
-
-        Control GetCollidedControl { get; }
-
-
-        Panel pnMatrixFrame { get; }
-        Panel pnMatrixInOutSelectFrame { get; }
-
-        void InitMioFrames(List<MatrixInOutSelectFrameView> MioFrames);
-
-        void InitMatrixFrame(UserControl uc);
-
-        void InitDlpFrame(UserControl uc);
-
-        void AddMioFrame(UserControl uc);
-        void MioFrameDelete(object sender, EventArgs e);
-
-
-
-
-        string lblUpdate {  get; set; }
-
 
     }
 }

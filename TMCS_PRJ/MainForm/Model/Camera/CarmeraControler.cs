@@ -7,10 +7,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using LshCamera;
 
 namespace TMCS_PRJ
 {
-    public partial class CarmeraControler : UserControl,CameraControlerView
+    public partial class CarmeraControler : UserControl, CameraControlerView
     {
 
 
