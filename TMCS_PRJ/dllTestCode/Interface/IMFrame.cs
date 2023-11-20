@@ -9,10 +9,7 @@ namespace LshMatrix
 {
     public interface IMFrame
     {
-        string ChannelType { get; set; }
-
         Form GetFindForm();
-
         void SetMatrixFrameChannelList(DataTable dataTable);
         void ClearClickedCell();
 

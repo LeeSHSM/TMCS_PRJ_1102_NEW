@@ -14,12 +14,12 @@ using LshGlobalSetting;
 
 namespace LshMatrix
 {
-    public class MatrixPresenter
+    public class MatrixControler
     {
         #region Properties
+        public event EventHandler? MFrameDragEnded;
         public event EventHandler? MioFrameDelete;
-        public event EventHandler? MatrixSelectedChanged;
-        public event EventHandler? DragEnded;
+        public event EventHandler? MFrameSelectedChannelChange;        
 
         private IMFrame _mFrame;
         private List<IMioFrame> _mioFrames = new List<IMioFrame>();
@@ -27,16 +27,16 @@ namespace LshMatrix
         private MatrixManager _matrixManager;
         private MatrixFrameFileManager _matrixFrameTotalManager;
 
-        private MatrixChannel? _mappingChannel;
+        private MatrixChannel? _selectedChannel;
         IProgress<ProgressReport> _progress;
 
         #endregion
 
         #region 초기화 Mewthods
-        public MatrixPresenter(int inputCount, int outputCount, IProgress<ProgressReport> progress)
+        public MatrixControler(int inputCount, int outputCount, IProgress<ProgressReport> progress)
         {
             _progress = progress;
-            _mFrame = new MatrixFrame();
+            //_mFrame = new MatrixFrame();
             _matrixManager = new MatrixManager(new Matrix(inputCount, outputCount), progress);
             _matrixFrameTotalManager = new MatrixFrameFileManager();
 
@@ -61,21 +61,32 @@ namespace LshMatrix
         /// </summary>
         private void InitializeEvent()
         {
-            _mFrame.SelectedCellChanged += MatrixFrame_SelectedCellChanged;
-            _mFrame.MatrixChannelNameChanged += _matrixFrame_CellValueChanged;
-            _mFrame.MFrameToObjectDragEnded += _matrixFrame_MFrameToObjectDragEnded;                
+            //_mFrame.SelectedCellChanged += MatrixFrame_SelectedCellChanged;
+            //_mFrame.MatrixChannelNameChanged += _matrixFrame_CellValueChanged;
+            //_mFrame.MFrameToObjectDragEnded += _matrixFrame_MFrameToObjectDragEnded;                
         }
 
         #endregion
 
         #region 유저컨트롤 추가,삭제 메서드...
 
-        public UserControl InitMatrixFrame()
+        public UserControl GetMFrame()
         {
             UserControl uc = (UserControl)_mFrame;
 
             return uc;
         }
+        
+        public void SetMFrame(UserControl uc)
+        {
+            _mFrame = (IMFrame)uc;
+            _mFrame.SelectedCellChanged += MatrixFrame_SelectedCellChanged;
+            _mFrame.MatrixChannelNameChanged += _matrixFrame_CellValueChanged;
+            _mFrame.MFrameToObjectDragEnded += _matrixFrame_MFrameToObjectDragEnded;
+        }
+
+
+
 
         public List<IMioFrame> InitMioFrames()
         {
@@ -140,7 +151,7 @@ namespace LshMatrix
             {
                 throw new ArgumentException("잘못된 값입니다.(INPUT or OUTPUT 만 사용가능)", nameof(channelType));
             }
-            _mFrame.ChannelType = channelType;
+            //_mFrame.ChannelType = channelType;
             DataTable dt = ConvertMatrixChannelListToDataTable(channelType);
             _mFrame.SetMatrixFrameChannelList(dt);            
         }
@@ -155,14 +166,14 @@ namespace LshMatrix
         // mioFrame 아웃채널 변경
         private void SetMatrixOutputInMioFrame(MatrixInOutSelectFrame mioFrame)
         {
-            if (_mappingChannel == null || _mappingChannel.ChannelType != "OUTPUT")
+            if (_selectedChannel == null || _selectedChannel.ChannelType != "OUTPUT")
             {
                 return;
             }
 
             foreach (MatrixInOutSelectFrame mc in _mioFrames)
             {
-                if (_mappingChannel.Port == mc.MatrixChannelOutput.Port)
+                if (_selectedChannel.Port == mc.MatrixChannelOutput.Port)
                 {
                     MessageBox.Show("이미 지정하셧습니다.");
                     return;
@@ -173,7 +184,7 @@ namespace LshMatrix
             {
                 if (mc == mioFrame)
                 {
-                    mc.MatrixChannelOutput = _mappingChannel;
+                    mc.MatrixChannelOutput = _selectedChannel;
                     ClearSelectedMatrixChannel();
                 }
             }
@@ -182,7 +193,7 @@ namespace LshMatrix
         // mioFrame 인채널 변경
         private void SetMatrixInputInMioFrame(MatrixInOutSelectFrame mioFrame)
         {
-            if (_mappingChannel == null || _mappingChannel.ChannelType != "INPUT")
+            if (_selectedChannel == null || _selectedChannel.ChannelType != "INPUT")
             {
                 return;
             }
@@ -196,7 +207,7 @@ namespace LshMatrix
             {
                 if (mc == mioFrame)
                 {
-                    mc.MatrixChannelInput = _mappingChannel;                    
+                    mc.MatrixChannelInput = _selectedChannel;                    
                 }
             }
         }
@@ -226,7 +237,7 @@ namespace LshMatrix
         /// DB접속정보 할당 
         /// </summary>
         /// <param name="connectionString"></param>
-        public void SetConnectDBInfo(string connectionString)
+        public void InitializeDBInfo(string connectionString)
         {
             _matrixManager.ConnectionString = connectionString;
             _matrixFrameTotalManager.ConnectionString = connectionString;
@@ -256,15 +267,15 @@ namespace LshMatrix
         private void MioFrame_Click(object? sender, EventArgs e)
         {
             MatrixInOutSelectFrame MioFrame = sender as MatrixInOutSelectFrame;
-            if(_mappingChannel == null)
+            if(_selectedChannel == null)
             {
                 return;
             }
-            if(_mappingChannel.ChannelType == "INPUT")
+            if(_selectedChannel.ChannelType == "INPUT")
             {
                 SetMatrixInputInMioFrame(MioFrame);
             }
-            else if(_mappingChannel.ChannelType == "OUTPUT")
+            else if(_selectedChannel.ChannelType == "OUTPUT")
             {
                 SetMatrixOutputInMioFrame(MioFrame);
             }
@@ -293,9 +304,9 @@ namespace LshMatrix
             DataGridViewCellEventArgs dgvEvent = e as DataGridViewCellEventArgs;
             int rowNum = dgvEvent.RowIndex;
             string channelName = dgv.Rows[dgvEvent.RowIndex].Cells[1].Value.ToString();
-            string channelType = _mFrame.ChannelType;
+            //string channelType = _mFrame.ChannelType;
 
-            _matrixManager.SetChannelName(rowNum, channelName, channelType);
+            //_matrixManager.SetChannelName(rowNum, channelName, channelType);
         }
 
         private void _matrixFrame_MFrameToObjectDragEnded(object? sender, EventArgs e)
@@ -328,11 +339,11 @@ namespace LshMatrix
 
             if (largestIntersectingFrame != null)
             {
-                if(_mappingChannel.ChannelType == "INPUT")
+                if(_selectedChannel.ChannelType == "INPUT")
                 {
                     SetMatrixInputInMioFrame(largestIntersectingFrame);
                 }
-                else if(_mappingChannel.ChannelType == "OUTPUT")
+                else if(_selectedChannel.ChannelType == "OUTPUT")
                 {
                     SetMatrixOutputInMioFrame(largestIntersectingFrame);
                 }
@@ -340,7 +351,7 @@ namespace LshMatrix
             }
             else
             {
-                DragEnded?.Invoke(sender, e);
+                MFrameDragEnded?.Invoke(sender, e);
             }
             
         }
@@ -353,13 +364,13 @@ namespace LshMatrix
             {
                 var cell = dgv.SelectedCells[0];
 
-                _mappingChannel = _matrixManager.GetChannel(cell.RowIndex, _mFrame.ChannelType);
+                //_selectedChannel = _matrixManager.GetChannel(cell.RowIndex, _mFrame.ChannelType);
             }
             else if(dgv == null)
             {
-                _mappingChannel = null;
+                _selectedChannel = null;
             }
-            MatrixSelectedChanged?.Invoke(_mappingChannel, EventArgs.Empty);
+            MFrameSelectedChannelChange?.Invoke(_selectedChannel, EventArgs.Empty);
         }
 
         #endregion

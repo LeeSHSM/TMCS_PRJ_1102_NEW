@@ -3,20 +3,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using LshMatrix;
 
 namespace TMCS_PRJ
 {
-    public interface MainView
+    public interface IMainForm
     {
         Form GetMainForm();
         Control GetCollidedControl { get; }
 
-
         void InitMioFrames(List<IMioFrame> MioFrames);
+
         void InitMatrixFrame(UserControl uc);
         void InitDlpFrame(UserControl uc);
         void AddMioFrame(UserControl uc);
         void MioFrameDelete(object sender, EventArgs e);
+
+        event EventHandler MFrameLoad;
 
         event EventHandler FormLoad;
         event EventHandler FormClose;

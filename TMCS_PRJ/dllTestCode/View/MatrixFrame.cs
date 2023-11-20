@@ -9,36 +9,13 @@ namespace LshMatrix
 
     public partial class MatrixFrame : UserControl, IMFrame
     {
-        #region Properties
-
-        private string _nowChannelType;
-
-        public string ChannelType
-        {
-            get { return _nowChannelType; }
-            set
-            {
-                if (value != "INPUT" && value != "OUTPUT")
-                { throw new ArgumentException("Channel type must be either 'INPUT' or 'OUTPUT'", nameof(value)); }
-                _nowChannelType = value;
-            }
-        }
-
-        public Form GetFindForm()
-        {
-            return this.FindForm();
-        }
-
-        #endregion
-
-        #region 초기화 Methods 
+        //private string _channelType;
         public MatrixFrame()
         {
             InitializeComponent();
             InitializeEvent();
             dgvMatrixChannelList.GetType().GetProperty("DoubleBuffered", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(dgvMatrixChannelList, true, null);
         }
-
         private void InitializeEvent()
         {
             dgvMatrixChannelList.SelectionChanged += DgvMatrixChannelList_SelectionChanged;
@@ -50,11 +27,10 @@ namespace LshMatrix
             dgvMatrixChannelList.CellEndEdit += DgvMatrixChannelList_CellEndEdit;
         }
 
-        #endregion
-
-
-
-        #region Public Methods
+        public Form GetFindForm()
+        {
+            return this.FindForm();
+        }
 
         /// <summary>
         /// dgv 내용물 채우는 메서드 
@@ -84,10 +60,6 @@ namespace LshMatrix
         {
             dgvMatrixChannelList.ClearSelection();
         }
-
-        #endregion
-
-        #region Private Methods
 
         /// <summary>
         /// 레이아웃 변경하는 메서드
@@ -151,10 +123,10 @@ namespace LshMatrix
                 }
 
                 // 최초 dgv 실행시 선택된 컬럼이 없게 하기
-                dgvMatrixChannelList.ClearSelection();
+                ClearClickedCell();
             }
         }
-        #endregion
+
 
 
         #region Event Handles
@@ -166,11 +138,11 @@ namespace LshMatrix
         /// <param name="e"></param>
         private void DgvMatrixChannelList_SelectionChanged(object? sender, EventArgs e)
         {
-            if (dgvMatrixChannelList.SelectedCells.Count > 0 && _nowChannelType != null && dgvMatrixChannelList.SelectedCells[0].ColumnIndex == 1) // 유효한 셀인지 확인
+            if (dgvMatrixChannelList.SelectedCells.Count > 0 &&  dgvMatrixChannelList.SelectedCells[0].ColumnIndex == 1) // 유효한 셀인지 확인
             {
                 SelectedCellChanged?.Invoke(sender, e);
             }
-            else if (dgvMatrixChannelList.SelectedCells.Count == 0 && _nowChannelType != null)
+            else if (dgvMatrixChannelList.SelectedCells.Count == 0 )
             {
                 SelectedCellChanged?.Invoke(null, EventArgs.Empty);
             }
@@ -196,12 +168,55 @@ namespace LshMatrix
             }
         }
 
+        /// <summary>
+        /// cms 이름바꾸기 클릭시 이벤트 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void 이름바꾸기ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (sender is ToolStripItem item && item.Owner is ContextMenuStrip contextMenuStrip)
+            {
+                if (dgvMatrixChannelList.SelectedCells.Count == 1)
+                {
+                    DataGridViewCell selectedCell = dgvMatrixChannelList.SelectedCells[0];
+
+                    dgvMatrixChannelList.ReadOnly = false;
+                    selectedCell.ReadOnly = false;
+
+                    dgvMatrixChannelList.CurrentCell = selectedCell;
+                    dgvMatrixChannelList.BeginEdit(true);
+                }
+            }
+        }
+
+        /// <summary>
+        /// 우클릭후 이름바꾼후 이벤트 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void DgvMatrixChannelList_CellEndEdit(object? sender, DataGridViewCellEventArgs e)
+        {
+            dgvMatrixChannelList.ReadOnly = true;
+
+            int rowIndex = e.RowIndex;
+            int columnIndex = e.ColumnIndex;
+
+            this.BeginInvoke(new MethodInvoker(() =>
+            {
+                dgvMatrixChannelList.Rows[rowIndex].Cells[columnIndex].Selected = true;
+            }));
+
+            MatrixChannelNameChanged?.Invoke(sender, e);
+        }
+
+
 
         //드래그 관련 전역변수
         private bool _isDragMouseMove = false;      //드래그관련 마우스 무브
         private Point? _pDragStartedPostion = null; //드래그관련 시작 마우스 위치
         private Label _dragLbl;                     //드래그 라벨
-        Form mainForm;                              //부모폼 확인
+        private Form mainForm;                              //부모폼 확인
 
         /// <summary>
         /// DragStarted 이벤트... 드래그 시작할때? 이건 마우스 좌클릭할때 무조건 동작 
@@ -277,48 +292,6 @@ namespace LshMatrix
             UpdateDgvMatrixChannelListLayOut();
         }
 
-
-        /// <summary>
-        /// cms 이름바꾸기 클릭시 이벤트 
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void 이름바꾸기ToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (sender is ToolStripItem item && item.Owner is ContextMenuStrip contextMenuStrip)
-            {
-                if (dgvMatrixChannelList.SelectedCells.Count == 1)
-                {
-                    DataGridViewCell selectedCell = dgvMatrixChannelList.SelectedCells[0];
-
-                    dgvMatrixChannelList.ReadOnly = false;
-                    selectedCell.ReadOnly = false;
-
-                    dgvMatrixChannelList.CurrentCell = selectedCell;
-                    dgvMatrixChannelList.BeginEdit(true);
-                }
-            }
-        }
-
-        /// <summary>
-        /// 우클릭후 이름바꾼후 이벤트 
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void DgvMatrixChannelList_CellEndEdit(object? sender, DataGridViewCellEventArgs e)
-        {
-            dgvMatrixChannelList.ReadOnly = true;
-
-            int rowIndex = e.RowIndex;
-            int columnIndex = e.ColumnIndex;
-
-            this.BeginInvoke(new MethodInvoker(() =>
-            {
-                dgvMatrixChannelList.Rows[rowIndex].Cells[columnIndex].Selected = true;
-            }));
-
-            MatrixChannelNameChanged?.Invoke(sender, e);
-        }
 
         #endregion
 

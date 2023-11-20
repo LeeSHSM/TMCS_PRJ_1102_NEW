@@ -29,9 +29,9 @@
         private void InitializeComponent()
         {
             groupBox1 = new GroupBox();
+            mFrame = new LshMatrix.MatrixFrame();
             btnMatrixOutput = new Button();
             btnMatrixInput = new Button();
-            pnMatrixFrame = new Panel();
             btnAddMioFrame = new Button();
             pnMioFrame = new Panel();
             menuStrip1 = new MenuStrip();
@@ -45,15 +45,23 @@
             // 
             // groupBox1
             // 
+            groupBox1.Controls.Add(mFrame);
             groupBox1.Controls.Add(btnMatrixOutput);
             groupBox1.Controls.Add(btnMatrixInput);
-            groupBox1.Controls.Add(pnMatrixFrame);
             groupBox1.Location = new Point(12, 37);
             groupBox1.Name = "groupBox1";
             groupBox1.Size = new Size(298, 684);
             groupBox1.TabIndex = 0;
             groupBox1.TabStop = false;
             groupBox1.Text = "groupBox1";
+            // 
+            // mFrame
+            // 
+            mFrame.Location = new Point(6, 51);
+            mFrame.Name = "mFrame";
+            mFrame.Size = new Size(286, 280);
+            mFrame.TabIndex = 7;
+            mFrame.Load += mFrame_Load;
             // 
             // btnMatrixOutput
             // 
@@ -74,13 +82,6 @@
             btnMatrixInput.Text = "입 력";
             btnMatrixInput.UseVisualStyleBackColor = true;
             btnMatrixInput.Click += btnMatrixInput_Click;
-            // 
-            // pnMatrixFrame
-            // 
-            pnMatrixFrame.Location = new Point(6, 59);
-            pnMatrixFrame.Name = "pnMatrixFrame";
-            pnMatrixFrame.Size = new Size(286, 326);
-            pnMatrixFrame.TabIndex = 0;
             // 
             // btnAddMioFrame
             // 
@@ -167,7 +168,6 @@
         private GroupBox groupBox1;
         private Button btnMatrixOutput;
         private Button btnMatrixInput;
-        private Panel pnMatrixFrame;
         private Button btnAddMioFrame;
         private Panel pnMioFrame;
         private MenuStrip menuStrip1;
@@ -175,5 +175,6 @@
         private ToolStripMenuItem 보기ToolStripMenuItem;
         private ToolStripMenuItem 장비등록정보확인ToolStripMenuItem;
         private Panel pnDlpFrame;
+        private LshMatrix.MatrixFrame mFrame;
     }
 }

@@ -10,9 +10,9 @@ namespace TMCS_PRJ
 {
     public class MainPresenter
     {
-        MainView _view;
+        IMainForm _view;
 
-        MatrixPresenter _matrixPresenter;
+        MatrixControler _matrixControler;
         MatrixChannel? _selectedMatrixChannel;
 
         DlpPresenter _dlpPresenter;
@@ -20,20 +20,17 @@ namespace TMCS_PRJ
         CameraPresenter _cameraPresenter;
         IProgress<ProgressReport> _progress;
 
-        public MainPresenter(MainView view, IProgress<ProgressReport> progress)
+        public MainPresenter(IMainForm view, IProgress<ProgressReport> progress)
         {
             _progress = progress;
             _view = view;
-            
-            //_matrixPresenter = new MatrixPresenter(8, 8, progress);            
+            _matrixControler = new MatrixControler(8, 8, progress);
+            _matrixControler.InitializeDBInfo(GlobalSetting.MATRIX_DB);
+            _matrixControler.SetConnectInfo(new RTVDMMatrixToIP(GlobalSetting.MATRIX_IP,GlobalSetting.MATRIX_PORT,progress));
 
-            ////나중에 ip관련정보, DB접속정보들은 xml파일로 분리하자...그래야 컴파일 없이 외부에서 수정가능할듯?
-            //_matrixPresenter.SetConnectInfo(new RTVDMMatrixToIP(GlobalSetting.MATRIX_IP,GlobalSetting.MATRIX_PORT, progress));
-            //_matrixPresenter.SetConnectDBInfo(GlobalSetting.MATRIX_DB);
+            //_dlpPresenter = new DlpPresenter(2,4, progress);
 
-            _dlpPresenter = new DlpPresenter(2,4, progress);
-
-            _cameraPresenter = new CameraPresenter();
+            //_cameraPresenter = new CameraPresenter();
 
             InitializeViewEvent();
         }
@@ -50,41 +47,28 @@ namespace TMCS_PRJ
             _view.btnAddMioFrameClick += _view_btnAddMioFrameClick;
             _view.EquipmentStatusClick += _view_EquipmentStatusClick;
 
+            _view.MFrameLoad += _view_MFrameLoad;
 
-            //_matrixPresenter.MioFrameDelete += _matrixControl_MioFrameDelete;
-            //_matrixPresenter.MatrixSelectedChanged += _matrixControl_MatrixSelectedChanged;
-            //_matrixPresenter.DragEnded += _matrixPresenter_DragEnded;
-
-            //_dlpPresenter.DlpRouteChanged += _dlpPresenter_DlpRouteChanged;
-            //_dlpPresenter.DlpMatrixInfoRequest += _dlpPresenter_DlpMatrixInfoRequest;
-            _dlpPresenter.DlpClick += _dlpPresenter_DlpClick;
+            //_dlpPresenter.DlpClick += _dlpPresenter_DlpClick;
 
         }
 
-        private void _view_CameraControlerLoad(object? sender, EventArgs e)
+        private void _view_MFrameLoad(object? sender, EventArgs e)
         {
-            CameraControlerView cameraControler = sender as CameraControlerView;
-            //_cameraPresenter.set
+            UserControl userControl = sender as UserControl;
+            _matrixControler.SetMFrame(userControl);
         }
 
-        private void _view_cameraSet(object? sender, EventArgs e)
-        {
-            CameraType camera = sender as CameraType;
-            _cameraPresenter.SetCamera(camera);
-        }
 
-        private void _view_test(object? sender, EventArgs e)
-        {
-            CameraType camera = sender as CameraType;
-            _cameraPresenter.test(camera);
-        }
+
+
 
         //dlp에서 매트릭스정보 요청
         private List<MatrixChannel> _dlpPresenter_DlpMatrixInfoRequest()
         {
             List<MatrixChannel> mcs = new List<MatrixChannel>();
 
-            mcs = _matrixPresenter.GetInputList();
+            mcs = _matrixControler.GetInputList();
 
             return mcs;
         }
@@ -92,7 +76,7 @@ namespace TMCS_PRJ
         //dlp에서 dlp라우트 변경이벤트
         private async void _dlpPresenter_DlpRouteChanged(int dlpPort, MatrixChannel mc)
         {
-            await _matrixPresenter.SetMatrixRouteAsync(dlpPort, mc);
+            await _matrixControler.SetMatrixRouteAsync(dlpPort, mc);
         }
 
         //dlp에서 dlp클릭함
@@ -105,14 +89,14 @@ namespace TMCS_PRJ
             Dlp dlp = sender as Dlp;
 
             //_dlpPresenter.SetMatrixChannelInDlp(dlp.DlpId, _selectedMatrixChannel);
-            _matrixPresenter.ClearSelectedMatrixChannel();
+            _matrixControler.ClearSelectedMatrixChannel();
         }
 
         private void _matrixPresenter_DragEnded(object? sender, EventArgs e)
         {
             if (_view.GetCollidedControl == null || _selectedMatrixChannel == null)
             {
-                _matrixPresenter.ClearSelectedMatrixChannel();
+                _matrixControler.ClearSelectedMatrixChannel();
                 return;
             }
             Form mainForm = _view.GetMainForm();
@@ -140,7 +124,7 @@ namespace TMCS_PRJ
                     }
                 }
             }
-            _matrixPresenter.ClearSelectedMatrixChannel();
+            _matrixControler.ClearSelectedMatrixChannel();
         }
 
         private Control FindParentControl(Control control, Type senderType)
@@ -175,10 +159,10 @@ namespace TMCS_PRJ
         /// <returns></returns>
         public async Task InitializeAsync()
         {
-            await _matrixPresenter.InitializeAsync();
-            await _dlpPresenter.InitializeAsync();
+            await _matrixControler.InitializeAsync();
+            //await _dlpPresenter.InitializeAsync();
 
-            _matrixPresenter.StartConnectionAsync(); //서버와 통신... 중요하긴한데 일단 백그라운드 실행
+            _matrixControler.StartConnectionAsync(); //서버와 통신... 중요하긴한데 일단 백그라운드 실행
         }
 
 
@@ -187,33 +171,33 @@ namespace TMCS_PRJ
 
         private void _view_Form_Load(object? sender, EventArgs e)
         {
-            _view.InitMatrixFrame(_matrixPresenter.InitMatrixFrame());
-            _view.InitMioFrames(_matrixPresenter.InitMioFrames());
+            //_view.InitMatrixFrame(_matrixControler.GetMFrame());
+            //_view.InitMioFrames(_matrixControler.InitMioFrames());
 
-            _matrixPresenter.SetMFrameChannelType("INPUT");
+            _matrixControler.SetMFrameChannelType("INPUT");
 
-            _view.InitDlpFrame(_dlpPresenter.GetDlpFrame());
+            //_view.InitDlpFrame(_dlpPresenter.GetDlpFrame());
         }
 
         private void _view_FormClose(object? sender, EventArgs e)
         {
-            _matrixPresenter.SaveMatrixInfo();
+            _matrixControler.SaveMatrixInfo();
             _dlpPresenter.SaveDlpFrameInfo();
         }
 
         private void _view_btnOutputClick(object? sender, EventArgs e)
         {
-            _matrixPresenter.SetMFrameChannelType("OUTPUT");
+            _matrixControler.SetMFrameChannelType("OUTPUT");
         }
 
         private void _view_btnInputClick(object? sender, EventArgs e)
         {
-            _matrixPresenter.SetMFrameChannelType("INPUT");
+            _matrixControler.SetMFrameChannelType("INPUT");
         }
 
         private void _view_btnAddMioFrameClick(object? sender, EventArgs e)
         {
-            _view.AddMioFrame(_matrixPresenter.AddMatrixInOutFrame());
+            _view.AddMioFrame(_matrixControler.AddMatrixInOutFrame());
         }
 
         private void _matrixControl_MioFrameDelete(object? sender, EventArgs e)

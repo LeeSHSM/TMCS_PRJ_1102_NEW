@@ -2,6 +2,7 @@
 using TMCS_PRJ;
 using LshGlobalSetting;
 using System.Linq.Expressions;
+using LshMatrix;
 
 namespace LshDlp
 {

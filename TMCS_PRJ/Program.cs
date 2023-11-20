@@ -30,7 +30,7 @@ namespace TMCS_PRJ
 
                 if(report.Test != null)
                 {
-                    view.lblUpdate = report.Test;
+                    
                 }                
             });
 

@@ -3,11 +3,12 @@ using System.Diagnostics;
 using System.Drawing.Drawing2D;
 using System.Reflection;
 using System.Windows.Forms;
+using LshMatrix;
 using Timer = System.Windows.Forms.Timer;
 
 namespace TMCS_PRJ
 {
-    public partial class MainForm : Form, MainView
+    public partial class MainForm : Form, IMainForm
     {
 
         public MainForm()
@@ -129,8 +130,7 @@ namespace TMCS_PRJ
 
         private void SetMatrixFrame(UserControl uc)
         {
-            pnMatrixFrame.Controls.Add(uc);
-            uc.Dock = DockStyle.Fill;
+
         }
 
         #region Event Handles
@@ -190,6 +190,11 @@ namespace TMCS_PRJ
             FormClose?.Invoke(this, e);
         }
 
+        private void mFrame_Load(object sender, EventArgs e)
+        {
+            MFrameLoad?.Invoke(sender, e);
+        }
+
 
         #endregion
 
@@ -198,6 +203,10 @@ namespace TMCS_PRJ
 
 
 
+
+
+
+        public event EventHandler MFrameLoad;
 
         public event EventHandler FormLoad;
         public event EventHandler FormClose;
