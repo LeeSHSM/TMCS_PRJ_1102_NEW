@@ -39,6 +39,9 @@
             보기ToolStripMenuItem = new ToolStripMenuItem();
             장비등록정보확인ToolStripMenuItem = new ToolStripMenuItem();
             pnDlpFrame = new Panel();
+            lgCamera1 = new LGCamera();
+            samsungCamera1 = new SamsungCamera();
+            carmeraControler1 = new CarmeraControler();
             groupBox1.SuspendLayout();
             menuStrip1.SuspendLayout();
             SuspendLayout();
@@ -59,7 +62,7 @@
             // 
             mFrame.Location = new Point(6, 51);
             mFrame.Name = "mFrame";
-            mFrame.Size = new Size(286, 280);
+            mFrame.Size = new Size(286, 325);
             mFrame.TabIndex = 7;
             mFrame.Load += mFrame_Load;
             // 
@@ -97,7 +100,7 @@
             // 
             pnMioFrame.Location = new Point(316, 320);
             pnMioFrame.Name = "pnMioFrame";
-            pnMioFrame.Size = new Size(204, 149);
+            pnMioFrame.Size = new Size(729, 291);
             pnMioFrame.TabIndex = 3;
             // 
             // menuStrip1
@@ -138,12 +141,45 @@
             pnDlpFrame.Size = new Size(474, 235);
             pnDlpFrame.TabIndex = 6;
             // 
+            // lgCamera1
+            // 
+            lgCamera1.CameraId = 0;
+            lgCamera1.CameraName = null;
+            lgCamera1.InputPort = 0;
+            lgCamera1.Location = new Point(806, 37);
+            lgCamera1.Name = "lgCamera1";
+            lgCamera1.OutputPort = 0;
+            lgCamera1.Size = new Size(150, 150);
+            lgCamera1.TabIndex = 7;
+            // 
+            // samsungCamera1
+            // 
+            samsungCamera1.CameraId = 0;
+            samsungCamera1.CameraName = null;
+            samsungCamera1.InputPort = 0;
+            samsungCamera1.Location = new Point(806, 222);
+            samsungCamera1.Name = "samsungCamera1";
+            samsungCamera1.OutputPort = 0;
+            samsungCamera1.Size = new Size(93, 50);
+            samsungCamera1.TabIndex = 8;
+            // 
+            // carmeraControler1
+            // 
+            carmeraControler1.BackColor = Color.Black;
+            carmeraControler1.Location = new Point(1016, 37);
+            carmeraControler1.Name = "carmeraControler1";
+            carmeraControler1.Size = new Size(171, 184);
+            carmeraControler1.TabIndex = 9;
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.Control;
             ClientSize = new Size(1199, 696);
+            Controls.Add(carmeraControler1);
+            Controls.Add(samsungCamera1);
+            Controls.Add(lgCamera1);
             Controls.Add(pnDlpFrame);
             Controls.Add(pnMioFrame);
             Controls.Add(btnAddMioFrame);
@@ -176,5 +212,8 @@
         private ToolStripMenuItem 장비등록정보확인ToolStripMenuItem;
         private Panel pnDlpFrame;
         private LshMatrix.MatrixFrame mFrame;
+        private LGCamera lgCamera1;
+        private SamsungCamera samsungCamera1;
+        private CarmeraControler carmeraControler1;
     }
 }

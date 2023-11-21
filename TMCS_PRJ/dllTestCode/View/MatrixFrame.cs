@@ -16,6 +16,7 @@ namespace LshMatrix
             InitializeEvent();
             dgvMatrixChannelList.GetType().GetProperty("DoubleBuffered", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(dgvMatrixChannelList, true, null);
         }
+
         private void InitializeEvent()
         {
             dgvMatrixChannelList.SelectionChanged += DgvMatrixChannelList_SelectionChanged;

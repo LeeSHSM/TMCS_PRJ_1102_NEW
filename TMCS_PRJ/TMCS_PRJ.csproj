@@ -22,7 +22,7 @@
     <Compile Update="dllTestCode\View\MatrixFrame.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Update="dllTestCode\View\MatrixInOutSelectFrame.cs">
+    <Compile Update="dllTestCode\View\MioFrame.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Update="Properties\Resources.Designer.cs">

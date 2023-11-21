@@ -1,6 +1,6 @@
 ﻿namespace LshMatrix
 {
-    partial class MatrixInOutSelectFrame
+    partial class MioFrame
     {
         /// <summary> 
         /// 필수 디자이너 변수입니다.

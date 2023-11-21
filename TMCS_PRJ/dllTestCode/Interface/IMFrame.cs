@@ -16,6 +16,5 @@ namespace LshMatrix
         event EventHandler SelectedCellChanged;
         event EventHandler MatrixChannelNameChanged;
         event EventHandler MFrameToObjectDragEnded;
-
     }
 }

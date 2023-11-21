@@ -12,7 +12,7 @@ namespace TMCS_PRJ
     {
         IMainForm _view;
 
-        MatrixControler _matrixControler;
+        MatrixPresenter _matrixControler;
         MatrixChannel? _selectedMatrixChannel;
 
         DlpPresenter _dlpPresenter;
@@ -24,11 +24,11 @@ namespace TMCS_PRJ
         {
             _progress = progress;
             _view = view;
-            _matrixControler = new MatrixControler(8, 8, progress);
+            _matrixControler = new MatrixPresenter(8, 8, progress);
             _matrixControler.InitializeDBInfo(GlobalSetting.MATRIX_DB);
             _matrixControler.SetConnectInfo(new RTVDMMatrixToIP(GlobalSetting.MATRIX_IP,GlobalSetting.MATRIX_PORT,progress));
 
-            //_dlpPresenter = new DlpPresenter(2,4, progress);
+            _dlpPresenter = new DlpPresenter(2,4, progress);
 
             //_cameraPresenter = new CameraPresenter();
 
@@ -46,10 +46,14 @@ namespace TMCS_PRJ
             _view.btnMatrixOutputClick += _view_btnOutputClick;
             _view.btnAddMioFrameClick += _view_btnAddMioFrameClick;
             _view.EquipmentStatusClick += _view_EquipmentStatusClick;
-
             _view.MFrameLoad += _view_MFrameLoad;
 
-            //_dlpPresenter.DlpClick += _dlpPresenter_DlpClick;
+            _matrixControler.MFrameDragEnded += _matrixControler_MFrameDragEnded;
+            _matrixControler.MFrameSelectedChannelChanged += _matrixControl_MatrixSelectedChanged;
+            _matrixControler.MioFrameDelete += _matrixControl_MioFrameDelete;
+
+            _dlpPresenter.DlpClick += _dlpPresenter_DlpClick;
+            _dlpPresenter.DlpMatrixInfoRequest += _dlpPresenter_DlpMatrixInfoRequest;
 
         }
 
@@ -58,10 +62,6 @@ namespace TMCS_PRJ
             UserControl userControl = sender as UserControl;
             _matrixControler.SetMFrame(userControl);
         }
-
-
-
-
 
         //dlp에서 매트릭스정보 요청
         private List<MatrixChannel> _dlpPresenter_DlpMatrixInfoRequest()
@@ -88,11 +88,11 @@ namespace TMCS_PRJ
             }
             Dlp dlp = sender as Dlp;
 
-            //_dlpPresenter.SetMatrixChannelInDlp(dlp.DlpId, _selectedMatrixChannel);
+            _dlpPresenter.SetMatrixChannelInDlp(dlp.DlpId, _selectedMatrixChannel);
             _matrixControler.ClearSelectedMatrixChannel();
         }
 
-        private void _matrixPresenter_DragEnded(object? sender, EventArgs e)
+        private void _matrixControler_MFrameDragEnded(object? sender, EventArgs e)
         {
             if (_view.GetCollidedControl == null || _selectedMatrixChannel == null)
             {
@@ -160,7 +160,7 @@ namespace TMCS_PRJ
         public async Task InitializeAsync()
         {
             await _matrixControler.InitializeAsync();
-            //await _dlpPresenter.InitializeAsync();
+            await _dlpPresenter.InitializeAsync();
 
             _matrixControler.StartConnectionAsync(); //서버와 통신... 중요하긴한데 일단 백그라운드 실행
         }
@@ -172,11 +172,11 @@ namespace TMCS_PRJ
         private void _view_Form_Load(object? sender, EventArgs e)
         {
             //_view.InitMatrixFrame(_matrixControler.GetMFrame());
-            //_view.InitMioFrames(_matrixControler.InitMioFrames());
+            _view.InitMioFrames(_matrixControler.InitMioFrames());
 
             _matrixControler.SetMFrameChannelType("INPUT");
 
-            //_view.InitDlpFrame(_dlpPresenter.GetDlpFrame());
+            _view.InitDlpFrame(_dlpPresenter.GetDlpFrame());
         }
 
         private void _view_FormClose(object? sender, EventArgs e)

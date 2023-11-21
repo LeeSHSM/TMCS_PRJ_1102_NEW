@@ -80,14 +80,17 @@ namespace LshDlp
                 matchingDlp.TileMode = dlp.TileMode;
                 matchingDlp.Row = dlp.Row;
                 matchingDlp.Col = dlp.Col;
-                matchingDlp.MatrixPort = dlp.MatrixPort;  
-                
-                foreach (MatrixChannel mcInput in mcs)
+                matchingDlp.MatrixPort = dlp.MatrixPort;
+
+                if (mcs != null)
                 {
-                    if (dlp.InputChannelPort == mcInput.Port)
+                    foreach (MatrixChannel mcInput in mcs)
                     {
-                        matchingDlp.InputChannel = mcInput;
-                        break;
+                        if (dlp.InputChannelPort == mcInput.Port)
+                        {
+                            matchingDlp.InputChannel = mcInput;
+                            break;
+                        }
                     }
                 }
             }

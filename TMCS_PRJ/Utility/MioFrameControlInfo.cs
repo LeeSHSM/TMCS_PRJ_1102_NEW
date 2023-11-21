@@ -8,7 +8,6 @@ namespace LshGlobalSetting
 {
     public class MioFrameControlInfo
     {
-        public string ParentId { get; set; }
         public Point Location { get; set; }
         public Size Size { get; set; }
         public DockStyle DockStyle { get; set; }

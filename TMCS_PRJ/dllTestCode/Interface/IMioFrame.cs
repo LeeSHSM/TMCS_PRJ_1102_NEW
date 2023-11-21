@@ -7,11 +7,8 @@ using System.Threading.Tasks;
 namespace LshMatrix
 {    public interface IMioFrame
     {
-        MatrixInOutSelectFrame MioFrame { get; }
         MatrixChannel MatrixChannelInput { get; set; }
         MatrixChannel MatrixChannelOutput { get; set; }
-
-        string ParentId {  get; set; }
 
         Form GetMainForm();
 

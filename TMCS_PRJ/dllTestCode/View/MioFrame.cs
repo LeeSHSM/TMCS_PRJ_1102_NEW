@@ -11,17 +11,13 @@ using System.Windows.Forms;
 
 namespace LshMatrix
 {
-    public partial class MatrixInOutSelectFrame : UserControl, IMioFrame
+    public partial class MioFrame : UserControl, IMioFrame
     {
         #region Properties
 
         private MatrixChannel _matrixChannelOutput;
         private MatrixChannel _matrixChannelInput;
 
-        public MatrixInOutSelectFrame MioFrame 
-        { 
-            get { return this; }
-        }
 
         /// <summary>
         /// MioFrame 아웃채널정보 
@@ -75,12 +71,6 @@ namespace LshMatrix
             }
         }
 
-        public string ParentId 
-        { 
-            get; 
-            set;
-        }
-
         public Form GetMainForm()
         {
             return this.FindForm();
@@ -96,7 +86,7 @@ namespace LshMatrix
         #endregion
 
         #region 초기화 Methods
-        public MatrixInOutSelectFrame()
+        public MioFrame()
         {
             InitializeComponent();
             _matrixChannelOutput = new MatrixChannel

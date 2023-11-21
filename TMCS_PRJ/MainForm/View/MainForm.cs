@@ -90,12 +90,9 @@ namespace TMCS_PRJ
 
         public void InitMioFrames(List<IMioFrame> MioFrames)
         {
-            foreach (MatrixInOutSelectFrame mioFrame in MioFrames)
-            {
-
-                var parentControl = FindControlById(mioFrame.ParentId);
-                parentControl?.Controls.Add(mioFrame);
-
+            foreach (MioFrame mioFrame in MioFrames)
+            {                
+                pnMioFrame.Controls.Add(mioFrame);
             }
         }
 
@@ -156,9 +153,9 @@ namespace TMCS_PRJ
 
         public void MioFrameDelete(object sender, EventArgs e)
         {
-            MatrixInOutSelectFrame mioFrame = sender as MatrixInOutSelectFrame;
+            MioFrame mioFrame = sender as MioFrame;
 
-            foreach (MatrixInOutSelectFrame mc in pnMioFrame.Controls)
+            foreach (MioFrame mc in pnMioFrame.Controls)
             {
                 if (mc == mioFrame)
                 {

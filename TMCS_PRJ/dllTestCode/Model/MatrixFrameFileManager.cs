@@ -20,10 +20,9 @@ namespace LshMatrix
         public void SaveMatrixInOutFramesInfo(List<IMioFrame> MioFrames)
         {
             List<MioFrameControlInfo> mioFramesInfo = new List<MioFrameControlInfo>();
-            foreach (MatrixInOutSelectFrame mioFrame in MioFrames)
+            foreach (MioFrame mioFrame in MioFrames)
             {
                 MioFrameControlInfo mioFrameInfo = new MioFrameControlInfo();
-                mioFrameInfo.ParentId = mioFrame.Parent.Name;
                 mioFrameInfo.DockStyle = mioFrame.Dock;
                 mioFrameInfo.Location = mioFrame.Location;
                 mioFrameInfo.Size = mioFrame.Size;
@@ -74,8 +73,7 @@ namespace LshMatrix
                     // MatrixInOutFrameUserControlInfo 객체들을 MatrixInOutSelectFrameView 객체로 변환
                     foreach (var mioFrameInfo in mioFramesInfo)
                     {
-                        MatrixInOutSelectFrame mioFrame = new MatrixInOutSelectFrame();
-                        mioFrame.ParentId = mioFrameInfo.ParentId;
+                        MioFrame mioFrame = new MioFrame();
                         mioFrame.Dock = mioFrameInfo.DockStyle;
                         mioFrame.MatrixChannelInput.Port = mioFrameInfo.inputPort;
                         mioFrame.MatrixChannelOutput.Port = mioFrameInfo.outputPort;
