@@ -9,28 +9,28 @@ namespace LshCamera
 {
     internal class CameraManager
     {
-        private List<CameraType> Cameras;
+        private List<ICamera> Cameras;
 
         public CameraManager()
         {
-            Cameras = new List<CameraType>();
+            Cameras = new List<ICamera>();
         }
 
 
-        internal void AddCamera(CameraType camera)
+        internal void AddCamera(ICamera camera)
         {
             Cameras.Add(camera);
         }
 
 
-        internal void PanTilt(CameraType camera)
+        internal void PanTilt(ICamera camera)
         {
             
         }
 
-        public void test(CameraType camera)
+        public void test(ICamera camera)
         {
-            Debug.WriteLine(camera.PanTilt() + camera.CameraId);
+            //Debug.WriteLine(camera.PanTilt() + camera.CameraId);
         }
 
     }

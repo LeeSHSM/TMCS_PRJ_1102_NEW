@@ -1,19 +1,20 @@
-﻿using System;
+﻿using LshCamera;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LshCamera2
+namespace TMCS_PRJ
 {
-    internal class Camera : ICameraType
+    internal class ViscaCamera : ICamera
     {
-        public int CameraId {get; set;}
-        public string CameraName {get; set;}
+        public int CameraId { get; set; }
+        public string CameraName { get; set; }
 
         private ICameraAction ActionHandler;
 
-        public Camera(int cameraId,string cameraName, ICameraAction actionHandler)
+        public ViscaCamera(int cameraId, string cameraName, ICameraAction actionHandler)
         {
             CameraId = cameraId;
             CameraName = cameraName;
@@ -39,6 +40,7 @@ namespace LshCamera2
         {
             await ActionHandler.ZoomOutAsync();
         }
+
 
     }
 }

@@ -4,7 +4,7 @@ using System.Diagnostics;
 
 namespace LshDlp
 {
-    internal partial class DlpFrame : UserControl, DlpFrameView
+    internal partial class DlpFrame : UserControl, IDlpFrame
     {
         public event EventHandler DlpClick;
 
@@ -57,7 +57,7 @@ namespace LshDlp
             }
         }
 
-        void DlpFrameView.SetDlpFrame(string channelType)
+        void IDlpFrame.SetDlpFrame(string channelType)
         {
             if (channelType == "INPUT")
             {
@@ -75,7 +75,7 @@ namespace LshDlp
             }
         }
 
-        void DlpFrameView.UpdateDlpTest()
+        void IDlpFrame.UpdateDlpTest()
         {
             foreach (Dlp dlp in _dlpStruct.Dlps)
             {

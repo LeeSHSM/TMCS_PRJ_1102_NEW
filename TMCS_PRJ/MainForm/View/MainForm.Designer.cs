@@ -39,8 +39,6 @@
             보기ToolStripMenuItem = new ToolStripMenuItem();
             장비등록정보확인ToolStripMenuItem = new ToolStripMenuItem();
             pnDlpFrame = new Panel();
-            lgCamera1 = new LGCamera();
-            samsungCamera1 = new SamsungCamera();
             carmeraControler1 = new CarmeraControler();
             groupBox1.SuspendLayout();
             menuStrip1.SuspendLayout();
@@ -141,28 +139,6 @@
             pnDlpFrame.Size = new Size(474, 235);
             pnDlpFrame.TabIndex = 6;
             // 
-            // lgCamera1
-            // 
-            lgCamera1.CameraId = 0;
-            lgCamera1.CameraName = null;
-            lgCamera1.InputPort = 0;
-            lgCamera1.Location = new Point(806, 37);
-            lgCamera1.Name = "lgCamera1";
-            lgCamera1.OutputPort = 0;
-            lgCamera1.Size = new Size(150, 150);
-            lgCamera1.TabIndex = 7;
-            // 
-            // samsungCamera1
-            // 
-            samsungCamera1.CameraId = 0;
-            samsungCamera1.CameraName = null;
-            samsungCamera1.InputPort = 0;
-            samsungCamera1.Location = new Point(806, 222);
-            samsungCamera1.Name = "samsungCamera1";
-            samsungCamera1.OutputPort = 0;
-            samsungCamera1.Size = new Size(93, 50);
-            samsungCamera1.TabIndex = 8;
-            // 
             // carmeraControler1
             // 
             carmeraControler1.BackColor = Color.Black;
@@ -178,8 +154,6 @@
             BackColor = SystemColors.Control;
             ClientSize = new Size(1199, 696);
             Controls.Add(carmeraControler1);
-            Controls.Add(samsungCamera1);
-            Controls.Add(lgCamera1);
             Controls.Add(pnDlpFrame);
             Controls.Add(pnMioFrame);
             Controls.Add(btnAddMioFrame);
@@ -212,8 +186,6 @@
         private ToolStripMenuItem 장비등록정보확인ToolStripMenuItem;
         private Panel pnDlpFrame;
         private LshMatrix.MatrixFrame mFrame;
-        private LGCamera lgCamera1;
-        private SamsungCamera samsungCamera1;
         private CarmeraControler carmeraControler1;
     }
 }

@@ -4,12 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LshCamera2
+namespace LshCamera
 {
-    public interface ICameraType
+    public interface ICamera
     {
         int CameraId { get; set; }
         string CameraName { get; set; }
-
     }
 }
+
+

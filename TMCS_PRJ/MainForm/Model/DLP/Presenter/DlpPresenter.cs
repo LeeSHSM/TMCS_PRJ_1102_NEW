@@ -18,7 +18,7 @@ namespace LshDlp
 
         IProgress<ProgressReport> _progress;
 
-        private DlpFrameView _dlpFrame;
+        private IDlpFrame _dlpFrame;
         private DlpManager _dlpManager;
         private DlpFrameFileManager _dlpFrameFileManager;
 

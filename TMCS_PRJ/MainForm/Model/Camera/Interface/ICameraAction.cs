@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LshCamera2
+namespace LshCamera
 {
     public interface ICameraAction
     {
@@ -89,21 +89,21 @@ namespace LshCamera2
 
         public async Task TiltAsync()
         {
-            
+
         }
 
         public async Task ZoomInAsync()
         {
-           
+
         }
 
         public async Task ZoomOutAsync()
         {
-            
+
         }
     }
 
- 
+
 
     //public class Serial : ICameraAction
     //{
@@ -121,7 +121,7 @@ namespace LshCamera2
 
     //    public async Task TiltAsync()
     //    {
-           
+
     //    }
 
     //    public async Task ZoomInAsync()

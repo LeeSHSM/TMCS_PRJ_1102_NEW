@@ -10,8 +10,9 @@ namespace LshCamera
     public class CameraPresenter
     {
         private CameraManager _cameraManager;
-        private CameraType _selectedCamera;
-        private CameraControlerView _cameraControler;
+        private ICamera _selectedCamera;
+        private ICameraControler _cameraControler;
+        private List<ICamera> _cameraTypes;
 
         public CameraPresenter()
         {
@@ -21,8 +22,8 @@ namespace LshCamera
 
         private void InitializeEvent()
         {
-            _cameraControler.CameraMove += _cameraControler_CameraMove;
-            _cameraControler.CameraMoveEnded += _cameraControler_CameraMoveEnded;
+            //_cameraControler.CameraMove += _cameraControler_CameraMove;
+            //_cameraControler.CameraMoveEnded += _cameraControler_CameraMoveEnded;
         }
 
         private void _cameraControler_CameraMoveEnded(object? sender, EventArgs e)
@@ -35,20 +36,20 @@ namespace LshCamera
             
         }
 
-        public void SetCamera(CameraType camera)
+        public void SetCamera(ICamera camera)
         {
             _cameraManager.AddCamera(camera);
-            camera.CameraSelected += Camera_CameraSelected;
+            //camera.CameraSelected += Camera_CameraSelected;
         }
 
-        public void SetCameraControler(CameraControlerView cameraControler)
+        public void SetCameraControler(ICameraControler cameraControler)
         {
             _cameraControler = cameraControler;
         }
 
         private void Camera_CameraSelected(object? sender, EventArgs e)
         {
-            CameraType camera = sender as CameraType;
+            ICamera camera = sender as ICamera;
             _selectedCamera = camera;
         }
 
@@ -57,7 +58,7 @@ namespace LshCamera
             
         }
 
-        public void test(CameraType camera)
+        public void test(ICamera camera)
         {
             _cameraManager.test(camera);
         }

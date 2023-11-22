@@ -30,7 +30,7 @@ namespace TMCS_PRJ
 
             _dlpPresenter = new DlpPresenter(2,4, progress);
 
-            //_cameraPresenter = new CameraPresenter();
+            _cameraPresenter = new CameraPresenter();
 
             InitializeViewEvent();
         }
@@ -54,6 +54,7 @@ namespace TMCS_PRJ
 
             _dlpPresenter.DlpClick += _dlpPresenter_DlpClick;
             _dlpPresenter.DlpMatrixInfoRequest += _dlpPresenter_DlpMatrixInfoRequest;
+            _dlpPresenter.DlpRouteChanged += _dlpPresenter_DlpRouteChanged;
 
         }
 
