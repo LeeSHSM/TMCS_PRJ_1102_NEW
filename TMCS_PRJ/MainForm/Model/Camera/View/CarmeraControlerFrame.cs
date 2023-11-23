@@ -7,22 +7,22 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using LshCamera;
 
-namespace TMCS_PRJ
+namespace LshCamera
 {
-    public partial class CarmeraControler : UserControl, ICameraControler
+    public partial class CarmeraControlerFrame : UserControl, ICameraControler
     {
+        public event EventHandler CameraMove;
+        public event EventHandler CameraMoveEnded;
 
-
-        public CarmeraControler()
+        public CarmeraControlerFrame()
         {
             InitializeComponent();
             InitializeEvent();
         }
 
-        public event EventHandler CameraMove;
-        public event EventHandler CameraMoveEnded;
+        private System.Windows.Forms.Timer cameraMoveTimer;
+
 
         private void InitializeEvent()
         {
@@ -37,10 +37,13 @@ namespace TMCS_PRJ
             btnBot.MouseUp += BtnArrow_MouseUp;
         }
 
+
         private void BtnArrow_MouseUp(object? sender, MouseEventArgs e)
         {
             CameraMoveEnded?.Invoke(sender, e);
         }
+
+        Button btnTest;
 
         private void BtnArrow_MouseDown(object? sender, MouseEventArgs e)
         {

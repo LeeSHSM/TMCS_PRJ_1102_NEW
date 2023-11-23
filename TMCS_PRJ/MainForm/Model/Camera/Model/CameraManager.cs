@@ -9,29 +9,75 @@ namespace LshCamera
 {
     internal class CameraManager
     {
-        private List<ICamera> Cameras;
+        List<ICamera> _cameras;
 
         public CameraManager()
         {
-            Cameras = new List<ICamera>();
+            _cameras = new List<ICamera>();
         }
-
 
         internal void AddCamera(ICamera camera)
         {
-            Cameras.Add(camera);
+            if(camera.Protocol is Visca cameraAction)
+            {                
+                cameraAction.SetIPAddress("192.168.50.8", 10000);
+            }
+            _cameras.Add(camera);
         }
 
+        public bool IsDuplicateCameraId(ICamera camera)
+        {            
+            foreach (ICamera c in _cameras)
+            {
+                if (c.CameraId == camera.CameraId) 
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
 
-        internal void PanTilt(ICamera camera)
+        public void PanRight(ICamera camera)
         {
-            
+
         }
 
-        public void test(ICamera camera)
+        public void PanLeft(ICamera camera)
         {
-            //Debug.WriteLine(camera.PanTilt() + camera.CameraId);
+
         }
+
+        public void TilitUp(ICamera camera)
+        {
+
+        }
+
+        public void TiliDown(ICamera camera)
+        {
+
+        }
+
+        public void ZoomIn(ICamera camera)
+        {
+
+        }
+
+        public void ZoomOut(ICamera camera)
+        {
+
+        }
+
+        public void SavePreeset(ICamera camera, int preesetNum)
+        {
+
+        }
+
+        public void LoadPreeset(ICamera camera, int preesetNum) 
+        { 
+        
+        }
+
+
 
     }
 

@@ -6,10 +6,9 @@ using System.Threading.Tasks;
 
 namespace LshCamera
 {
-    public interface ICameraControler
+    public class CameraConnectManager
     {
-        event EventHandler CameraMove;
-        event EventHandler CameraMoveEnded;
+
 
 
     }

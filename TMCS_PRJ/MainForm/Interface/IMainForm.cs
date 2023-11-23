@@ -28,5 +28,8 @@ namespace TMCS_PRJ
         event EventHandler btnAddMioFrameClick;
         event EventHandler EquipmentStatusClick;
 
+        event EventHandler CameraLoad;
+        event EventHandler CameraControlerLoad;
+
     }
 }

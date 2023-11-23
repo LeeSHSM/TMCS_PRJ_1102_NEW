@@ -47,6 +47,8 @@ namespace TMCS_PRJ
             _view.btnAddMioFrameClick += _view_btnAddMioFrameClick;
             _view.EquipmentStatusClick += _view_EquipmentStatusClick;
             _view.MFrameLoad += _view_MFrameLoad;
+            _view.CameraLoad += _view_CameraLoad;
+            _view.CameraControlerLoad += _view_CameraControlerLoad;
 
             _matrixControler.MFrameDragEnded += _matrixControler_MFrameDragEnded;
             _matrixControler.MFrameSelectedChannelChanged += _matrixControl_MatrixSelectedChanged;
@@ -56,6 +58,25 @@ namespace TMCS_PRJ
             _dlpPresenter.DlpMatrixInfoRequest += _dlpPresenter_DlpMatrixInfoRequest;
             _dlpPresenter.DlpRouteChanged += _dlpPresenter_DlpRouteChanged;
 
+        }
+
+        private void _view_CameraControlerLoad(object? sender, EventArgs e)
+        {
+            ICameraControler cameraControler = sender as ICameraControler;
+
+            if (cameraControler != null)
+            {
+                _cameraPresenter.SetCameraControler(cameraControler);
+            }
+        }
+
+        private void _view_CameraLoad(object? sender, EventArgs e)
+        {
+            ICamera camera = sender as ICamera;
+            if (camera != null)
+            {
+                _cameraPresenter.SetCamera(camera);
+            }
         }
 
         private void _view_MFrameLoad(object? sender, EventArgs e)

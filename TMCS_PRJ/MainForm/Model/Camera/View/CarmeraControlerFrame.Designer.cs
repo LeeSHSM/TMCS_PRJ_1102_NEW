@@ -1,6 +1,6 @@
-﻿namespace TMCS_PRJ
+﻿namespace LshCamera
 {
-    partial class CarmeraControler
+    partial class CarmeraControlerFrame
     {
         /// <summary> 
         /// 필수 디자이너 변수입니다.
@@ -39,7 +39,7 @@
             // btnRight
             // 
             btnRight.BackColor = Color.White;
-            btnRight.BackgroundImage = Properties.Resources.RightArrow;
+            btnRight.BackgroundImage = TMCS_PRJ.Properties.Resources.RightArrow;
             btnRight.BackgroundImageLayout = ImageLayout.Zoom;
             btnRight.Dock = DockStyle.Fill;
             btnRight.Location = new Point(100, 50);
@@ -52,7 +52,7 @@
             // btnUp
             // 
             btnUp.BackColor = Color.White;
-            btnUp.BackgroundImage = Properties.Resources.UpArrow;
+            btnUp.BackgroundImage = TMCS_PRJ.Properties.Resources.UpArrow;
             btnUp.BackgroundImageLayout = ImageLayout.Zoom;
             btnUp.Dock = DockStyle.Fill;
             btnUp.Location = new Point(50, 0);
@@ -65,7 +65,7 @@
             // btnLeft
             // 
             btnLeft.BackColor = Color.White;
-            btnLeft.BackgroundImage = Properties.Resources.LeftArrow;
+            btnLeft.BackgroundImage = TMCS_PRJ.Properties.Resources.LeftArrow;
             btnLeft.BackgroundImageLayout = ImageLayout.Zoom;
             btnLeft.Dock = DockStyle.Fill;
             btnLeft.Location = new Point(0, 50);
@@ -78,7 +78,7 @@
             // btnBot
             // 
             btnBot.BackColor = Color.White;
-            btnBot.BackgroundImage = Properties.Resources.BotArrow;
+            btnBot.BackgroundImage = TMCS_PRJ.Properties.Resources.BotArrow;
             btnBot.BackgroundImageLayout = ImageLayout.Zoom;
             btnBot.Dock = DockStyle.Fill;
             btnBot.Location = new Point(50, 100);

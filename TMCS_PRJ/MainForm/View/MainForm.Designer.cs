@@ -1,4 +1,6 @@
-﻿namespace TMCS_PRJ
+﻿using LshCamera;
+
+namespace TMCS_PRJ
 {
     partial class MainForm
     {
@@ -39,7 +41,9 @@
             보기ToolStripMenuItem = new ToolStripMenuItem();
             장비등록정보확인ToolStripMenuItem = new ToolStripMenuItem();
             pnDlpFrame = new Panel();
-            carmeraControler1 = new CarmeraControler();
+            carmeraControler1 = new CarmeraControlerFrame();
+            camera_ViscaType1 = new CameraFrame();
+            camera_ViscaType2 = new CameraFrame();
             groupBox1.SuspendLayout();
             menuStrip1.SuspendLayout();
             SuspendLayout();
@@ -146,6 +150,29 @@
             carmeraControler1.Name = "carmeraControler1";
             carmeraControler1.Size = new Size(171, 184);
             carmeraControler1.TabIndex = 9;
+            carmeraControler1.Load += CameraControl_Load;
+            // 
+            // camera_ViscaType1
+            // 
+            camera_ViscaType1.CameraId = 0;
+            camera_ViscaType1.CameraName = "하이";
+            camera_ViscaType1.Protocol = null;
+            camera_ViscaType1.Location = new Point(819, 37);
+            camera_ViscaType1.Name = "camera_ViscaType1";
+            camera_ViscaType1.Size = new Size(150, 150);
+            camera_ViscaType1.TabIndex = 10;
+            camera_ViscaType1.Load += Camera_Load;
+            // 
+            // camera_ViscaType2
+            // 
+            camera_ViscaType2.CameraId = 1;
+            camera_ViscaType2.CameraName = "엘지";
+            camera_ViscaType2.Protocol = null;
+            camera_ViscaType2.Location = new Point(829, 164);
+            camera_ViscaType2.Name = "camera_ViscaType2";
+            camera_ViscaType2.Size = new Size(150, 150);
+            camera_ViscaType2.TabIndex = 11;
+            camera_ViscaType2.Load += Camera_Load;
             // 
             // MainForm
             // 
@@ -153,6 +180,8 @@
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.Control;
             ClientSize = new Size(1199, 696);
+            Controls.Add(camera_ViscaType2);
+            Controls.Add(camera_ViscaType1);
             Controls.Add(carmeraControler1);
             Controls.Add(pnDlpFrame);
             Controls.Add(pnMioFrame);
@@ -186,6 +215,8 @@
         private ToolStripMenuItem 장비등록정보확인ToolStripMenuItem;
         private Panel pnDlpFrame;
         private LshMatrix.MatrixFrame mFrame;
-        private CarmeraControler carmeraControler1;
+        private CarmeraControlerFrame carmeraControler1;
+        private CameraFrame camera_ViscaType1;
+        private CameraFrame camera_ViscaType2;
     }
 }

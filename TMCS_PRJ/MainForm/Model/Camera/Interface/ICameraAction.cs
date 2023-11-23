@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,129 +8,75 @@ namespace LshCamera
 {
     public interface ICameraAction
     {
-        Task PanAsync(int cameraId);
-        Task TiltAsync();
-        Task ZoomInAsync();
-        Task ZoomOutAsync();
+
+        void SetCameraId(int CameraId);
+
+
+        void PanStart(int speed, int Direction);
+        void PanStop();
+        void TiltStart(int speed, int Direction);
+        void TiltStop();
+        void PanTilt(int PanSpeed, int tiltSpeed, int panDirection, int tiltDirection);
+        void PanTiltStop();
+
+
+
+        //void ZoomStart();
+        //void ZoomStop();
     }
 
-    public class CameraToAmx_Visca : ICameraAction
+    public class Visca : ICameraAction
     {
-        private string cameraIpAddress;
-        private int port;
-        private HttpClient httpClient;
+        string AMX_serverIp;
+        int AMX_serverPort;
 
-        public CameraToAmx_Visca(string ipAddress, int port = 80)
+        int _cameraId;
+
+        public void SetIPAddress(string serverIp, int serverPort)
         {
-            cameraIpAddress = ipAddress;
-            this.port = port;
-            httpClient = new HttpClient();
+            AMX_serverIp = serverIp;
+            AMX_serverPort = serverPort;
         }
 
-        public async Task PanAsync(int cameraId)
+        public void PanStart(int speed, int Direction)
         {
-            Debug.WriteLine($"{cameraId}가 움직입니다~");
+            
         }
 
-
-        public async Task TiltAsync()
+        public void PanStop()
         {
-
+            throw new NotImplementedException();
         }
 
-        public async Task ZoomInAsync()
+        public void PanTilt(int PanSpeed, int tiltSpeed, int panDirection, int tiltDirection)
         {
+            byte bytePanSpeed = (byte)PanSpeed;
+            byte bytetiltSpeed = (byte)tiltSpeed;
+            byte bytepanDirection = (byte)panDirection;
+            byte bytetiltDirection = (byte)tiltDirection;
+            byte[] command = new byte[] { 0x81, 0x06, 0x01, bytePanSpeed, bytetiltSpeed, bytepanDirection, bytetiltDirection, 0xFF };
 
+            throw new NotImplementedException();
         }
 
-        public async Task ZoomOutAsync()
+        public void PanTiltStop()
         {
-
-        }
-    }
-
-    public class IpCamera : ICameraAction
-    {
-        private string cameraIpAddress;
-        private int port;
-        private HttpClient httpClient;
-        int pan = 50;
-        int tilt = 50;
-
-        public IpCamera(string ipAddress, int port = 80)
-        {
-            cameraIpAddress = ipAddress;
-            this.port = port;
-            httpClient = new HttpClient();
+            throw new NotImplementedException();
         }
 
-        public async Task PanAsync(int cameraId)
+        public void SetCameraId(int CameraId)
         {
-            string requestUri = $"http://{cameraIpAddress}:{port}/control?pan={pan}&tilt={tilt}";
-            Debug.WriteLine("카메라 팬 움직임 시도중");
-            try
-            {
-                HttpResponseMessage response = await httpClient.GetAsync(requestUri);
-                if (response.IsSuccessStatusCode)
-                {
-                    Debug.WriteLine("Camera moved successfully.");
-                }
-                else
-                {
-                    Debug.WriteLine("Failed to move the camera.");
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"Error: {ex.Message}");
-            }
+            _cameraId = CameraId;
         }
 
-        public async Task TiltAsync()
+        public void TiltStart(int speed, int Direction)
         {
-
+            throw new NotImplementedException();
         }
 
-        public async Task ZoomInAsync()
+        public void TiltStop()
         {
-
-        }
-
-        public async Task ZoomOutAsync()
-        {
-
+            throw new NotImplementedException();
         }
     }
-
-
-
-    //public class Serial : ICameraAction
-    //{
-    //    private SerialManager serialManager;
-
-    //    public Serial(SerialManager serialManager)
-    //    {
-    //        this.serialManager = serialManager;
-    //    }
-
-    //    public async Task PanAsync(int cameraId)
-    //    {
-
-    //    }
-
-    //    public async Task TiltAsync()
-    //    {
-
-    //    }
-
-    //    public async Task ZoomInAsync()
-    //    {
-
-    //    }
-
-    //    public async Task ZoomOutAsync()
-    //    {
-
-    //    }
-    //}
 }

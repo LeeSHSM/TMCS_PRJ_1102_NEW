@@ -10,6 +10,16 @@ namespace TMCS_PRJ
 {
     public partial class MainForm : Form, IMainForm
     {
+        public event EventHandler MFrameLoad;
+
+        public event EventHandler FormLoad;
+        public event EventHandler FormClose;
+        public event EventHandler btnMatrixInputClick;
+        public event EventHandler btnMatrixOutputClick;
+        public event EventHandler btnAddMioFrameClick;
+        public event EventHandler EquipmentStatusClick;
+        public event EventHandler CameraLoad;
+        public event EventHandler CameraControlerLoad;
 
         public MainForm()
         {
@@ -91,7 +101,7 @@ namespace TMCS_PRJ
         public void InitMioFrames(List<IMioFrame> MioFrames)
         {
             foreach (MioFrame mioFrame in MioFrames)
-            {                
+            {
                 pnMioFrame.Controls.Add(mioFrame);
             }
         }
@@ -192,6 +202,16 @@ namespace TMCS_PRJ
             MFrameLoad?.Invoke(sender, e);
         }
 
+        private void Camera_Load(object sender, EventArgs e)
+        {
+            CameraLoad?.Invoke(sender, e);
+        }
+
+        private void CameraControl_Load(object sender, EventArgs e)
+        {
+            CameraControlerLoad?.Invoke(sender, e);
+        }
+
 
         #endregion
 
@@ -203,14 +223,7 @@ namespace TMCS_PRJ
 
 
 
-        public event EventHandler MFrameLoad;
 
-        public event EventHandler FormLoad;
-        public event EventHandler FormClose;
-        public event EventHandler btnMatrixInputClick;
-        public event EventHandler btnMatrixOutputClick;
-        public event EventHandler btnAddMioFrameClick;
-        public event EventHandler EquipmentStatusClick;
 
 
 
