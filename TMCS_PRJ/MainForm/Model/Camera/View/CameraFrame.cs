@@ -93,6 +93,16 @@ namespace LshCamera
         {
             _protocol.PanTilt(panSpeed, tiltSpeed, panDir, tiltDir);
         }
+
+        public async Task SavePreset()
+        {
+            _protocol.SavePreset();
+        }
+
+        public async Task LoadPreset(byte[] presetPosition)
+        {
+            _protocol.LoadPreset(presetPosition);
+        }
     }
 
     public class MyInterfaceTypeConverter : TypeConverter

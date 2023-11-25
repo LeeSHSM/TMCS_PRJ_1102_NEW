@@ -6,9 +6,11 @@ using System.Threading.Tasks;
 
 namespace LshCamera
 {
-    public class CameraPresetManager
+    public class CameraIpManager
     {
+        private void SetCameraIp(List<string> CameraIpList)
+        {
 
-
+        }
     }
 }

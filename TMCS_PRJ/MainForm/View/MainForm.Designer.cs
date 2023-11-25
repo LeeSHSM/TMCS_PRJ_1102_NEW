@@ -178,7 +178,7 @@ namespace TMCS_PRJ
             // 
             // ucCameraControler
             // 
-            ucCameraControler.BackColor = Color.Black;
+            ucCameraControler.BackColor = Color.FromArgb(64, 64, 64);
             ucCameraControler.Location = new Point(975, 569);
             ucCameraControler.Name = "ucCameraControler";
             ucCameraControler.Size = new Size(917, 460);

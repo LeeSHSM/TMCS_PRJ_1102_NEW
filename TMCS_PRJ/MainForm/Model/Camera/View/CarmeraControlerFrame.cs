@@ -17,6 +17,8 @@ namespace LshCamera
     {
         public event EventHandler testBtn;
         public event ICameraControler.delCameraPanTilt CameraPanTilt;
+        public event EventHandler SavePreset;
+        public event EventHandler LoadPreset;
 
         public CarmeraControlerFrame()
         {
@@ -33,7 +35,7 @@ namespace LshCamera
         private void Initialize()
         {
             pnPreeset.AutoScroll = true;
-            //AddControls(10);
+            AddControls(10);
         }
 
         private const int ControlSpacing = 7;
@@ -50,6 +52,7 @@ namespace LshCamera
                     Text = $"프리셋{i + 1}",
                     Location = new Point(ControlSpacing, yPos),
                     Size = new Size(100, ControlHeight)
+
                 };
                 pnPreeset.Controls.Add(label);
 
@@ -57,15 +60,27 @@ namespace LshCamera
                 {
                     Text = "실행",
                     Location = new Point(label.Width + 20, yPos - 4),
-                    Size = new Size(75, ControlHeight)
+                    Tag = i + 1,
+                    Size = new Size(75, ControlHeight),
+                    //BackColor = Color.Black,
+                    TabStop = false
                 };
+                button.Click += new EventHandler(LoadPreset_Click);
+                button.KeyUp += CarmeraControlerFrame_KeyUp;
+
                 pnPreeset.Controls.Add(button);
                 Button button2 = new Button
                 {
                     Text = "저장",
+                    Name = $"btnSave{i + 1}",
+                    Tag = i + 1,
                     Location = new Point(200, yPos - 4),
-                    Size = new Size(75, ControlHeight)
+                    //BackColor = Color.Black,
+                    Size = new Size(75, ControlHeight),
+                    TabStop = false
                 };
+                button2.Click += new EventHandler(SavePreset_Click);
+                button2.KeyUp += CarmeraControlerFrame_KeyUp;
                 // 필요한 경우 button.Click += new EventHandler(Button_Click);
                 pnPreeset.Controls.Add(button2);
 
@@ -73,10 +88,16 @@ namespace LshCamera
             }
         }
 
-
-        private void vScrollBar_Scroll(object? sender, ScrollEventArgs e)
+        private void LoadPreset_Click(object? sender, EventArgs e)
         {
-            pnPreeset.Top = -e.NewValue;
+            btnDown.Focus();
+            LoadPreset?.Invoke(sender, e);
+        }
+
+        private void SavePreset_Click(object? sender, EventArgs e)
+        {
+            btnDown.Focus();
+            SavePreset?.Invoke(sender, EventArgs.Empty);
         }
 
         private int userSpeed;
@@ -142,11 +163,6 @@ namespace LshCamera
             lblPanTiltSpeed.Text = userSpeed.ToString();
         }
 
-        public void SelectedCamera()
-        {
-            this.Focus();
-        }
-
         public void EndKeyEvent()
         {
             FindForm().Focus();
@@ -158,8 +174,8 @@ namespace LshCamera
             {
                 Debug.WriteLine("??");
                 SetKeyPressed(Keys.ControlKey, true);
-                _panSpeed = userSpeed - 8;
-                _tiltSpeed = userSpeed - 8;
+                _panSpeed = userSpeed - 5;
+                _tiltSpeed = userSpeed - 5;
                 StartCameraPanTilt();
             }
 
@@ -367,6 +383,11 @@ namespace LshCamera
         {
             testBtn?.Invoke(this, e);
 
+        }
+
+        public void SelectedCamera(ICamera camera)
+        {
+            throw new NotImplementedException();
         }
     }
 

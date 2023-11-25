@@ -18,6 +18,9 @@ namespace LshCamera
 
         void PanTilt(int panSpeed, int tiltSpeed, int panDir, int tiltDir);
 
+        Task SavePreset();
+        Task LoadPreset(byte[] presetPosition);
+
         void ClearCameraSelect();
 
 

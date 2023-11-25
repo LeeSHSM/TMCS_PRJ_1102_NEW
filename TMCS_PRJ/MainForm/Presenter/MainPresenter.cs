@@ -23,35 +23,34 @@ namespace TMCS_PRJ
         CameraPresenter _cameraPresenter;
         IProgress<ProgressReport> _progress;
 
-        NetworkStream stream;
+        
 
         public MainPresenter(IMainForm view, IProgress<ProgressReport> progress)
         {
             _progress = progress;
             _view = view;
+
             _matrixControler = new MatrixPresenter(8, 8, progress);
-            _matrixControler.InitializeDBServer(GlobalSetting.MATRIX_DB);
-            _matrixControler.SetConnectInfo(new RTVDMMatrixToIP(GlobalSetting.MATRIX_IP, GlobalSetting.MATRIX_PORT, progress));
+            _matrixControler.SetDBConnectString(GlobalSetting.DBConnectString);
+            _matrixControler.SetMatrixServer(new RTVDMMatrixToIP(GlobalSetting.MATRIX_IP, GlobalSetting.MATRIX_PORT, progress));
 
             _dlpPresenter = new DlpPresenter(2, 4, progress);
 
             _cameraPresenter = new CameraPresenter();
-            
-
-            TcpClient client = new TcpClient("192.168.50.9",1234);
-            Debug.WriteLine($"Connected to {client} ");
-            stream = client.GetStream();
-
-            _cameraPresenter.SetAmxServer(stream);
+            _cameraPresenter.SetDBConnectString(GlobalSetting.DBConnectString);
+            _cameraPresenter.SetAmxServer("192.168.50.9", 1234);            
 
             InitializeViewEvent();
         }
 
+        public async Task InitializeAsync()
+        {
+            await _matrixControler.InitializeAsync();
+            await _dlpPresenter.InitializeAsync();
+            await _cameraPresenter.InitializeAsync();
 
-
-
-
-
+            //_matrixControler.ConnectMatrixAsync(); //서버와 통신... 중요하긴한데 일단 백그라운드 실행
+        }
 
         /// <summary>
         /// 이벤트 초기화  
@@ -82,24 +81,9 @@ namespace TMCS_PRJ
         /// 비동기로 초기화시작 
         /// </summary>
         /// <returns></returns>
-        public async Task InitializeAsync()
-        {
-            await _matrixControler.InitializeAsync();
-            await _dlpPresenter.InitializeAsync();
 
-            _matrixControler.StartConnectionAsync(); //서버와 통신... 중요하긴한데 일단 백그라운드 실행
-            ReadDataAsync(stream);
-        }
 
-        private async Task ReadDataAsync(NetworkStream stream)
-        {
-            byte[] buffer = new byte[1024];
-            while (true)
-            {
-                int bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length);
-                Debug.WriteLine(BitConverter.ToString(buffer, 0, bytesRead));
-            }
-        }
+
 
         private void _view_CameraControlerLoad(object? sender, EventArgs e)
         {
@@ -215,10 +199,6 @@ namespace TMCS_PRJ
             MatrixChannel mc = sender as MatrixChannel;
             _selectedMatrixChannel = mc;
         }
-
-
-
-
 
         #region Event Handles
 

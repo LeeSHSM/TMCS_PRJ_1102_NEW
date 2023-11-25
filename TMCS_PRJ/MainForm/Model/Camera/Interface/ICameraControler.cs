@@ -11,6 +11,9 @@ namespace LshCamera
         delegate void delCameraPanTilt(int panSpeed, int tiltSpeed, int panDir, int tiltDir);
         event delCameraPanTilt CameraPanTilt;
 
+        event EventHandler SavePreset;
+        event EventHandler LoadPreset;
+
         void SelectedCamera(ICamera camera);
         void EndKeyEvent();
         

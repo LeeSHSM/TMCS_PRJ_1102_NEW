@@ -232,7 +232,7 @@ namespace LshMatrix
         /// DB접속정보 할당 
         /// </summary>
         /// <param name="connectionString"></param>
-        public void InitializeDBServer(string connectionString)
+        public void SetDBConnectString(string connectionString)
         {
             _matrixManager.ConnectionString = connectionString;
             _matrixFrameTotalManager.ConnectionString = connectionString;
@@ -242,12 +242,12 @@ namespace LshMatrix
         /// MatrixManager 통신역할 인터페이스 할당 
         /// </summary>
         /// <param name="matrixConnectInfo"></param>
-        public void SetConnectInfo(MatrixConnectInfo matrixConnectInfo)
+        public void SetMatrixServer(MatrixConnectInfo matrixConnectInfo)
         {
             _matrixManager.ConnectInfo = matrixConnectInfo;
         }
 
-        public async Task StartConnectionAsync()
+        public async Task ConnectMatrixAsync()
         {
             await _matrixManager.StartConnectAsync();
         }

@@ -35,6 +35,7 @@
             btnRight = new Button();
             btnUp = new Button();
             tableLayoutPanel3 = new TableLayoutPanel();
+            pnPreeset = new Panel();
             tableLayoutPanel4 = new TableLayoutPanel();
             lblPanTiltSpeed = new Label();
             lblZoomSpeed = new Label();
@@ -43,7 +44,6 @@
             scrollbarPanTiltSpeed = new VScrollBar();
             label1 = new Label();
             tableLayoutPanel5 = new TableLayoutPanel();
-            pnPreeset = new Panel();
             tblArrow.SuspendLayout();
             tableLayoutPanel1.SuspendLayout();
             tableLayoutPanel3.SuspendLayout();
@@ -158,6 +158,15 @@
             tableLayoutPanel3.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
             tableLayoutPanel3.Size = new Size(616, 233);
             tableLayoutPanel3.TabIndex = 5;
+            // 
+            // pnPreeset
+            // 
+            pnPreeset.BackColor = Color.FromArgb(224, 224, 224);
+            pnPreeset.Dock = DockStyle.Fill;
+            pnPreeset.Location = new Point(147, 3);
+            pnPreeset.Name = "pnPreeset";
+            pnPreeset.Size = new Size(466, 227);
+            pnPreeset.TabIndex = 11;
             // 
             // tableLayoutPanel4
             // 
@@ -279,20 +288,11 @@
             tableLayoutPanel5.Size = new Size(866, 518);
             tableLayoutPanel5.TabIndex = 10;
             // 
-            // pnPreeset
-            // 
-            pnPreeset.BackColor = Color.BlanchedAlmond;
-            pnPreeset.Dock = DockStyle.Fill;
-            pnPreeset.Location = new Point(147, 3);
-            pnPreeset.Name = "pnPreeset";
-            pnPreeset.Size = new Size(466, 227);
-            pnPreeset.TabIndex = 11;
-            // 
             // CarmeraControlerFrame
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            BackColor = Color.Black;
+            BackColor = Color.FromArgb(64, 64, 64);
             Controls.Add(tableLayoutPanel5);
             Name = "CarmeraControlerFrame";
             Size = new Size(866, 518);
