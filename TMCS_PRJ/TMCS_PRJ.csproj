@@ -15,16 +15,32 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="MainForm\Model\Matrix\Interface\IMFrame.cs" />
+    <Compile Include="MainForm\Model\Matrix\Interface\IMioFrame.cs" />
+    <Compile Include="MainForm\Model\Matrix\Model\Matrix.cs" />
+    <Compile Include="MainForm\Model\Matrix\Model\MatrixFrameFileManager.cs" />
+    <Compile Include="MainForm\Model\Matrix\Model\MatrixManager.cs" />
+    <Compile Include="MainForm\Model\Matrix\Presenter\MatrixPresenter.cs" />
+    <Compile Include="MainForm\Model\Matrix\View\MatrixFrame.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="MainForm\Model\Matrix\View\MatrixFrame.Designer.cs" />
+    <Compile Include="MainForm\Model\Matrix\View\MioFrame.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="MainForm\Model\Matrix\View\MioFrame.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="MainForm\Model\Matrix\View\MatrixFrame.resx" />
+    <EmbeddedResource Include="MainForm\Model\Matrix\View\MioFrame.resx" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="System.Data.SqlClient" Version="4.8.5" />
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Matrix\View\MatrixFrame.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="Matrix\View\MioFrame.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
     <Compile Update="Properties\Resources.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>

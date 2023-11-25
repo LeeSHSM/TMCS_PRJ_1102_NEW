@@ -9,7 +9,7 @@ using System.Windows.Forms;
 using System.Xml.Serialization;
 using LshGlobalSetting;
 
-namespace TMCS_PRJ
+namespace LshMatrix
 {
     public class MatrixFrameFileManager
     {
@@ -20,10 +20,9 @@ namespace TMCS_PRJ
         public void SaveMatrixInOutFramesInfo(List<IMioFrame> MioFrames)
         {
             List<MioFrameControlInfo> mioFramesInfo = new List<MioFrameControlInfo>();
-            foreach (MatrixInOutSelectFrame mioFrame in MioFrames)
+            foreach (MioFrame mioFrame in MioFrames)
             {
                 MioFrameControlInfo mioFrameInfo = new MioFrameControlInfo();
-                mioFrameInfo.ParentId = mioFrame.Parent.Name;
                 mioFrameInfo.DockStyle = mioFrame.Dock;
                 mioFrameInfo.Location = mioFrame.Location;
                 mioFrameInfo.Size = mioFrame.Size;
@@ -43,10 +42,10 @@ namespace TMCS_PRJ
         private void SaveUserControlsToXml(List<MioFrameControlInfo> controls, string filePath)
         {
             var serializer = new XmlSerializer(typeof(List<MioFrameControlInfo>));
-            using (var stream = new FileStream(filePath, FileMode.Create))
-            {
-                serializer.Serialize(stream, controls);
-            }
+            //using (var stream = new FileStream(filePath, FileMode.Create))
+            //{
+            //    serializer.Serialize(stream, controls);
+            //}
         }
 
         public async Task<List<IMioFrame>> LoadMatrixInOutFramesInfoAsync()
@@ -74,8 +73,7 @@ namespace TMCS_PRJ
                     // MatrixInOutFrameUserControlInfo 객체들을 MatrixInOutSelectFrameView 객체로 변환
                     foreach (var mioFrameInfo in mioFramesInfo)
                     {
-                        MatrixInOutSelectFrame mioFrame = new MatrixInOutSelectFrame();
-                        mioFrame.ParentId = mioFrameInfo.ParentId;
+                        MioFrame mioFrame = new MioFrame();
                         mioFrame.Dock = mioFrameInfo.DockStyle;
                         mioFrame.MatrixChannelInput.Port = mioFrameInfo.inputPort;
                         mioFrame.MatrixChannelOutput.Port = mioFrameInfo.outputPort;

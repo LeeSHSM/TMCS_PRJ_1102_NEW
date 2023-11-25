@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using LshGlobalSetting;
 
-namespace TMCS_PRJ
+namespace LshMatrix
 {
     public class MatrixManager
     {
@@ -42,7 +42,6 @@ namespace TMCS_PRJ
             _matrix = matrix;
         }
 
-
         //초기화 메서드이나... Async 타입으로 MatrixManager을 외부에서 생성할때 같이 실행해줘야함.
         public async Task InitializeChannels()
         {
@@ -50,9 +49,13 @@ namespace TMCS_PRJ
             {
                 _progress?.Report(new ProgressReport { Message = "인풋채널 초기화 시작" });
                 List<MatrixChannel> inputChannels = await LoadChannelAsync(INPUT);
+                //await Task.Delay(500);
                 _progress?.Report(new ProgressReport { Message = "인풋채널 초기화 완료" });
+                //await Task.Delay(500);
                 _progress?.Report(new ProgressReport { Message = "아웃채널 초기화 시작" });
+                //await Task.Delay(500);
                 List<MatrixChannel> outputChannels = await LoadChannelAsync(OUTPUT);
+                //await Task.Delay(500);
                 _progress?.Report(new ProgressReport { Message = "아웃채널 초기화 완료" });
 
                 _matrix.InputChannel = inputChannels;

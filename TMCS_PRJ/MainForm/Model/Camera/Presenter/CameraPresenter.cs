@@ -20,11 +20,11 @@ namespace LshCamera
         {
             _cameraManager = new CameraManager();
             _cameraDBManager = new CameraDBManager();
-            InitializeEvent();
         }
 
-        private void InitializeEvent()
-        {           
+        public async Task InitializeAsync()
+        {
+
         }
 
         public void SetAmxServer(NetworkStream amxStream)

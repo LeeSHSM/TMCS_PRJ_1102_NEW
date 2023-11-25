@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using LshGlobalSetting;
 
-namespace TMCS_PRJ
+namespace LshMatrix
 {
     public class MatrixChannel
     {
