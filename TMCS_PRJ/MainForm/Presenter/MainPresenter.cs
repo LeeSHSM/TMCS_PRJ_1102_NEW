@@ -1,5 +1,8 @@
 ﻿using System.Diagnostics;
+using System.IO;
+using System.Net.Sockets;
 using System.Runtime.Intrinsics.Arm;
+using System.Text;
 using LshCamera;
 using LshDlp;
 using LshGlobalSetting;
@@ -20,20 +23,35 @@ namespace TMCS_PRJ
         CameraPresenter _cameraPresenter;
         IProgress<ProgressReport> _progress;
 
+        NetworkStream stream;
+
         public MainPresenter(IMainForm view, IProgress<ProgressReport> progress)
         {
             _progress = progress;
             _view = view;
             _matrixControler = new MatrixPresenter(8, 8, progress);
-            _matrixControler.InitializeDBInfo(GlobalSetting.MATRIX_DB);
-            _matrixControler.SetConnectInfo(new RTVDMMatrixToIP(GlobalSetting.MATRIX_IP,GlobalSetting.MATRIX_PORT,progress));
+            _matrixControler.InitializeDBServer(GlobalSetting.MATRIX_DB);
+            _matrixControler.SetConnectInfo(new RTVDMMatrixToIP(GlobalSetting.MATRIX_IP, GlobalSetting.MATRIX_PORT, progress));
 
-            _dlpPresenter = new DlpPresenter(2,4, progress);
+            _dlpPresenter = new DlpPresenter(2, 4, progress);
 
             _cameraPresenter = new CameraPresenter();
+            
+
+            TcpClient client = new TcpClient("192.168.50.9",1234);
+            Debug.WriteLine($"Connected to {client} ");
+            stream = client.GetStream();
+
+            _cameraPresenter.SetAmxServer(stream);
 
             InitializeViewEvent();
         }
+
+
+
+
+
+
 
         /// <summary>
         /// 이벤트 초기화  
@@ -58,6 +76,29 @@ namespace TMCS_PRJ
             _dlpPresenter.DlpMatrixInfoRequest += _dlpPresenter_DlpMatrixInfoRequest;
             _dlpPresenter.DlpRouteChanged += _dlpPresenter_DlpRouteChanged;
 
+        }
+
+        /// <summary>
+        /// 비동기로 초기화시작 
+        /// </summary>
+        /// <returns></returns>
+        public async Task InitializeAsync()
+        {
+            await _matrixControler.InitializeAsync();
+            await _dlpPresenter.InitializeAsync();
+
+            _matrixControler.StartConnectionAsync(); //서버와 통신... 중요하긴한데 일단 백그라운드 실행
+            ReadDataAsync(stream);
+        }
+
+        private async Task ReadDataAsync(NetworkStream stream)
+        {
+            byte[] buffer = new byte[1024];
+            while (true)
+            {
+                int bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length);
+                Debug.WriteLine(BitConverter.ToString(buffer, 0, bytesRead));
+            }
         }
 
         private void _view_CameraControlerLoad(object? sender, EventArgs e)
@@ -175,17 +216,7 @@ namespace TMCS_PRJ
             _selectedMatrixChannel = mc;
         }
 
-        /// <summary>
-        /// 비동기로 초기화시작 
-        /// </summary>
-        /// <returns></returns>
-        public async Task InitializeAsync()
-        {
-            await _matrixControler.InitializeAsync();
-            await _dlpPresenter.InitializeAsync();
 
-            _matrixControler.StartConnectionAsync(); //서버와 통신... 중요하긴한데 일단 백그라운드 실행
-        }
 
 
 
@@ -193,7 +224,7 @@ namespace TMCS_PRJ
 
         private void _view_Form_Load(object? sender, EventArgs e)
         {
-            //_view.InitMatrixFrame(_matrixControler.GetMFrame());
+            _view.InitMatrixFrame(_matrixControler.GetMFrame());
             _view.InitMioFrames(_matrixControler.InitMioFrames());
 
             _matrixControler.SetMFrameChannelType("INPUT");

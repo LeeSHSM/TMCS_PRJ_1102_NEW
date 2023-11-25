@@ -33,10 +33,10 @@ namespace LshDlp
         private void SaveUserControlsToXml(List<DlpFrameControlInfo> controls, string filePath)
         {
             var serializer = new XmlSerializer(typeof(List<DlpFrameControlInfo>));
-            using (var stream = new FileStream(filePath, FileMode.Create))
-            {
-                serializer.Serialize(stream, controls);
-            }
+            //using (var stream = new FileStream(filePath, FileMode.Create))
+            //{
+            //    serializer.Serialize(stream, controls);
+            //}
         }
 
         public async Task<List<DlpFrameControlInfo>> LoadDlpsInfoAsync()

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -10,6 +11,7 @@ namespace LshCamera
     internal class CameraManager
     {
         List<ICamera> _cameras;
+        NetworkStream AmxStream;
 
         public CameraManager()
         {
@@ -19,10 +21,16 @@ namespace LshCamera
         internal void AddCamera(ICamera camera)
         {
             if(camera.Protocol is Visca cameraAction)
-            {                
-                cameraAction.SetIPAddress("192.168.50.8", 10000);
+            {
+                cameraAction.SetCameraId(camera.CameraId);
+                cameraAction.SetAmxServer(AmxStream);
             }
             _cameras.Add(camera);
+        }
+
+        public void SetAmxServer(NetworkStream amxStream)
+        {
+            AmxStream = amxStream;
         }
 
         public bool IsDuplicateCameraId(ICamera camera)
@@ -37,34 +45,17 @@ namespace LshCamera
             return false;
         }
 
-        public void PanRight(ICamera camera)
+        public void CameraPanTilt(ICamera camera,int panSpeed, int tiltSpeed, int panDir, int tiltDir)
         {
-
+            camera.PanTilt(panSpeed, tiltSpeed, panDir, tiltDir);
         }
 
-        public void PanLeft(ICamera camera)
+        public void testBtn(ICamera camera)
         {
+            byte[] command = new byte[] { 0x81, 0x01, 0x06, 0x02, 0x18, 0x18, 0x00, 0x08, 0x0a, 0x05, 0x08, 0x04, 0x09, 0x03, 0x0e, 0xFF };
 
-        }
 
-        public void TilitUp(ICamera camera)
-        {
-
-        }
-
-        public void TiliDown(ICamera camera)
-        {
-
-        }
-
-        public void ZoomIn(ICamera camera)
-        {
-
-        }
-
-        public void ZoomOut(ICamera camera)
-        {
-
+            AmxStream.Write(command, 0, command.Length);
         }
 
         public void SavePreeset(ICamera camera, int preesetNum)

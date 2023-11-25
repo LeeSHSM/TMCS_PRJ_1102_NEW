@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Drawing.Drawing2D;
 using System.Reflection;
 using System.Windows.Forms;
+using LshCamera;
 using LshMatrix;
 using Timer = System.Windows.Forms.Timer;
 
@@ -24,6 +25,9 @@ namespace TMCS_PRJ
         public MainForm()
         {
             InitializeComponent();
+            ucCamera1.Load += Camera_Load;
+            ucCamera2.Load += Camera_Load;
+            ucCameraControler.Load += CameraControl_Load;
         }
 
         public Form GetMainForm()
@@ -212,19 +216,27 @@ namespace TMCS_PRJ
             CameraControlerLoad?.Invoke(sender, e);
         }
 
+        private void MainForm_KeyDown(object sender, KeyEventArgs e)
+        {
+
+            if (this.ActiveControl.HasChildren)
+            {
+                // 유저 컨트롤에 포커스가 있을 때 키 이벤트를 무시                
+                return;
+            }
+            Debug.WriteLine("snfma");
+
+
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            ucCameraControler.Focus();
+        }
+
+
 
         #endregion
-
-
-
-
-
-
-
-
-
-
-
 
 
 

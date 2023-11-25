@@ -232,7 +232,7 @@ namespace LshMatrix
         /// DB접속정보 할당 
         /// </summary>
         /// <param name="connectionString"></param>
-        public void InitializeDBInfo(string connectionString)
+        public void InitializeDBServer(string connectionString)
         {
             _matrixManager.ConnectionString = connectionString;
             _matrixFrameTotalManager.ConnectionString = connectionString;

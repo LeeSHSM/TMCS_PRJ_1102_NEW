@@ -31,7 +31,7 @@ namespace TMCS_PRJ
         private void InitializeComponent()
         {
             groupBox1 = new GroupBox();
-            mFrame = new LshMatrix.MatrixFrame();
+            matrixFrame1 = new LshMatrix.MatrixFrame();
             btnMatrixOutput = new Button();
             btnMatrixInput = new Button();
             btnAddMioFrame = new Button();
@@ -41,16 +41,17 @@ namespace TMCS_PRJ
             보기ToolStripMenuItem = new ToolStripMenuItem();
             장비등록정보확인ToolStripMenuItem = new ToolStripMenuItem();
             pnDlpFrame = new Panel();
-            carmeraControler1 = new CarmeraControlerFrame();
-            camera_ViscaType1 = new CameraFrame();
-            camera_ViscaType2 = new CameraFrame();
+            ucCamera1 = new CameraFrame();
+            ucCamera2 = new CameraFrame();
+            button1 = new Button();
+            ucCameraControler = new CarmeraControlerFrame();
             groupBox1.SuspendLayout();
             menuStrip1.SuspendLayout();
             SuspendLayout();
             // 
             // groupBox1
             // 
-            groupBox1.Controls.Add(mFrame);
+            groupBox1.Controls.Add(matrixFrame1);
             groupBox1.Controls.Add(btnMatrixOutput);
             groupBox1.Controls.Add(btnMatrixInput);
             groupBox1.Location = new Point(12, 37);
@@ -60,13 +61,13 @@ namespace TMCS_PRJ
             groupBox1.TabStop = false;
             groupBox1.Text = "groupBox1";
             // 
-            // mFrame
+            // matrixFrame1
             // 
-            mFrame.Location = new Point(6, 51);
-            mFrame.Name = "mFrame";
-            mFrame.Size = new Size(286, 325);
-            mFrame.TabIndex = 7;
-            mFrame.Load += mFrame_Load;
+            matrixFrame1.Location = new Point(6, 51);
+            matrixFrame1.Name = "matrixFrame1";
+            matrixFrame1.Size = new Size(286, 474);
+            matrixFrame1.TabIndex = 3;
+            matrixFrame1.Load += mFrame_Load;
             // 
             // btnMatrixOutput
             // 
@@ -102,7 +103,7 @@ namespace TMCS_PRJ
             // 
             pnMioFrame.Location = new Point(316, 320);
             pnMioFrame.Name = "pnMioFrame";
-            pnMioFrame.Size = new Size(729, 291);
+            pnMioFrame.Size = new Size(484, 175);
             pnMioFrame.TabIndex = 3;
             // 
             // menuStrip1
@@ -112,7 +113,7 @@ namespace TMCS_PRJ
             menuStrip1.Items.AddRange(new ToolStripItem[] { 파일ToolStripMenuItem, 보기ToolStripMenuItem });
             menuStrip1.Location = new Point(0, 0);
             menuStrip1.Name = "menuStrip1";
-            menuStrip1.Size = new Size(1199, 24);
+            menuStrip1.Size = new Size(1904, 24);
             menuStrip1.TabIndex = 5;
             menuStrip1.Text = "menuStrip1";
             // 
@@ -143,46 +144,56 @@ namespace TMCS_PRJ
             pnDlpFrame.Size = new Size(474, 235);
             pnDlpFrame.TabIndex = 6;
             // 
-            // carmeraControler1
+            // ucCamera1
             // 
-            carmeraControler1.BackColor = Color.Black;
-            carmeraControler1.Location = new Point(1016, 37);
-            carmeraControler1.Name = "carmeraControler1";
-            carmeraControler1.Size = new Size(171, 184);
-            carmeraControler1.TabIndex = 9;
-            carmeraControler1.Load += CameraControl_Load;
+            ucCamera1.BackColor = Color.Transparent;
+            ucCamera1.CameraId = 1;
+            ucCamera1.CameraName = "엘지";
+            ucCamera1.Location = new Point(1074, 470);
+            ucCamera1.Name = "ucCamera1";
+            ucCamera1.Protocol = null;
+            ucCamera1.Size = new Size(51, 45);
+            ucCamera1.TabIndex = 8;
             // 
-            // camera_ViscaType1
+            // ucCamera2
             // 
-            camera_ViscaType1.CameraId = 0;
-            camera_ViscaType1.CameraName = "하이";
-            camera_ViscaType1.Protocol = null;
-            camera_ViscaType1.Location = new Point(819, 37);
-            camera_ViscaType1.Name = "camera_ViscaType1";
-            camera_ViscaType1.Size = new Size(150, 150);
-            camera_ViscaType1.TabIndex = 10;
-            camera_ViscaType1.Load += Camera_Load;
+            ucCamera2.BackColor = Color.Transparent;
+            ucCamera2.CameraId = 2;
+            ucCamera2.CameraName = "삼성";
+            ucCamera2.Location = new Point(1074, 398);
+            ucCamera2.Name = "ucCamera2";
+            ucCamera2.Protocol = null;
+            ucCamera2.Size = new Size(51, 45);
+            ucCamera2.TabIndex = 9;
             // 
-            // camera_ViscaType2
+            // button1
             // 
-            camera_ViscaType2.CameraId = 1;
-            camera_ViscaType2.CameraName = "엘지";
-            camera_ViscaType2.Protocol = null;
-            camera_ViscaType2.Location = new Point(829, 164);
-            camera_ViscaType2.Name = "camera_ViscaType2";
-            camera_ViscaType2.Size = new Size(150, 150);
-            camera_ViscaType2.TabIndex = 11;
-            camera_ViscaType2.Load += Camera_Load;
+            button1.Location = new Point(616, 581);
+            button1.Name = "button1";
+            button1.Size = new Size(75, 23);
+            button1.TabIndex = 10;
+            button1.Text = "button1";
+            button1.UseVisualStyleBackColor = true;
+            button1.Click += button1_Click;
+            // 
+            // ucCameraControler
+            // 
+            ucCameraControler.BackColor = Color.Black;
+            ucCameraControler.Location = new Point(975, 569);
+            ucCameraControler.Name = "ucCameraControler";
+            ucCameraControler.Size = new Size(917, 460);
+            ucCameraControler.TabIndex = 0;
             // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.Control;
-            ClientSize = new Size(1199, 696);
-            Controls.Add(camera_ViscaType2);
-            Controls.Add(camera_ViscaType1);
-            Controls.Add(carmeraControler1);
+            ClientSize = new Size(1904, 1041);
+            Controls.Add(ucCameraControler);
+            Controls.Add(button1);
+            Controls.Add(ucCamera2);
+            Controls.Add(ucCamera1);
             Controls.Add(pnDlpFrame);
             Controls.Add(pnMioFrame);
             Controls.Add(btnAddMioFrame);
@@ -192,9 +203,10 @@ namespace TMCS_PRJ
             MainMenuStrip = menuStrip1;
             Name = "MainForm";
             StartPosition = FormStartPosition.CenterScreen;
-            Text = "TMCS_PRJ";
+            Text = "TMCS";
             FormClosing += MainForm_FormClosing;
             Load += MainForm_Load;
+            KeyDown += MainForm_KeyDown;
             groupBox1.ResumeLayout(false);
             menuStrip1.ResumeLayout(false);
             menuStrip1.PerformLayout();
@@ -214,9 +226,13 @@ namespace TMCS_PRJ
         private ToolStripMenuItem 보기ToolStripMenuItem;
         private ToolStripMenuItem 장비등록정보확인ToolStripMenuItem;
         private Panel pnDlpFrame;
-        private LshMatrix.MatrixFrame mFrame;
         private CarmeraControlerFrame carmeraControler1;
         private CameraFrame camera_ViscaType1;
         private CameraFrame camera_ViscaType2;
+        private CameraFrame ucCamera1;
+        private CameraFrame ucCamera2;
+        private Button button1;
+        private LshMatrix.MatrixFrame matrixFrame1;
+        private CarmeraControlerFrame ucCameraControler;
     }
 }

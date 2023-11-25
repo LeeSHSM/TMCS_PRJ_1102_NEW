@@ -28,31 +28,36 @@
         /// </summary>
         private void InitializeComponent()
         {
-            lblName = new Label();
+            picCamera = new PictureBox();
+            ((System.ComponentModel.ISupportInitialize)picCamera).BeginInit();
             SuspendLayout();
             // 
-            // lblName
+            // picCamera
             // 
-            lblName.AutoSize = true;
-            lblName.Location = new Point(47, 68);
-            lblName.Name = "lblName";
-            lblName.Size = new Size(39, 15);
-            lblName.TabIndex = 0;
-            lblName.Text = "label1";
+            picCamera.BackColor = Color.Transparent;
+            picCamera.BackgroundImage = TMCS_PRJ.Properties.Resources.cctv1;
+            picCamera.BackgroundImageLayout = ImageLayout.Stretch;
+            picCamera.Dock = DockStyle.Fill;
+            picCamera.Location = new Point(0, 0);
+            picCamera.Name = "picCamera";
+            picCamera.Size = new Size(150, 150);
+            picCamera.TabIndex = 0;
+            picCamera.TabStop = false;
             // 
-            // Camera_ViscaType
+            // CameraFrame
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            Controls.Add(lblName);
-            Name = "Camera_ViscaType";
-            MouseUp += Camera_ViscaType_MouseUp;
+            BackColor = Color.Transparent;
+            Controls.Add(picCamera);
+            Name = "CameraFrame";
+            MouseUp += Camera_MouseUp;
+            ((System.ComponentModel.ISupportInitialize)picCamera).EndInit();
             ResumeLayout(false);
-            PerformLayout();
         }
 
         #endregion
 
-        private Label lblName;
+        private PictureBox picCamera;
     }
 }

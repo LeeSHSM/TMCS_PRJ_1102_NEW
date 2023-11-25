@@ -19,10 +19,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="dllTestCode\View\MatrixFrame.cs">
+    <Compile Update="Matrix\View\MatrixFrame.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Update="dllTestCode\View\MioFrame.cs">
+    <Compile Update="Matrix\View\MioFrame.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Update="Properties\Resources.Designer.cs">

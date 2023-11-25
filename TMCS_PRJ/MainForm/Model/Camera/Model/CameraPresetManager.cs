@@ -6,10 +6,7 @@ using System.Threading.Tasks;
 
 namespace LshCamera
 {
-    public class CameraConnectManager
+    internal class CameraPresetManager
     {
-
-
-
     }
 }

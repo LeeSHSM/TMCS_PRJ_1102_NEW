@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Globalization;
 using System.Linq;
@@ -14,15 +15,27 @@ namespace LshCamera
     public partial class CameraFrame : UserControl, ICamera
     {
         public event EventHandler CameraSelected;
+        public event EventHandler CameraSelectedClear;
 
         private string _cameraName;
         private int _cameraId;
+
+        private bool _selected = false;
+
+
         public ICameraAction _protocol;
 
         public CameraFrame()
         {
             InitializeComponent();
-        } 
+            InitializeEvent();
+        }
+
+        private void InitializeEvent()
+        {
+            picCamera.MouseUp += Camera_MouseUp;
+
+        }
 
         public string CameraName
         {
@@ -30,25 +43,45 @@ namespace LshCamera
             set
             {
                 _cameraName = value;
-                lblName.Text = _cameraName;
+
             }
         }
 
-        public int CameraId { get => _cameraId; set => _cameraId = value; }
+        public int CameraId
+        {
+            get => _cameraId;
+            set => _cameraId = value;
+        }
 
-        public ICameraAction Protocol 
+        public ICameraAction Protocol
         {
             get => _protocol;
-            set 
+            set
             {
                 _protocol = value;
-                //_protocol.SetCameraId(CameraId);
             }
-        }        
+        }
 
-        private void Camera_ViscaType_MouseUp(object sender, MouseEventArgs e)
+        private void Camera_MouseUp(object sender, MouseEventArgs e)
+        {            
+            if(_selected)
+            {
+                ClearCameraSelect();
+                CameraSelectedClear?.Invoke(this, EventArgs.Empty);
+            }
+            else
+            {
+                CameraSelected?.Invoke(this, e);
+                _selected = true;
+                picCamera.BackgroundImage = TMCS_PRJ.Properties.Resources.cctvMouseOver;
+            }
+            Debug.WriteLine($"선택!{CameraId}");
+        }
+
+        public void ClearCameraSelect()
         {
-            CameraSelected?.Invoke(this, e);
+            _selected = false;
+            picCamera.BackgroundImage = TMCS_PRJ.Properties.Resources.cctv;
         }
 
         public void SetCameraId(int CameraId)
@@ -56,39 +89,9 @@ namespace LshCamera
             _cameraId = CameraId;
         }
 
-        public void PanStart(int speed, int Direction)
+        public void PanTilt(int panSpeed, int tiltSpeed, int panDir, int tiltDir)
         {
-            _protocol.PanStart(speed, Direction);
-        }
-
-        public void PanStop()
-        {
-            _protocol.PanStop();
-        }
-
-        public void TiltStart(int speed, int Direction)
-        {
-            _protocol.TiltStart(speed, Direction);
-        }
-
-        public void TiltStop()
-        {
-            _protocol.TiltStop();
-        }
-
-        public void PanTilt(int PanSpeed, int tiltSpeed, int panDirection, int tiltDirection)
-        {
-            _protocol.PanTilt(PanSpeed, tiltSpeed, panDirection, tiltDirection);
-        }
-
-        public void PanTiltStop()
-        {
-            _protocol.PanStop();
-        }
-
-        public void SetCameraActionConnectInfo(string serverIp, int serverPort)
-        {
-            throw new NotImplementedException();
+            _protocol.PanTilt(panSpeed, tiltSpeed, panDir, tiltDir);
         }
     }
 

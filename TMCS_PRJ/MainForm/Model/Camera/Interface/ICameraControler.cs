@@ -8,9 +8,12 @@ namespace LshCamera
 {
     public interface ICameraControler
     {
-        event EventHandler CameraMove;
-        event EventHandler CameraMoveEnded;
+        delegate void delCameraPanTilt(int panSpeed, int tiltSpeed, int panDir, int tiltDir);
+        event delCameraPanTilt CameraPanTilt;
 
-
+        void SelectedCamera(ICamera camera);
+        void EndKeyEvent();
+        
+        event EventHandler testBtn;
     }
 }

@@ -9,21 +9,16 @@ namespace LshCamera
     public interface ICamera 
     {
         event EventHandler CameraSelected;
+        event EventHandler CameraSelectedClear;
 
         int CameraId { get; set; }
         string CameraName { get; set; }
 
         ICameraAction Protocol { get; set; }
 
-        void SetCameraActionConnectInfo(string serverIp, int serverPort);
+        void PanTilt(int panSpeed, int tiltSpeed, int panDir, int tiltDir);
 
-        void PanStart(int speed, int Direction);
-        void PanStop();
-        void TiltStart(int speed, int Direction);
-        void TiltStop();
-        void PanTilt(int PanSpeed, int tiltSpeed, int panDirection, int tiltDirection);
-        void PanTiltStop();
-
+        void ClearCameraSelect();
 
 
     }
