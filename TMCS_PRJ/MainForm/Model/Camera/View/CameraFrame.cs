@@ -17,14 +17,6 @@ namespace LshCamera
         public event EventHandler CameraSelected;
         public event EventHandler CameraSelectedClear;
 
-        private string _cameraName;
-        private int _cameraId;
-
-        private bool _selected = false;
-
-
-        public ICameraAction _protocol;
-
         public CameraFrame()
         {
             InitializeComponent();
@@ -34,17 +26,19 @@ namespace LshCamera
         private void InitializeEvent()
         {
             picCamera.MouseUp += Camera_MouseUp;
-
         }
+
+
+        private string _cameraName;
+        private int _cameraId;
+        private ICameraAction _protocol;
+
+        private bool _selected = false;
 
         public string CameraName
         {
-            get { return _cameraName; }
-            set
-            {
-                _cameraName = value;
-
-            }
+            get => _cameraName; 
+            set => _cameraName = value;
         }
 
         public int CameraId
@@ -56,26 +50,7 @@ namespace LshCamera
         public ICameraAction Protocol
         {
             get => _protocol;
-            set
-            {
-                _protocol = value;
-            }
-        }
-
-        private void Camera_MouseUp(object sender, MouseEventArgs e)
-        {            
-            if(_selected)
-            {
-                ClearCameraSelect();
-                CameraSelectedClear?.Invoke(this, EventArgs.Empty);
-            }
-            else
-            {
-                CameraSelected?.Invoke(this, e);
-                _selected = true;
-                picCamera.BackgroundImage = TMCS_PRJ.Properties.Resources.cctvMouseOver;
-            }
-            Debug.WriteLine($"선택!{CameraId}");
+            set => _protocol = value;
         }
 
         public void ClearCameraSelect()
@@ -84,24 +59,45 @@ namespace LshCamera
             picCamera.BackgroundImage = TMCS_PRJ.Properties.Resources.cctv;
         }
 
+        private void SetCameraSelect()
+        {
+            _selected = true;
+            picCamera.BackgroundImage = TMCS_PRJ.Properties.Resources.cctvMouseOver;
+        }
+
+
         public void SetCameraId(int CameraId)
         {
             _cameraId = CameraId;
         }
 
-        public void PanTilt(int panSpeed, int tiltSpeed, int panDir, int tiltDir)
+        public async Task PanTiltAsync(int panSpeed, int tiltSpeed, int panDir, int tiltDir)
         {
-            _protocol.PanTilt(panSpeed, tiltSpeed, panDir, tiltDir);
+            _protocol.PanTiltAsync(panSpeed, tiltSpeed, panDir, tiltDir);
         }
 
-        public async Task SavePreset()
+        public async Task<byte[]> SavePresetAsync()
         {
-            _protocol.SavePreset();
+           return await _protocol.SavePresetAsync();
         }
 
-        public async Task LoadPreset(byte[] presetPosition)
+        public async Task LoadPresetAsync(byte[] presetPosition)
         {
-            _protocol.LoadPreset(presetPosition);
+            _protocol.LoadPresetAsync(presetPosition);
+        }
+
+        private void Camera_MouseUp(object sender, MouseEventArgs e)
+        {
+            if (_selected)
+            {
+                ClearCameraSelect();
+                CameraSelectedClear?.Invoke(this, EventArgs.Empty);
+            }
+            else
+            {
+                SetCameraSelect();
+                CameraSelected?.Invoke(this, EventArgs.Empty);                
+            }
         }
     }
 

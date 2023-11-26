@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace LshCamera
 {
-    public interface ICamera 
+    public interface ICamera :ICameraAction
     {
         event EventHandler CameraSelected;
         event EventHandler CameraSelectedClear;
@@ -15,11 +15,6 @@ namespace LshCamera
         string CameraName { get; set; }
 
         ICameraAction Protocol { get; set; }
-
-        void PanTilt(int panSpeed, int tiltSpeed, int panDir, int tiltDir);
-
-        Task SavePreset();
-        Task LoadPreset(byte[] presetPosition);
 
         void ClearCameraSelect();
 

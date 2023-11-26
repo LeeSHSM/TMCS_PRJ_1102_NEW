@@ -378,13 +378,6 @@ namespace LshCamera
         }
 
 
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-            testBtn?.Invoke(this, e);
-
-        }
-
         public void SelectedCamera(ICamera camera)
         {
             throw new NotImplementedException();

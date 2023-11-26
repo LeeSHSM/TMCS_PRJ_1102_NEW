@@ -17,6 +17,5 @@ namespace LshCamera
         void SelectedCamera(ICamera camera);
         void EndKeyEvent();
         
-        event EventHandler testBtn;
     }
 }

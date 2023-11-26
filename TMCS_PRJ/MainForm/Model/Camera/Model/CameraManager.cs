@@ -14,7 +14,7 @@ namespace LshCamera
         private CameraDBManager _dbManager;
 
         List<ICamera> _cameras;
-        NetworkStream _amxStream;
+        //NetworkStream _amxStream;
 
         public CameraManager()
         {
@@ -26,53 +26,32 @@ namespace LshCamera
         {
             if (camera.Protocol is Visca cameraAction)
             {
-                if (_amxStream == null)
-                {
-                    cameraAction.SetCameraId(camera.CameraId);
-                }
-                else
-                {
-                    cameraAction.SetCameraId(camera.CameraId);
-                    cameraAction.SetAmxServer(_amxStream);
-                }                
+                cameraAction.SetCameraId(camera.CameraId);
+                cameraAction.SetAmxServer(_amxServer);
             }
             _cameras.Add(camera);
         }
-
+       
         public void SetAmxServer(CameraAmxServer amxServer)
         {
             _amxServer = amxServer;
             _amxServer.AmxConnected += _amxServer_AmxConnected;
-            _amxServer.ConnectAmxServerAsync();
         }
-
+        
         private void _amxServer_AmxConnected(object? sender, EventArgs e)
         {
-            _amxStream = _amxServer.GetStream();
             foreach (ICamera camera in _cameras)
             {
                 if (camera.Protocol is Visca cameraAction && camera.Protocol == null)
                 {
-                    cameraAction.SetAmxServer(_amxStream);
+                    cameraAction.SetAmxServer(_amxServer);
                 }
             }
         }
 
-        public void SetIpCamera(NetworkStream amxStream)
-        {
-
-        }
-
-        public void CameraPanTilt(ICamera camera,int panSpeed, int tiltSpeed, int panDir, int tiltDir)
-        {
-            camera.PanTilt(panSpeed, tiltSpeed, panDir, tiltDir);
-        }
-
-        public void testBtn(ICamera camera)
-        {
-            byte[] command = new byte[] { 0x81, 0x01, 0x06, 0x02, 0x18, 0x18, 0x00, 0x08, 0x0a, 0x05, 0x08, 0x04, 0x09, 0x03, 0x0e, 0xFF };
-
-            _amxStream.Write(command, 0, command.Length);
+        public async Task CameraPanTilt(ICamera camera,int panSpeed, int tiltSpeed, int panDir, int tiltDir)
+        {            
+            await camera.PanTiltAsync(panSpeed, tiltSpeed, panDir, tiltDir);
         }
 
         public async Task SavePreeset(ICamera camera, int preesetNum)
@@ -81,8 +60,8 @@ namespace LshCamera
             {
                 return;
             }
-            camera.SavePreset();
-            byte[] tat = await _amxServer.GetCameraPosition();            
+            byte[] tat = await camera.SavePresetAsync();
+            //byte[] tat = await _amxServer.GetCameraPosition();            
             _dbManager.SavePreset(camera, preesetNum, tat);
             string tmp = BitConverter.ToString(tat, 0, 9);
             //Debug.WriteLine(BitConverter.ToString(buffer, 0, bytesRead));
@@ -98,7 +77,7 @@ namespace LshCamera
             }
 
             //_amxStream.Write(newArray, 0, newArray.Length);
-            camera.LoadPreset(tat);
+            camera.LoadPresetAsync(tat);
 
         }
 

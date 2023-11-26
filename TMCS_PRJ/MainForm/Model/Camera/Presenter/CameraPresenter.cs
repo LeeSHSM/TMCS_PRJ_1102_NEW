@@ -59,7 +59,6 @@ namespace LshCamera
 		public void SetCameraControler(ICameraControler cameraControler)
 		{
 			_cameraControler = cameraControler;
-			_cameraControler.testBtn += _cameraControler_testBtn;
 			_cameraControler.CameraPanTilt += _cameraControler_CameraPanTilt;
             _cameraControler.SavePreset += _cameraControler_SavePreset;
             _cameraControler.LoadPreset += _cameraControler_LoadPreset;
@@ -84,29 +83,8 @@ namespace LshCamera
 				return;
 			}
 
-			if (_selectedCamera.Protocol is Visca)
-			{
-				if ((!_cameraAmxServer.GetStatus()))
-				{
-					await _cameraAmxServer.ConnectAmxServerAsync();
-				}
-				else
-				{
-					_cameraManager.CameraPanTilt(_selectedCamera, panSpeed, tiltSpeed, panDir, tiltDir);
-				}
-			}
-			else if(_selectedCamera.Protocol is IpCamera)
-			{
-
-			}
-
-			
-		}
-
-		private void _cameraControler_testBtn(object? sender, EventArgs e)
-		{
-			_cameraManager.testBtn(_selectedCamera);
-		}      
+            await _cameraManager.CameraPanTilt(_selectedCamera, panSpeed, tiltSpeed, panDir, tiltDir);			
+		}     
 
 		private void Camera_CameraSelected(object? sender, EventArgs e)
 		{

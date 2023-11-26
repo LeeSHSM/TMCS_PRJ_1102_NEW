@@ -14,4 +14,11 @@ namespace LshCamera
         public int Cameraid { get => _cameraid; set => _cameraid = value; }
         public Dictionary<int, byte[]> Preset { get => _preset; set => _preset = value; }
     }
+
+    public class Preset 
+    { 
+
+
+    }
+
 }
