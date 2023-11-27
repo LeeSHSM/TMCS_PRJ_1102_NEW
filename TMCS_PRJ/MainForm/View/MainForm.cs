@@ -23,6 +23,23 @@ namespace TMCS_PRJ
             ucCamera1.Load += Camera_Load;
             ucCamera2.Load += Camera_Load;
             ucCameraControler.Load += CameraControl_Load;
+            InitializeEvent();
+        }
+
+        private void InitializeEvent()
+        {
+            btnMatrixInput.Click += btnMatrixInput_Click;
+            btnMatrixOutput.Click += btnMatrixOutput_Click;
+        }
+
+        private void btnMatrixOutput_Click(object? sender, EventArgs e)
+        {
+            btnMatrixOutputClick?.Invoke(sender, e);
+        }
+
+        private void btnMatrixInput_Click(object? sender, EventArgs e)
+        {
+            btnMatrixInputClick?.Invoke(sender, e);
         }
 
         public Form GetMainForm()
@@ -140,15 +157,7 @@ namespace TMCS_PRJ
         }
 
         #region Event Handles
-        private void btnMatrixInput_Click(object sender, EventArgs e)
-        {
-            btnMatrixInputClick?.Invoke(sender, e);
-        }
 
-        private void btnMatrixOutput_Click(object sender, EventArgs e)
-        {
-            btnMatrixOutputClick?.Invoke(sender, e);
-        }
 
         private void MainForm_Load(object sender, EventArgs e)
         {

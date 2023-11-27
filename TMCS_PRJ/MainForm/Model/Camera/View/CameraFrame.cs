@@ -38,7 +38,7 @@ namespace LshCamera
             set => _cameraId = value;
         }
 
-        public CameraPresetGroup PresetGroup 
+        public CameraPresetGroup PresetGroup
         {
             get => _presetGroup;
             set => _presetGroup = value;

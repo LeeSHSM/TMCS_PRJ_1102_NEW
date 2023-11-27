@@ -35,7 +35,7 @@
             // picCamera
             // 
             picCamera.BackColor = Color.Transparent;
-            picCamera.BackgroundImage = TMCS_PRJ.Properties.Resources.cctv1;
+            picCamera.BackgroundImage = TMCS_PRJ.Properties.Resources.cctv;
             picCamera.BackgroundImageLayout = ImageLayout.Stretch;
             picCamera.Dock = DockStyle.Fill;
             picCamera.Location = new Point(0, 0);

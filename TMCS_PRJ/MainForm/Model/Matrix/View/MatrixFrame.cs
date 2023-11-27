@@ -1,19 +1,328 @@
 ﻿using System.Data;
 using System.Diagnostics;
 using System.Reflection;
+using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace LshMatrix
 {
 
     public partial class MatrixFrame : UserControl, IMFrame
     {
-        //private string _channelType;
         public MatrixFrame()
         {
             InitializeComponent();
             InitializeEvent();
             dgvMatrixChannelList.GetType().GetProperty("DoubleBuffered", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(dgvMatrixChannelList, true, null);
+            dgvMatrixChannelList.Visible = false;
+            dgvMatrixChannelList.Dock = DockStyle.None;
+            pnMainScreen = new Panel();
+
+            InitializeMainScreen();
         }
+
+        private void InitializeMainScreen()
+        {
+            this.Controls.Add(pnMainScreen);
+            pnMainScreen.Paint += PnMainScreen_Paint;
+            pnMainScreen.Dock = DockStyle.Fill;
+            pnMainScreen.Margin = new Padding(0, 0, 0, 0);
+            pnMainScreen.MouseWheel += PnMainScreen_MouseWheel;
+        }
+
+        private int scrollPosition = 10;
+        private int wheelCount = 0;
+        private int maxCount = 0;
+        private int maxCountPer = 0;
+        private void PnMainScreen_MouseWheel(object? sender, MouseEventArgs e)
+        {
+            int tmpScrollValue = 0;
+
+            if (e.Delta > 0)
+            {
+                if (wheelCount <= 0)
+                {
+                    return;
+                }
+                if (wheelCount == maxCount)
+                {
+                    wheelCount -= 1;
+                    tmpScrollValue = -(maxCountPer+ scrollPosition);
+                }
+                else
+                {
+                    wheelCount -= 1;
+                    tmpScrollValue = -scrollPosition;
+                }
+            }
+            else
+            {          
+                if (wheelCount >= maxCount)
+                {
+                    return;
+                }
+
+                if (wheelCount == maxCount - 1)
+                {
+                    wheelCount += 1;
+                    tmpScrollValue = maxCountPer + scrollPosition;
+                }
+                else
+                {
+                    wheelCount += 1;
+                    tmpScrollValue = scrollPosition;
+                }
+            }
+            UpdateMainScreenWheelMove(tmpScrollValue);
+        }
+
+
+
+        private void UpdateMainScreenWheelMove(int scrollValue)
+        {            
+                foreach (Control control in pnMainScreen.Controls)
+                {
+                    if (control is Label && (int)control.Tag != -1)
+                    {
+                        control.Location = new Point(control.Location.X, control.Location.Y - (scrollValue));
+                    }
+
+                    if (control is Panel)
+                    {
+                        foreach (Control panCon in control.Controls)
+                        {
+                            int scrollbarHeight = panCon.Height;
+                            int maxScroll = control.Height - scrollbarHeight - 6;
+                            int scrollbarY = 3 + (int)((double)wheelCount / maxCount * maxScroll);
+                            panCon.Location = new Point(panCon.Location.X, scrollbarY);
+                        }
+                    }
+                }
+            //}
+        }
+
+
+        private void CheckOverMainScreen()
+        {
+            wheelCount = 0;
+            maxCount = 0;
+            maxCountPer = 0;
+            Control con = new Control();
+            foreach (Control control in pnMainScreen.Controls)
+            {
+                if ((int)control.Tag > maxCount)
+                {
+                    con = control;
+                }
+            }
+            if (con == null)
+            {
+                return;
+            }
+            maxCount = ((con.Top + con.Height) - pnMainScreen.Height) / scrollPosition;
+            maxCountPer = ((con.Top + con.Height) - pnMainScreen.Height) % scrollPosition;
+
+            if(maxCount > 0)
+            {
+                Panel pn = new Panel
+                {
+                    Name = "test",
+                    Location = new Point(pnMainScreen.Width - 18, 0),
+                    Size = new Size(18,pnMainScreen.Height ),
+                    BackColor = Color.FromArgb(100,100,100),
+                };
+                pnMainScreen.Controls.Add(pn);
+
+                Panel pn2 = new Panel
+                {
+                    Location = new Point(3, 3),
+                    Size = new Size (pn.Width - 6, pn.Height / maxCount),
+                    BackColor = Color.FromArgb(140,140,140),
+                };
+                pn.Controls.Add(pn2);
+                pn2.MouseDown += Pn2_MouseDown;
+                pn2.MouseMove += Pn2_MouseMove;
+                pn2.MouseUp += Pn2_MouseUp;
+                pn2.MouseEnter += Pn2_MouseEnter;
+                pn2.MouseLeave += Pn2_MouseLeave;
+
+                pn.BringToFront();
+            }
+        }
+
+        private void Pn2_MouseLeave(object? sender, EventArgs e)
+        {
+            if (isDragging)
+            {
+                return;
+            }
+            Panel scrollbar = sender as Panel;
+            scrollbar.BackColor = Color.FromArgb(140, 140, 140);
+        }
+
+        private void Pn2_MouseEnter(object? sender, EventArgs e)
+        {
+            Panel scrollbar = sender as Panel;
+            scrollbar.BackColor = Color.FromArgb(200,200,200);
+        }
+
+        private bool isDragging = false;
+        private int initialY;
+
+        private void Pn2_MouseUp(object? sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                isDragging = false;
+                initialY = 0;
+            }
+        }
+
+        private void Pn2_MouseDown(object? sender, MouseEventArgs e)
+        {
+            
+            if (e.Button == MouseButtons.Left)
+            {
+                Panel scrollbar = sender as Panel;
+                isDragging = true;
+                initialY = e.Y ;
+            }
+        }
+
+        private void Pn2_MouseMove(object? sender, MouseEventArgs e)
+        {
+            //Debug.WriteLine(e.Y);
+            if (isDragging)
+            {
+                int value = 0;
+                Panel scrollbar = sender as Panel;
+                Panel scrollbarParent = scrollbar.Parent as Panel;
+                int scrollbarHeight = scrollbar.Height;
+                int maxScroll = scrollbarParent.Height - scrollbarHeight - 6;
+                int deltaY = (e.Y - initialY);
+                int scrollStep = maxScroll / maxCount;
+
+                //scrollbar.Location = new Point(scrollbar.Location.X, e.Y - scrollbar.Height );
+
+                Debug.WriteLine("테스트   : " + e.Y);
+                Debug.WriteLine("테스트2  : " + initialY);
+                if (e.Y - initialY >= scrollbarHeight / maxCount)
+                {
+                    if (wheelCount >= maxCount)
+                    {
+                        return;
+                    }
+
+                    if (wheelCount == maxCount - 1)
+                    {
+                        wheelCount += 1;
+                        value = maxCountPer + scrollPosition;
+                    }
+                    else
+                    {
+                        wheelCount += 1;
+                        value = scrollPosition;
+                    }
+                    UpdateMainScreenWheelMove(value);
+                }
+                else if (initialY - e.Y >= scrollbarHeight / maxCount)
+                {
+                    if (wheelCount <= 0)
+                    {
+                        return;
+                    }
+                    if (wheelCount == maxCount)
+                    {
+                        wheelCount -= 1;
+                        value = -(maxCountPer + scrollPosition);
+                    }
+                    else
+                    {
+                        wheelCount -= 1;
+                        value = -scrollPosition;
+                    }
+                    UpdateMainScreenWheelMove(value);
+                }
+                
+
+            }
+        }
+
+        int height = 30;
+
+        private void UpdateMainScreen(DataTable dataTable)
+        {
+            pnMainScreen.Controls.Clear();
+            Debug.WriteLine(dataTable.Rows.Count);
+
+            int channelTypeWidth = (pnMainScreen.Width / 3) * 2;
+
+            int rowsCount = dataTable.Rows.Count;
+
+            Label headerlbl1 = new Label
+            {
+                Text = "신 호",
+                Font = new Font("맑은 고딕", 10, FontStyle.Regular),
+                Tag = -1,
+                Location = new Point(1, 1),
+                TextAlign = ContentAlignment.MiddleCenter,
+                BorderStyle = BorderStyle.FixedSingle,
+                Size = new Size(channelTypeWidth / 2, height)
+            };
+            pnMainScreen.Controls.Add(headerlbl1);
+
+            Label headerlbl2 = new Label
+            {
+                Text = "소스명",
+                Font = new Font("맑은 고딕", 10, FontStyle.Regular),
+                Tag = -1,
+                TextAlign = ContentAlignment.MiddleCenter,
+                BorderStyle = BorderStyle.FixedSingle,
+                Location = new Point(headerlbl1.Width + 1, 1),
+                Size = new Size(channelTypeWidth, height)
+            };
+            pnMainScreen.Controls.Add(headerlbl2);
+
+
+            for (int i = 0; i < rowsCount; i++)
+            {
+                Label lbl1 = new Label
+                {
+                    Text = dataTable.Rows[i][0].ToString(),
+                    Tag = i,
+                    Font = new Font("맑은 고딕", 10, FontStyle.Regular),
+                    TextAlign = ContentAlignment.MiddleCenter,
+                    BorderStyle = BorderStyle.FixedSingle,
+                    Location = new Point(1, 1 + (height * (i + 1))),
+                    Size = new Size(channelTypeWidth / 2, height)
+                };
+                pnMainScreen.Controls.Add(lbl1);
+
+                Label lbl2 = new Label
+                {
+                    Text = dataTable.Rows[i][1].ToString(),
+                    Tag = i,
+                    Font = new Font("맑은 고딕", 10, FontStyle.Regular),
+                    TextAlign = ContentAlignment.MiddleCenter,
+                    BorderStyle = BorderStyle.FixedSingle,
+                    Location = new Point(lbl1.Width + 1, 1 + (height * (i + 1))),
+                    Size = new Size(channelTypeWidth, height)
+                };
+                pnMainScreen.Controls.Add(lbl2);
+            }
+        }
+
+        private void PnMainScreen_Paint(object? sender, PaintEventArgs e)
+        {
+            Panel panel = (Panel)sender;
+            Color borderColor = Color.FromArgb(80, 80, 80); // RGB(80, 80, 80) 색상
+            panel.BackColor = Color.FromArgb(50, 50, 50);
+            ControlPaint.DrawBorder(e.Graphics, panel.ClientRectangle,
+                                    borderColor,   // 테두리 색상
+                                    ButtonBorderStyle.Solid); // 테두리 스타일
+        }
+
+        Panel pnMainScreen;
 
         private void InitializeEvent()
         {
@@ -29,15 +338,14 @@ namespace LshMatrix
             dgvMatrixChannelList.TabStop = false;
         }
 
-        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
-        {
-            // 개별 키 처리
-            if ((keyData & Keys.Right) == Keys.Right || (keyData & Keys.Left) == Keys.Left || (keyData & Keys.Up) == Keys.Up || (keyData & Keys.Down) == Keys.Down)
-            {
-                return true;
-            }
-            return base.ProcessCmdKey(ref msg, keyData);
-        }
+        //protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        //{
+        //    if ((keyData & Keys.Right) == Keys.Right || (keyData & Keys.Left) == Keys.Left || (keyData & Keys.Up) == Keys.Up || (keyData & Keys.Down) == Keys.Down)
+        //    {
+        //        return true;
+        //    }
+        //    return base.ProcessCmdKey(ref msg, keyData);
+        //}
 
         public Form GetFindForm()
         {
@@ -55,15 +363,20 @@ namespace LshMatrix
                 this.Invoke(new Action(delegate ()
                 {
                     dgvMatrixChannelList.DataSource = dataTable;
+                    UpdateMainScreen(dataTable);
                     UpdateDgvMatrixChannelListLayOut();
                 }));
             }
             else
             {
                 dgvMatrixChannelList.DataSource = dataTable;
+                UpdateMainScreen(dataTable);
                 UpdateDgvMatrixChannelListLayOut();
             }
+            CheckOverMainScreen();
         }
+
+
 
         /// <summary>
         /// dgv 선택한거 없애주는 메서드 

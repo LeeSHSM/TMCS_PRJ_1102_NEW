@@ -22,32 +22,25 @@ namespace LshCamera
             _panSpeed = userSpeed;
             _tiltSpeed = userSpeed;
             lblPanTiltSpeed.Text = userSpeed.ToString();
-            //tableLayoutPanel1.BackColor = Color.FromArgb(30, 30, 30);
-            ////tableLayoutPanel2.BackColor = Color.FromArgb(30, 30, 30);
-            //tableLayoutPanel3.BackColor = Color.FromArgb(30, 30, 30);
-            //tableLayoutPanel4.BackColor = Color.FromArgb(30, 30, 30);
-            tableLayoutPanel5.BackColor = Color.FromArgb(30, 30, 30);
-            this.BackColor = Color.FromArgb(30,30,30);
-            tableLayoutPanel5.Paint += CarmeraControlerFrame_Paint;
+
+            tblMainBackground.BackColor = Color.FromArgb(30, 30, 30);
+            tblMainBackground.Paint += CarmeraControlerFrame_Paint;
         }
 
         private void CarmeraControlerFrame_Paint(object? sender, PaintEventArgs e)
         {
-            Graphics g = e.Graphics;
+            //Graphics g = e.Graphics;
 
-            // 하얀색 펜 생성
-            using (Pen whitePen = new Pen(Color.White, 2)) // 2는 펜의 두께를 나타냅니다
-            {
-                // 유저 컨트롤의 경계에 선 그리기
-                // 여기서 this.ClientRectangle은 유저 컨트롤의 경계를 나타냅니다
-                g.DrawRectangle(whitePen, tableLayoutPanel5.ClientRectangle);
-            }
+            //// 하얀색 펜 생성
+            //using (Pen whitePen = new Pen(Color.White, 2)) // 2는 펜의 두께를 나타냅니다
+            //{
+            //    g.DrawRectangle(whitePen, tblMainBackground.ClientRectangle);
+            //}
         }
 
         private void Initialize()
         {
             pnPreeset.AutoScroll = true;
-            //AddControls(10);
         }
 
         private bool isCameraSelected = false;
@@ -64,16 +57,16 @@ namespace LshCamera
         {
             FindForm().Focus();
             pnPreeset.Controls.Clear();
-            isCameraSelected = false ;
+            isCameraSelected = false;
         }
 
         private const int ControlSpacing = 9;
         private const int ControlHeight = 25;
 
-        private void AddControls(CameraPresetGroup presetGroup,int numberOfControls)
+        private void AddControls(CameraPresetGroup presetGroup, int numberOfControls)
         {
             int yPos = ControlSpacing;
-            
+
             for (int i = 0; i < numberOfControls; i++)
             {
                 CameraPreset preset;
@@ -85,7 +78,7 @@ namespace LshCamera
                 {
                     preset = presetGroup.Presets.FirstOrDefault(p => p.Presetid == i + 1);
                 }
-                
+
                 string presetName;
                 if (preset == null)
                 {
@@ -99,20 +92,20 @@ namespace LshCamera
                 Label label = new Label
                 {
                     Text = presetName,
-                    Tag = i+1,
+                    Tag = i + 1,
                     Font = new Font("맑은 고딕", 9, FontStyle.Regular),
                     Location = new Point(ControlSpacing, yPos),
                     Size = new Size(150, ControlHeight)
                 };
                 label.MouseEnter += Label_MouseEnter;
                 label.MouseLeave += Label_MouseLeave;
-                label.MouseClick += Label_MouseClick;                
+                label.MouseClick += Label_MouseClick;
                 pnPreeset.Controls.Add(label);
 
                 Button button = new Button
                 {
                     Text = "실행",
-                    Location = new Point(label.Left+label.Width + 20, yPos - 4),
+                    Location = new Point(label.Left + label.Width + 20, yPos - 4),
                     Tag = i + 1,
                     Size = new Size(75, ControlHeight),
                     TabStop = false
@@ -152,10 +145,10 @@ namespace LshCamera
                 pnPreeset.Controls.Add(button3);
 
                 Panel panel = new Panel
-                {                    
+                {
                     Tag = i + 1,
-                    Location = new Point(label.Left, yPos + label.Height ),
-                    Size = new Size(button3.Left + button3.Width,3),
+                    Location = new Point(label.Left, yPos + label.Height),
+                    Size = new Size(button3.Left + button3.Width, 3),
                     TabStop = false,
                     BorderStyle = BorderStyle.None,
                     BackColor = Color.Black,
@@ -190,7 +183,6 @@ namespace LshCamera
 
         private void Tbox_KeyDown(object? sender, KeyEventArgs e)
         {
-            
             if (e.KeyCode == Keys.Enter)
             {
                 e.SuppressKeyPress = true;
@@ -259,7 +251,7 @@ namespace LshCamera
 
         private void Label_MouseClick(object? sender, MouseEventArgs e)
         {
-            
+            this.Focus();
         }
 
 
@@ -339,7 +331,7 @@ namespace LshCamera
             lblPanTiltSpeed.Text = userSpeed.ToString();
         }
 
-        
+
 
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
@@ -366,7 +358,7 @@ namespace LshCamera
                 _panSpeed = userSpeed - 5;
                 _tiltSpeed = userSpeed - 5;
                 StartCameraPanTilt();
-            }            
+            }
             if (rightMost6Bits == 37 || rightMost6Bits == 38 || rightMost6Bits == 39 || rightMost6Bits == 40)
             {
                 if (rightMost6Bits == 37 && !IsKeyPressed(Keys.Left))

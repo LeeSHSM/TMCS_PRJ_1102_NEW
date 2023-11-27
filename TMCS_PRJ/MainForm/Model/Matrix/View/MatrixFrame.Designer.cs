@@ -44,7 +44,7 @@
             dgvMatrixChannelList.Margin = new Padding(0);
             dgvMatrixChannelList.Name = "dgvMatrixChannelList";
             dgvMatrixChannelList.RowTemplate.Height = 25;
-            dgvMatrixChannelList.Size = new Size(150, 150);
+            dgvMatrixChannelList.Size = new Size(231, 433);
             dgvMatrixChannelList.TabIndex = 0;
             // 
             // cms
@@ -66,6 +66,7 @@
             AutoScaleMode = AutoScaleMode.Font;
             Controls.Add(dgvMatrixChannelList);
             Name = "MatrixFrame";
+            Size = new Size(231, 433);
             ((System.ComponentModel.ISupportInitialize)dgvMatrixChannelList).EndInit();
             cms.ResumeLayout(false);
             ResumeLayout(false);

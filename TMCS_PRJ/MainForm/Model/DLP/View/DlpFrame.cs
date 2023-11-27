@@ -1,4 +1,6 @@
-﻿namespace LshDlp
+﻿using System.Diagnostics;
+
+namespace LshDlp
 {
     internal partial class DlpFrame : UserControl, IDlpFrame
     {
@@ -41,14 +43,17 @@
             foreach (Dlp dlp in _dlpStruct.Dlps)
             {
                 dlp.Text = dlp.InputChannel.ChannelName;
+                dlp.ForeColor = Color.White;
                 dlp.Dock = DockStyle.Fill;
                 dlp.Margin = new Padding(0, 0, 0, 0);
                 dlp.BorderStyle = BorderStyle.FixedSingle;
-                dlp.BackColor = Color.Red;
+                dlp.BackColor = Color.FromArgb(75,75,75);
                 dlp.TextAlign = ContentAlignment.MiddleCenter;
                 dlp.MouseDown += mouseDown;
                 dlp.MouseMove += mouseMove;
                 dlp.MouseUp += mouseUp;
+
+                //dlp.FlatStyle = FlatStyle.Flat; // Flat 스타일을 사용하여 테두리를 설정합니다.
                 _tlpDlpFrame.Controls.Add(dlp, dlp.Col, dlp.Row);
             }
         }
@@ -127,6 +132,7 @@
 
         private void mouseDown(object? sender, MouseEventArgs e)
         {
+            Debug.WriteLine("??");
             if (e.Button == MouseButtons.Left)
             {
                 _startPoint = this.PointToClient(MousePosition);
