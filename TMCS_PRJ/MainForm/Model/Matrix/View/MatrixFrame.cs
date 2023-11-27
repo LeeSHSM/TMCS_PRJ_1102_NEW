@@ -1,8 +1,6 @@
 ﻿using System.Data;
 using System.Diagnostics;
-using System.Drawing;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 
 namespace LshMatrix
 {
@@ -26,6 +24,19 @@ namespace LshMatrix
             dgvMatrixChannelList.CellMouseUp += DgvMatrixChannelList_CellMouseUp;
             dgvMatrixChannelList.Resize += DgvMatrixChannelList_Resize;
             dgvMatrixChannelList.CellEndEdit += DgvMatrixChannelList_CellEndEdit;
+
+
+            dgvMatrixChannelList.TabStop = false;
+        }
+
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            // 개별 키 처리
+            if ((keyData & Keys.Right) == Keys.Right || (keyData & Keys.Left) == Keys.Left || (keyData & Keys.Up) == Keys.Up || (keyData & Keys.Down) == Keys.Down)
+            {
+                return true;
+            }
+            return base.ProcessCmdKey(ref msg, keyData);
         }
 
         public Form GetFindForm()
@@ -121,6 +132,7 @@ namespace LshMatrix
                 foreach (DataGridViewRow row in dgvMatrixChannelList.Rows)
                 {
                     row.Height = rowHeight;
+                    row.ReadOnly = true;
                 }
 
                 // 최초 dgv 실행시 선택된 컬럼이 없게 하기
@@ -139,11 +151,11 @@ namespace LshMatrix
         /// <param name="e"></param>
         private void DgvMatrixChannelList_SelectionChanged(object? sender, EventArgs e)
         {
-            if (dgvMatrixChannelList.SelectedCells.Count > 0 &&  dgvMatrixChannelList.SelectedCells[0].ColumnIndex == 1) // 유효한 셀인지 확인
+            if (dgvMatrixChannelList.SelectedCells.Count > 0 && dgvMatrixChannelList.SelectedCells[0].ColumnIndex == 1) // 유효한 셀인지 확인
             {
                 SelectedCellChanged?.Invoke(sender, e);
             }
-            else if (dgvMatrixChannelList.SelectedCells.Count == 0 )
+            else if (dgvMatrixChannelList.SelectedCells.Count == 0)
             {
                 SelectedCellChanged?.Invoke(null, EventArgs.Empty);
             }
@@ -280,7 +292,7 @@ namespace LshMatrix
             if (_isDragMouseMove)
             {
                 _dragLbl.Dispose();
-                MFrameToObjectDragEnded?.Invoke(dgvMatrixChannelList, e);                
+                MFrameToObjectDragEnded?.Invoke(dgvMatrixChannelList, e);
             }
 
             _isDragMouseMove = false;

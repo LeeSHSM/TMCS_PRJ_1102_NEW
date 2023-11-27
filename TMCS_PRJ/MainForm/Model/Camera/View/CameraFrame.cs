@@ -1,14 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
+﻿using System.ComponentModel;
 using System.Diagnostics;
-using System.Drawing;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace LshCamera
 {
@@ -28,16 +19,16 @@ namespace LshCamera
             picCamera.MouseUp += Camera_MouseUp;
         }
 
-
         private string _cameraName;
         private int _cameraId;
+        private CameraPresetGroup _presetGroup;
         private ICameraAction _protocol;
 
         private bool _selected = false;
 
         public string CameraName
         {
-            get => _cameraName; 
+            get => _cameraName;
             set => _cameraName = value;
         }
 
@@ -45,6 +36,12 @@ namespace LshCamera
         {
             get => _cameraId;
             set => _cameraId = value;
+        }
+
+        public CameraPresetGroup PresetGroup 
+        {
+            get => _presetGroup;
+            set => _presetGroup = value;
         }
 
         public ICameraAction Protocol
@@ -73,18 +70,36 @@ namespace LshCamera
 
         public async Task PanTiltAsync(int panSpeed, int tiltSpeed, int panDir, int tiltDir)
         {
-            _protocol.PanTiltAsync(panSpeed, tiltSpeed, panDir, tiltDir);
+            await _protocol.PanTiltAsync(panSpeed, tiltSpeed, panDir, tiltDir);
         }
 
         public async Task<byte[]> SavePresetAsync()
         {
-           return await _protocol.SavePresetAsync();
+            return await _protocol.SavePresetAsync();
+        }
+        public async Task LoadPresetAsync(int presetNum)
+        {
+            try
+            {
+                CameraPreset preset = PresetGroup.Presets.FirstOrDefault(p => p.Presetid == presetNum);
+
+                if (preset != null)
+                {
+                    await _protocol.LoadPresetAsync(preset);
+                }
+                else
+                {
+                    // preset이 null일 때의 처리를 추가할 수 있습니다.
+                    Debug.WriteLine("Preset not found.");
+                }
+            }
+            catch (Exception ex)
+            {
+                // 예외가 발생한 경우의 처리를 여기에 추가할 수 있습니다.
+                Debug.WriteLine("An error occurred: " + ex.Message);
+            }
         }
 
-        public async Task LoadPresetAsync(byte[] presetPosition)
-        {
-            _protocol.LoadPresetAsync(presetPosition);
-        }
 
         private void Camera_MouseUp(object sender, MouseEventArgs e)
         {
@@ -96,9 +111,11 @@ namespace LshCamera
             else
             {
                 SetCameraSelect();
-                CameraSelected?.Invoke(this, EventArgs.Empty);                
+                CameraSelected?.Invoke(this, EventArgs.Empty);
             }
         }
+
+
     }
 
     public class MyInterfaceTypeConverter : TypeConverter

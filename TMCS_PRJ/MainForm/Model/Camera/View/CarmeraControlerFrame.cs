@@ -1,15 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Diagnostics;
-using System.Drawing;
-using System.Linq;
-using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Diagnostics;
+using System.Security.Cryptography.Xml;
 using System.Windows.Forms;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace LshCamera
 {
@@ -17,8 +8,9 @@ namespace LshCamera
     {
         public event EventHandler testBtn;
         public event ICameraControler.delCameraPanTilt CameraPanTilt;
-        public event EventHandler SavePreset;
-        public event EventHandler LoadPreset;
+        public event EventHandler PresetSave;
+        public event EventHandler PresetLoad;
+        public event ICameraControler.delPresetValueChanged PresetNameChanged;
 
         public CarmeraControlerFrame()
         {
@@ -30,74 +22,258 @@ namespace LshCamera
             _panSpeed = userSpeed;
             _tiltSpeed = userSpeed;
             lblPanTiltSpeed.Text = userSpeed.ToString();
+            //tableLayoutPanel1.BackColor = Color.FromArgb(30, 30, 30);
+            ////tableLayoutPanel2.BackColor = Color.FromArgb(30, 30, 30);
+            //tableLayoutPanel3.BackColor = Color.FromArgb(30, 30, 30);
+            //tableLayoutPanel4.BackColor = Color.FromArgb(30, 30, 30);
+            tableLayoutPanel5.BackColor = Color.FromArgb(30, 30, 30);
+            this.BackColor = Color.FromArgb(30,30,30);
+            tableLayoutPanel5.Paint += CarmeraControlerFrame_Paint;
+        }
+
+        private void CarmeraControlerFrame_Paint(object? sender, PaintEventArgs e)
+        {
+            Graphics g = e.Graphics;
+
+            // 하얀색 펜 생성
+            using (Pen whitePen = new Pen(Color.White, 2)) // 2는 펜의 두께를 나타냅니다
+            {
+                // 유저 컨트롤의 경계에 선 그리기
+                // 여기서 this.ClientRectangle은 유저 컨트롤의 경계를 나타냅니다
+                g.DrawRectangle(whitePen, tableLayoutPanel5.ClientRectangle);
+            }
         }
 
         private void Initialize()
         {
             pnPreeset.AutoScroll = true;
-            AddControls(10);
+            //AddControls(10);
         }
 
-        private const int ControlSpacing = 7;
+        private bool isCameraSelected = false;
+
+        public void SelectCamera(ICamera camera)
+        {
+            pnPreeset.Controls.Clear();
+            AddControls(camera.PresetGroup, 25);
+            this.Focus();
+            isCameraSelected = true;
+        }
+
+        public void EndKeyEvent()
+        {
+            FindForm().Focus();
+            pnPreeset.Controls.Clear();
+            isCameraSelected = false ;
+        }
+
+        private const int ControlSpacing = 9;
         private const int ControlHeight = 25;
 
-        private void AddControls(int numberOfControls)
+        private void AddControls(CameraPresetGroup presetGroup,int numberOfControls)
         {
             int yPos = ControlSpacing;
-
+            
             for (int i = 0; i < numberOfControls; i++)
             {
+                CameraPreset preset;
+                if (presetGroup == null)
+                {
+                    preset = null;
+                }
+                else
+                {
+                    preset = presetGroup.Presets.FirstOrDefault(p => p.Presetid == i + 1);
+                }
+                
+                string presetName;
+                if (preset == null)
+                {
+                    presetName = $"프리셋 {i + 1}";
+                }
+                else
+                {
+                    presetName = preset.Presetname;
+                }
+
                 Label label = new Label
                 {
-                    Text = $"프리셋{i + 1}",
+                    Text = presetName,
+                    Tag = i+1,
+                    Font = new Font("맑은 고딕", 9, FontStyle.Regular),
                     Location = new Point(ControlSpacing, yPos),
-                    Size = new Size(100, ControlHeight)
-
+                    Size = new Size(150, ControlHeight)
                 };
+                label.MouseEnter += Label_MouseEnter;
+                label.MouseLeave += Label_MouseLeave;
+                label.MouseClick += Label_MouseClick;                
                 pnPreeset.Controls.Add(label);
 
                 Button button = new Button
                 {
                     Text = "실행",
-                    Location = new Point(label.Width + 20, yPos - 4),
+                    Location = new Point(label.Left+label.Width + 20, yPos - 4),
                     Tag = i + 1,
                     Size = new Size(75, ControlHeight),
-                    //BackColor = Color.Black,
                     TabStop = false
                 };
-                button.Click += new EventHandler(LoadPreset_Click);
+                button.MouseEnter += Button_MouseEnter;
+                button.MouseLeave += Button_MouseLeave;
+                button.Click += LoadPreset_Click;
                 button.KeyUp += CarmeraControlerFrame_KeyUp;
 
                 pnPreeset.Controls.Add(button);
                 Button button2 = new Button
                 {
                     Text = "저장",
-                    Name = $"btnSave{i + 1}",
                     Tag = i + 1,
-                    Location = new Point(200, yPos - 4),
-                    //BackColor = Color.Black,
+                    Location = new Point(button.Width + button.Left + 20, yPos - 4),
                     Size = new Size(75, ControlHeight),
                     TabStop = false
                 };
-                button2.Click += new EventHandler(SavePreset_Click);
+                button2.MouseEnter += Button_MouseEnter;
+                button2.MouseLeave += Button_MouseLeave;
+                button2.Click += SavePreset_Click;
                 button2.KeyUp += CarmeraControlerFrame_KeyUp;
-                // 필요한 경우 button.Click += new EventHandler(Button_Click);
                 pnPreeset.Controls.Add(button2);
+
+                Button button3 = new Button
+                {
+                    Text = "이름변경",
+                    Tag = i + 1,
+                    Location = new Point(button2.Width + button2.Left + 20, yPos - 4),
+                    Size = new Size(75, ControlHeight),
+                    TabStop = false
+                };
+                button3.MouseEnter += Button_MouseEnter;
+                button3.MouseLeave += Button_MouseLeave;
+                button3.Click += SetPresetName_Click;
+                button3.KeyUp += CarmeraControlerFrame_KeyUp;
+                pnPreeset.Controls.Add(button3);
+
+                Panel panel = new Panel
+                {                    
+                    Tag = i + 1,
+                    Location = new Point(label.Left, yPos + label.Height ),
+                    Size = new Size(button3.Left + button3.Width,3),
+                    TabStop = false,
+                    BorderStyle = BorderStyle.None,
+                    BackColor = Color.Black,
+                };
+                pnPreeset.Controls.Add(panel);
 
                 yPos += ControlHeight + ControlSpacing;
             }
         }
 
-        private void LoadPreset_Click(object? sender, EventArgs e)
+        private bool isChangeName = false;
+
+        private void SetPresetName_Click(object? sender, EventArgs e)
         {
             btnDown.Focus();
-            LoadPreset?.Invoke(sender, e);
+            Button btn = sender as Button;
+            Label label = FindLabelWithTagOne((int)btn.Tag);
+            label.Visible = false;
+            TextBox tbox = new TextBox();
+            tbox.Location = label.Location;
+            tbox.Text = label.Text;
+            tbox.Tag = label.Tag;
+            tbox.Font = new Font("맑은 고딕", 9, FontStyle.Regular);
+            tbox.Size = label.Size;
+            tbox.ImeMode = ImeMode.Hangul;
+            tbox.BackColor = pnPreeset.BackColor;
+            pnPreeset.Controls.Add(tbox);
+            tbox.Focus();
+            tbox.KeyDown += Tbox_KeyDown;
+            isChangeName = true;
+        }
+
+        private void Tbox_KeyDown(object? sender, KeyEventArgs e)
+        {
+            
+            if (e.KeyCode == Keys.Enter)
+            {
+                e.SuppressKeyPress = true;
+                TextBox tbox = sender as TextBox;
+                Label label = FindLabelWithTagOne((int)tbox.Tag);
+                label.Text = tbox.Text;
+                label.Visible = true;
+                tbox.Visible = false;
+                pnPreeset.Controls.Remove(tbox);
+                isChangeName = false;
+
+                this.Focus();
+                PresetNameChanged?.Invoke((int)label.Tag, label.Text);
+            }
+            else if (e.KeyCode == Keys.Escape)
+            {
+                e.SuppressKeyPress = true;
+                TextBox tbox = sender as TextBox;
+                Label label = FindLabelWithTagOne((int)tbox.Tag);
+                label.Visible = true;
+                tbox.Visible = false;
+                pnPreeset.Controls.Remove(tbox);
+                isChangeName = false;
+                this.Focus();
+            }
+        }
+
+        private void Button_MouseLeave(object? sender, EventArgs e)
+        {
+            Button btn = sender as Button;
+            Label label = FindLabelWithTagOne((int)btn.Tag);
+            label.Font = new Font("맑은 고딕", 9, FontStyle.Regular);
+        }
+
+        private void Button_MouseEnter(object? sender, EventArgs e)
+        {
+            Button btn = sender as Button;
+            Label label = FindLabelWithTagOne((int)btn.Tag);
+            label.Font = new Font("맑은 고딕", 10, FontStyle.Bold);
+        }
+
+        private Label FindLabelWithTagOne(int tagNum)
+        {
+            foreach (Control control in pnPreeset.Controls)
+            {
+                if (control is Label label && (int)label.Tag == tagNum)
+                {
+                    return label;
+                }
+            }
+
+            // Tag 값이 1인 Label 컨트롤을 찾지 못한 경우 null 반환
+            return null;
+        }
+
+        private void Label_MouseEnter(object? sender, EventArgs e)
+        {
+            Label label = sender as Label;
+            label.Font = new Font("맑은 고딕", 10, FontStyle.Bold);
+        }
+        private void Label_MouseLeave(object? sender, EventArgs e)
+        {
+            Label label = sender as Label;
+            label.Font = new Font("맑은 고딕", 9, FontStyle.Regular);
+        }
+
+        private void Label_MouseClick(object? sender, MouseEventArgs e)
+        {
+            
+        }
+
+
+
+        private void LoadPreset_Click(object? sender, EventArgs e)
+        {
+            this.Focus();
+            PresetLoad?.Invoke(sender, e);
         }
 
         private void SavePreset_Click(object? sender, EventArgs e)
         {
-            btnDown.Focus();
-            SavePreset?.Invoke(sender, EventArgs.Empty);
+            this.Focus();
+            PresetSave?.Invoke(sender, EventArgs.Empty);
         }
 
         private int userSpeed;
@@ -163,72 +339,57 @@ namespace LshCamera
             lblPanTiltSpeed.Text = userSpeed.ToString();
         }
 
-        public void EndKeyEvent()
-        {
-            FindForm().Focus();
-        }
+        
 
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
-            if ((keyData & Keys.Control) == Keys.Control && !IsKeyPressed(Keys.ControlKey))
+            if (isChangeName)
+            {
+                return base.ProcessCmdKey(ref msg, keyData);
+            }
+
+            if (isCameraSelected)
+            {
+                PanTiltCamera(keyData);
+                return true;
+            }
+            return base.ProcessCmdKey(ref msg, keyData);
+        }
+
+        private void PanTiltCamera(Keys key)
+        {
+            int rightMost6Bits = (int)key & 0x3F;
+            if (!IsKeyPressed(Keys.ControlKey) && (key & Keys.Control) == Keys.Control)
             {
                 Debug.WriteLine("??");
                 SetKeyPressed(Keys.ControlKey, true);
                 _panSpeed = userSpeed - 5;
                 _tiltSpeed = userSpeed - 5;
                 StartCameraPanTilt();
-            }
-
-            // 개별 키 처리
-            if ((keyData & Keys.Right) == Keys.Right || (keyData & Keys.Left) == Keys.Left || (keyData & Keys.Up) == Keys.Up || (keyData & Keys.Down) == Keys.Down)
+            }            
+            if (rightMost6Bits == 37 || rightMost6Bits == 38 || rightMost6Bits == 39 || rightMost6Bits == 40)
             {
-                bool containsValue1 = (keyData & Keys.Left) == Keys.Left;
-                bool containsValue2 = (keyData & Keys.Up) == Keys.Up;
-                bool containsValue3 = (keyData & Keys.Right) == Keys.Right;
-                bool containsValue4 = (keyData & Keys.Down) == Keys.Down;
-
-                int arrow = 0; // 1 : 좌 / 2: 상 / 3 : 우 / 4 : 하
-                if (containsValue1 && !containsValue2 && !containsValue3 && !containsValue4 && !IsKeyPressed(Keys.Left))
+                if (rightMost6Bits == 37 && !IsKeyPressed(Keys.Left))
                 {
                     SetKeyPressed(Keys.Left, true);
-                    arrow = 1;
+                    PanLeft();
                 }
-                else if (containsValue2 && !containsValue1 && !containsValue3 && !containsValue4 && !IsKeyPressed(Keys.Up))
+                else if (rightMost6Bits == 38 && !IsKeyPressed(Keys.Up))
                 {
                     SetKeyPressed(Keys.Up, true);
-                    arrow = 2;
+                    TiltUp();
                 }
-                else if (containsValue3 && containsValue1 && containsValue2 && !containsValue4 && !IsKeyPressed(Keys.Right))
+                else if (rightMost6Bits == 39 && !IsKeyPressed(Keys.Right))
                 {
                     SetKeyPressed(Keys.Right, true);
-                    arrow = 3;
+                    PanRight();
                 }
-                else if (containsValue4 && !containsValue1 && !containsValue2 && !containsValue3 && !IsKeyPressed(Keys.Down))
+                else if (rightMost6Bits == 40 && !IsKeyPressed(Keys.Down))
                 {
                     SetKeyPressed(Keys.Down, true);
-                    arrow = 4;
+                    TiltDown();
                 }
-
-                switch (arrow)
-                {
-                    case 0:
-                        break;
-                    case 1:
-                        PanLeft();
-                        break;
-                    case 2:
-                        TiltUp();
-                        break;
-                    case 3:
-                        PanRight();
-                        break;
-                    case 4:
-                        TiltDown();
-                        break;
-                }
-                return true;
             }
-            return base.ProcessCmdKey(ref msg, keyData);
         }
 
         private void CarmeraControlerFrame_KeyUp(object? sender, KeyEventArgs e)
@@ -378,10 +539,7 @@ namespace LshCamera
         }
 
 
-        public void SelectedCamera(ICamera camera)
-        {
-            throw new NotImplementedException();
-        }
+
     }
 
 }

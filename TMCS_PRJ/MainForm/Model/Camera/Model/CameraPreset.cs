@@ -1,24 +1,52 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace LshCamera
+﻿namespace LshCamera
 {
     public class CameraPreset
     {
-        private int _cameraid;
-        private Dictionary<int, byte[]> _preset;
+        public event EventHandler PresetValueChanged;
 
-        public int Cameraid { get => _cameraid; set => _cameraid = value; }
-        public Dictionary<int, byte[]> Preset { get => _preset; set => _preset = value; }
+        private int _presetId;
+        private string _presetName;
+        private byte[] _presetPosition;
+
+        public int Presetid { get => _presetId; set => _presetId = value; }
+        public string Presetname 
+        { 
+            get => _presetName;
+            set
+            {
+                _presetName = value;
+                PresetValueChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public byte[] Presetposition 
+        { 
+            get => _presetPosition; 
+            set 
+            {
+                _presetPosition = value;
+                PresetValueChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
     }
 
-    public class Preset 
-    { 
+    public class CameraPresetGroup
+    {
+        public event EventHandler PresetValueChanged;
 
+        private int _cameraId;
+        private List<CameraPreset> _presets;
 
+        public int CameraId { get => _cameraId; set => _cameraId = value; }
+        public List<CameraPreset> Presets 
+        { 
+            get => _presets; 
+            set
+            {
+                _presets = value;            
+            }
+        }
     }
+
+
 
 }

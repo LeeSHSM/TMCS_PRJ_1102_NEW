@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Net.Sockets;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Diagnostics;
 
 namespace LshCamera
 {
@@ -14,15 +8,18 @@ namespace LshCamera
         private CameraDBManager _dbManager;
 
         List<ICamera> _cameras;
-        //NetworkStream _amxStream;
 
         public CameraManager()
         {
             _cameras = new List<ICamera>();
-            _dbManager = new CameraDBManager();
         }
 
-        internal void AddCamera(ICamera camera)
+        public void SetDBServer(CameraDBManager dbServer)
+        {
+            _dbManager = dbServer;
+        }
+
+        internal async Task SetCameraAsync(ICamera camera)
         {
             if (camera.Protocol is Visca cameraAction)
             {
@@ -30,55 +27,48 @@ namespace LshCamera
                 cameraAction.SetAmxServer(_amxServer);
             }
             _cameras.Add(camera);
+            camera.PresetGroup = await _dbManager.GetPresetAsync(camera);
         }
-       
+
         public void SetAmxServer(CameraAmxServer amxServer)
         {
             _amxServer = amxServer;
-            _amxServer.AmxConnected += _amxServer_AmxConnected;
-        }
-        
-        private void _amxServer_AmxConnected(object? sender, EventArgs e)
-        {
-            foreach (ICamera camera in _cameras)
-            {
-                if (camera.Protocol is Visca cameraAction && camera.Protocol == null)
-                {
-                    cameraAction.SetAmxServer(_amxServer);
-                }
-            }
         }
 
-        public async Task CameraPanTilt(ICamera camera,int panSpeed, int tiltSpeed, int panDir, int tiltDir)
-        {            
+        public async Task CameraPanTilt(ICamera camera, int panSpeed, int tiltSpeed, int panDir, int tiltDir)
+        {
             await camera.PanTiltAsync(panSpeed, tiltSpeed, panDir, tiltDir);
         }
 
-        public async Task SavePreeset(ICamera camera, int preesetNum)
+        public async Task SavePreeset(ICamera camera, int preesetId)
         {
-            if(camera == null)
+            if (camera == null)
             {
                 return;
             }
             byte[] tat = await camera.SavePresetAsync();
-            //byte[] tat = await _amxServer.GetCameraPosition();            
-            _dbManager.SavePreset(camera, preesetNum, tat);
+            CameraPreset preset = camera.PresetGroup.Presets.FirstOrDefault(preset => preset.Presetid == preesetId);
+            preset.Presetposition = tat;
+            await _dbManager.SavePresetAsync(camera, preset);
+
             string tmp = BitConverter.ToString(tat, 0, 9);
-            //Debug.WriteLine(BitConverter.ToString(buffer, 0, bytesRead));
             Debug.WriteLine(tmp);
         }
 
-        public void LoadPreeset(ICamera camera, int preesetNum) 
-        {            
-            byte[] tat = _dbManager.GetPreset(camera, preesetNum);
-            if(tat == null)
+        public void LoadPreeset(ICamera camera, int preesetNum)
+        {
+            camera.LoadPresetAsync(preesetNum);
+        }
+
+        public async Task ChangePresetName(ICamera camera, int presetId, string presetName)
+        {
+            if(camera.PresetGroup == null)
             {
                 return;
             }
-
-            //_amxStream.Write(newArray, 0, newArray.Length);
-            camera.LoadPresetAsync(tat);
-
+            CameraPreset preset = camera.PresetGroup.Presets.FirstOrDefault(preset => preset.Presetid == presetId);
+            preset.Presetname = presetName;
+            await _dbManager.SavePresetAsync(camera, preset);
         }
 
 

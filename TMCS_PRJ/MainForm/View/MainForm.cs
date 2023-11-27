@@ -1,11 +1,5 @@
-using System.Data.SqlClient;
-using System.Diagnostics;
-using System.Drawing.Drawing2D;
-using System.Reflection;
-using System.Windows.Forms;
-using LshCamera;
 using LshMatrix;
-using Timer = System.Windows.Forms.Timer;
+using System.Diagnostics;
 
 namespace TMCS_PRJ
 {
@@ -25,6 +19,7 @@ namespace TMCS_PRJ
         public MainForm()
         {
             InitializeComponent();
+            this.BackColor = Color.FromArgb(30, 30, 30);
             ucCamera1.Load += Camera_Load;
             ucCamera2.Load += Camera_Load;
             ucCameraControler.Load += CameraControl_Load;

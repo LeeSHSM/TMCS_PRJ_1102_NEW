@@ -1,14 +1,6 @@
-﻿using LshDlp;
-using LshGlobalSetting;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
+﻿using System.Diagnostics;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml.Serialization;
-using TMCS_PRJ;
 
 namespace LshDlp
 {
@@ -63,11 +55,11 @@ namespace LshDlp
                         xmlDlpsInfo =
                         (List<DlpFrameControlInfo>)await Task.Run(() => serializer.Deserialize(fs));
                     }
-                    catch(Exception ex) 
+                    catch (Exception ex)
                     {
-                    Debug.WriteLine(ex);
+                        Debug.WriteLine(ex);
                     }
-                    
+
 
                     foreach (var xmldlpInfo in xmlDlpsInfo)
                     {

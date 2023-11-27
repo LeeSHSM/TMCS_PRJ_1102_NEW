@@ -1,17 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
+﻿using System.Diagnostics;
 using System.Net.Sockets;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LshCamera
 {
     public class CameraAmxServer
     {
-        public event EventHandler AmxConnected;
-
         private string _amxIp;
         private int _amxPort;
 
@@ -20,7 +13,7 @@ namespace LshCamera
 
         private bool isSavePresetClick = false;
 
-        public CameraAmxServer(string amxIp, int amxPort) 
+        public CameraAmxServer(string amxIp, int amxPort)
         {
             _amxIp = amxIp;
             _amxPort = amxPort;
@@ -43,7 +36,6 @@ namespace LshCamera
 
                     // 연결에 성공하면 스트림을 얻습니다.
                     _stream = _client.GetStream();
-                    AmxConnected?.Invoke(this, EventArgs.Empty);
                     ReadDataAsync(_stream);
                     return; // 성공하면 메서드 종료
                 }
@@ -65,13 +57,8 @@ namespace LshCamera
             }
         }
 
-        public async Task PanTiltAsync(int cameraId,int panSpeed, int tiltSpeed, int panDir, int tiltDir)
+        public async Task PanTiltAsync(int cameraId, int panSpeed, int tiltSpeed, int panDir, int tiltDir)
         {
-            if (_stream == null)
-            {
-                return;
-            }
-
             byte byteCameraId = (byte)(128 + cameraId);
             byte bytePanSpeed = (byte)panSpeed;
             byte bytetiltSpeed = (byte)tiltSpeed;
@@ -85,7 +72,7 @@ namespace LshCamera
 
         private TaskCompletionSource<byte[]> returnMsg;
         private byte saveCameraId;
-        
+
         public async Task<byte[]> SavePresetAsync(int cameraId)
         {
             byte byteCameraId = (byte)(128 + cameraId);
@@ -102,12 +89,12 @@ namespace LshCamera
             return position;
         }
 
-        public async Task LoadPresetAsync(int cameraId, byte[] presetPosition)
+        public async Task LoadPresetAsync(int cameraId, CameraPreset preset)
         {
             byte byteCameraId = (byte)(128 + cameraId);
             List<byte> message = new List<byte> { byteCameraId };
             message.AddRange(new byte[] { 0x01, 0x06, 0x02, 0x18, 0x18 });
-            message.AddRange(presetPosition);
+            message.AddRange(preset.Presetposition);
             message.AddRange(new byte[] { 0xFF });
 
             byte[] command = message.ToArray();
@@ -124,7 +111,7 @@ namespace LshCamera
                 {
                     // 90 50 패턴 찾기
                     for (int i = 0; i < bytesRead - 1; i++)
-                    {                       
+                    {
                         //프리셋 저장한값 가져오기
                         if (buffer[i] == saveCameraId && buffer[i + 1] == 0x50)
                         {

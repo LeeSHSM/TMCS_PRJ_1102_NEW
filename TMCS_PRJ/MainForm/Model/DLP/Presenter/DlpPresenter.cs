@@ -1,7 +1,4 @@
-﻿
-using TMCS_PRJ;
-using LshGlobalSetting;
-using System.Linq.Expressions;
+﻿using LshGlobalSetting;
 using LshMatrix;
 
 namespace LshDlp
@@ -24,8 +21,8 @@ namespace LshDlp
 
         private string _dlpChannelType;
 
-        public DlpPresenter(int row, int col, IProgress<ProgressReport> progress) 
-        {            
+        public DlpPresenter(int row, int col, IProgress<ProgressReport> progress)
+        {
             _dlpManager = new DlpManager(new DlpStruct(row, col));
             _dlpFrameFileManager = new DlpFrameFileManager();
             _dlpFrame = new DlpFrame(_dlpManager.GetDlpStruct());
@@ -37,12 +34,12 @@ namespace LshDlp
 
         public async Task InitializeAsync()
         {
-            List<DlpFrameControlInfo> dlpsInfo  = await _dlpFrameFileManager.LoadDlpsInfoAsync();
-            List<MatrixChannel> matrixChannels = DlpMatrixInfoRequest?.Invoke();            
+            List<DlpFrameControlInfo> dlpsInfo = await _dlpFrameFileManager.LoadDlpsInfoAsync();
+            List<MatrixChannel> matrixChannels = DlpMatrixInfoRequest?.Invoke();
 
             if (dlpsInfo.Count > 0)
             {
-                _dlpManager.MatchingDlpInputListWithMatrix(matrixChannels,dlpsInfo);
+                _dlpManager.MatchingDlpInputListWithMatrix(matrixChannels, dlpsInfo);
             }
             else
             {
@@ -69,7 +66,7 @@ namespace LshDlp
 
         public void SetDlpChannelType(string channelType)
         {
-            if(channelType != "INPUT" && channelType != "OUTPUT")
+            if (channelType != "INPUT" && channelType != "OUTPUT")
             {
                 throw new Exception($"cahnnelType is only INPUT or OUTPUT");
             }
@@ -82,7 +79,7 @@ namespace LshDlp
 
         public void SetMatrixChannelInDlp(int dlpId, MatrixChannel mcInput)
         {
-            _dlpManager.SetDlpInputChannel(dlpId, mcInput);          
+            _dlpManager.SetDlpInputChannel(dlpId, mcInput);
         }
 
         public void SaveDlpFrameInfo()

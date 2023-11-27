@@ -1,5 +1,3 @@
-using System.Diagnostics;
-using System.Windows.Forms;
 using LshGlobalSetting;
 
 namespace TMCS_PRJ
@@ -22,16 +20,16 @@ namespace TMCS_PRJ
             IProgress<ProgressReport> progress = new Progress<ProgressReport>(report =>
             {
                 // UI 업데이트는 여기서 안전하게 수행됩니다.
-                if(report.Message != null) 
+                if (report.Message != null)
                 {
                     loadingForm.Setlbl(report.Message);
                     GlobalSetting.Logger.LogInfo(report.Message);
-                }   
+                }
 
-                if(report.Test != null)
+                if (report.Test != null)
                 {
-                    
-                }                
+
+                }
             });
 
             progress?.Report(new ProgressReport { Message = "메인프레젠터 로딩 시작" });
@@ -44,7 +42,7 @@ namespace TMCS_PRJ
 
             progress?.Report(new ProgressReport { Message = "메인프레젠터 비동기 초기화 시작" });
             Task.Run(async () =>
-            {                
+            {
                 await presenter.InitializeAsync(); // 비동기 초기화
                 progress.Report(new ProgressReport { Message = "메인프레젠터 비동기 초기화 완료" });
                 loadingForm.Invoke((MethodInvoker)delegate

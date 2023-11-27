@@ -1,8 +1,4 @@
-﻿
-
-using System.Diagnostics;
-
-namespace LshDlp
+﻿namespace LshDlp
 {
     internal partial class DlpFrame : UserControl, IDlpFrame
     {
@@ -263,7 +259,7 @@ namespace LshDlp
                     }
                 }
             };
-        }                
+        }
 
 
         private void 전체출력포트변경ToolStripMenuItem_Click(object sender, EventArgs e)

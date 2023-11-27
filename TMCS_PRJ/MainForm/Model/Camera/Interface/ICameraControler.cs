@@ -1,21 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace LshCamera
+﻿namespace LshCamera
 {
     public interface ICameraControler
     {
         delegate void delCameraPanTilt(int panSpeed, int tiltSpeed, int panDir, int tiltDir);
         event delCameraPanTilt CameraPanTilt;
 
-        event EventHandler SavePreset;
-        event EventHandler LoadPreset;
+        delegate void delPresetValueChanged(int presetid, string presetName);
+        event delPresetValueChanged PresetNameChanged;
 
-        void SelectedCamera(ICamera camera);
+        event EventHandler PresetSave;
+        event EventHandler PresetLoad;
+
+        void SelectCamera(ICamera camera);
         void EndKeyEvent();
-        
+
     }
 }

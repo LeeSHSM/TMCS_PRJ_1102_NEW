@@ -43,7 +43,6 @@ namespace TMCS_PRJ
             pnDlpFrame = new Panel();
             ucCamera1 = new CameraFrame();
             ucCamera2 = new CameraFrame();
-            button1 = new Button();
             ucCameraControler = new CarmeraControlerFrame();
             groupBox1.SuspendLayout();
             menuStrip1.SuspendLayout();
@@ -151,6 +150,7 @@ namespace TMCS_PRJ
             ucCamera1.CameraName = "엘지";
             ucCamera1.Location = new Point(1074, 470);
             ucCamera1.Name = "ucCamera1";
+            ucCamera1.PresetGroup = null;
             ucCamera1.Protocol = null;
             ucCamera1.Size = new Size(51, 45);
             ucCamera1.TabIndex = 8;
@@ -162,19 +162,10 @@ namespace TMCS_PRJ
             ucCamera2.CameraName = "삼성";
             ucCamera2.Location = new Point(1074, 398);
             ucCamera2.Name = "ucCamera2";
+            ucCamera2.PresetGroup = null;
             ucCamera2.Protocol = null;
             ucCamera2.Size = new Size(51, 45);
             ucCamera2.TabIndex = 9;
-            // 
-            // button1
-            // 
-            button1.Location = new Point(616, 581);
-            button1.Name = "button1";
-            button1.Size = new Size(75, 23);
-            button1.TabIndex = 10;
-            button1.Text = "button1";
-            button1.UseVisualStyleBackColor = true;
-            button1.Click += button1_Click;
             // 
             // ucCameraControler
             // 
@@ -191,7 +182,6 @@ namespace TMCS_PRJ
             BackColor = SystemColors.Control;
             ClientSize = new Size(1904, 1041);
             Controls.Add(ucCameraControler);
-            Controls.Add(button1);
             Controls.Add(ucCamera2);
             Controls.Add(ucCamera1);
             Controls.Add(pnDlpFrame);
@@ -231,7 +221,6 @@ namespace TMCS_PRJ
         private CameraFrame camera_ViscaType2;
         private CameraFrame ucCamera1;
         private CameraFrame ucCamera2;
-        private Button button1;
         private LshMatrix.MatrixFrame matrixFrame1;
         private CarmeraControlerFrame ucCameraControler;
     }

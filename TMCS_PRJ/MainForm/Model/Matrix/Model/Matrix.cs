@@ -1,17 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
-using LshGlobalSetting;
+﻿using LshGlobalSetting;
 
 namespace LshMatrix
 {
     public class MatrixChannel
     {
         #region Properties
-        
+
         public event EventHandler MatrixChannelValueChanged;
 
         private int _portNo;
@@ -93,8 +87,8 @@ namespace LshMatrix
 
         public int getChannelPortCount(string channelType)
         {
-            if(channelType == INPUT) return _inputChannelPortCount;
-            if(channelType == OUTPUT) return _outputChannelPortCount;
+            if (channelType == INPUT) return _inputChannelPortCount;
+            if (channelType == OUTPUT) return _outputChannelPortCount;
 
             return 0;
         }

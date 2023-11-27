@@ -1,16 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using LshGlobalSetting;
 using System.Data;
 using System.Data.SqlClient;
 using System.Diagnostics;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using System.Threading.Tasks;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using LshGlobalSetting;
 
 namespace LshMatrix
 {
@@ -63,22 +57,22 @@ namespace LshMatrix
                 _showInputChannels = inputChannels;     //사용자에게 전달할 리스트는 show 채널리스트로... 검색기능반영하기위함. 얕은복사로 이루어짐
                 _showOutputChannels = outputChannels;
 
-                foreach(var channel in inputChannels)
+                foreach (var channel in inputChannels)
                 {
                     channel.MatrixChannelValueChanged += Channel_MatrixChannelValueChanged;
                 }
 
-                foreach(var channel in outputChannels)
+                foreach (var channel in outputChannels)
                 {
                     channel.MatrixChannelValueChanged += Channel_MatrixChannelValueChanged;
                 }
             });
         }
 
-        private async void Channel_MatrixChannelValueChanged(object sender,EventArgs e)
+        private async void Channel_MatrixChannelValueChanged(object sender, EventArgs e)
         {
             MatrixChannel mc = (MatrixChannel)sender;
-            await SaveChannelToDBAsync(_connectionString,mc);
+            await SaveChannelToDBAsync(_connectionString, mc);
         }
 
         #endregion
@@ -350,8 +344,8 @@ namespace LshMatrix
 
         public async Task StartConnectAsync()
         {
-            _client = new TcpClient();            
-           
+            _client = new TcpClient();
+
             int retryCount = 0;
             int maxRetryCount = 1;
             while (retryCount < maxRetryCount)
@@ -363,13 +357,13 @@ namespace LshMatrix
                         _progress?.Report(new ProgressReport { Message = $"매트릭스 서버 접속중..." });
                         await _client.ConnectAsync(Address, Port);
                         break;
-                    }                 
+                    }
                     catch
                     {
                         retryCount++;
                         _progress?.Report(new ProgressReport { Message = $"재연결 시도 {retryCount}/{maxRetryCount}" });
                         // 연결 실패: 반복 횟수 증가
-                        
+
                         Debug.WriteLine($"재연결 시도 {retryCount}/{maxRetryCount}");
 
                     }
@@ -428,18 +422,18 @@ namespace LshMatrix
                     }
                 }
                 else
-                {                    
+                {
                     break;
                 }
             }
 
-            try            
+            try
             {
                 // 연결된 상태에서 메시지 전송
                 byte[] asciiBytes = Encoding.ASCII.GetBytes(msg);
                 await _stream.WriteAsync(asciiBytes, 0, asciiBytes.Length);
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 GlobalSetting.Logger.LogError("서버에 연결할 수 없습니다. 메시지를 전송하지 못했습니다." + ex);
             }

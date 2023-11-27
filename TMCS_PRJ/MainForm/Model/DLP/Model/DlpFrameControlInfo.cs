@@ -1,17 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TMCS_PRJ;
-
-namespace LshDlp
+﻿namespace LshDlp
 {
     public class DlpFrameControlInfo
     {
         public DlpFrameControlInfo() { }
 
-        public DlpFrameControlInfo(int dlpId, int tileMode, int row, int col, int matrixPort, int inputChannelPort) 
+        public DlpFrameControlInfo(int dlpId, int tileMode, int row, int col, int matrixPort, int inputChannelPort)
         {
             DlpId = dlpId;
             TileMode = tileMode;

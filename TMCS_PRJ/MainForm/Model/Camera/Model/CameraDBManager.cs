@@ -1,53 +1,151 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Data.SqlClient;
+using System.Data;
+using System.Diagnostics;
 
 namespace LshCamera
 {
     public class CameraDBManager
     {
-        private List<CameraPreset> _cameraPresets = new List<CameraPreset>();
+        private string _connectionString;
 
-        private string _connectString;
-
-        public string ConnectString { get => _connectString; set => _connectString = value; }
-        
-
-        public void SavePreset(ICamera camera,int presetId, byte[] presetPosition)
+        public void SetDBConectionString(string connectionString)
         {
-            var existingPreset = _cameraPresets.FirstOrDefault(p => p.Cameraid == camera.CameraId);
+            _connectionString = connectionString;
+        }
 
-            if (existingPreset != null)
+        private async Task<bool> IsDatabaseConnected()
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
             {
-                // 기존 프리셋이 있으면, 프리셋 업데이트
-                existingPreset.Preset[presetId] = presetPosition;
-            }
-            else
-            {
-                _cameraPresets.Add(new CameraPreset { Cameraid = camera.CameraId, Preset = new Dictionary<int, byte[]>() { [presetId] = presetPosition } });
+                try
+                {
+                    connection.Open();
+                    return connection.State == ConnectionState.Open;
+                }
+                catch (SqlException e)
+                {
+                    // 연결 시도 중 예외가 발생했습니다.
+                    Console.WriteLine("Database connection failed: " + e.Message);
+                    return false;
+                }
             }
         }
 
-        public byte[] GetPreset(ICamera camera,int presetId)
+        public async Task SavePresetAsync(ICamera camera,CameraPreset preset)
         {
-            var cameraPreset = _cameraPresets.FirstOrDefault(p => p.Cameraid == camera.CameraId);
-
-            if (cameraPreset != null)
+            using (SqlConnection connection = new SqlConnection(_connectionString))
             {
-                // 프리셋 딕셔너리에서 프리셋 ID에 해당하는 데이터 반환
-                if (cameraPreset.Preset.TryGetValue(presetId, out byte[] presetData))
+                await connection.OpenAsync();
+
+                // 먼저 해당 presetid와 cameraid 조합이 데이터베이스에 존재하는지 확인
+                string checkQuery = "SELECT COUNT(1) FROM tbl_camera_preset WHERE cameraid = @cameraId AND presetid = @presetId";
+                using (SqlCommand checkCommand = new SqlCommand(checkQuery, connection))
                 {
-                    return presetData;
+                    checkCommand.Parameters.AddWithValue("@cameraId", camera.CameraId);
+                    checkCommand.Parameters.AddWithValue("@presetId", preset.Presetid);
+
+                    int count = (int)await checkCommand.ExecuteScalarAsync();
+                    string query;
+
+                    if (count > 0)
+                    {
+                        // Update existing preset
+                        query = "UPDATE tbl_camera_preset SET presetname = @presetName, presetposition = @presetPosition WHERE cameraid = @cameraId AND presetid = @presetId";
+                    }
+                    else
+                    {
+                        // Insert new preset
+                        query = "INSERT INTO tbl_camera_preset (cameraid, presetid, presetname, presetposition) VALUES (@cameraId, @presetId, @presetName, @presetPosition)";
+                    }
+
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@cameraId", camera.CameraId);
+                        command.Parameters.AddWithValue("@presetId", preset.Presetid);
+                        command.Parameters.AddWithValue("@presetName", preset.Presetname);
+                        command.Parameters.AddWithValue("@presetPosition", ConvertPresetPositionToString(preset.Presetposition));
+
+                        await command.ExecuteNonQueryAsync();
+                    }
+                }
+            }
+        }
+
+        private string ConvertPresetPositionToString(byte[] positionBytes)
+        {
+            return string.Join(",", positionBytes);
+        }
+
+        public async Task SavePresetGroupAsync(ICamera camera, CameraPresetGroup presetGroup)
+        {
+
+        }
+
+        public async Task<CameraPresetGroup> GetPresetAsync(ICamera camera)
+        {
+            CameraPresetGroup presetGroup = new CameraPresetGroup { CameraId = camera.CameraId, Presets = new List<CameraPreset>() };
+            //if (await IsDatabaseConnected())
+            //{
+                try
+                {
+                    using (SqlConnection connection = new SqlConnection(_connectionString))
+                    {
+                    await connection.OpenAsync();
+
+                    string query = "SELECT presetid, presetname, presetposition FROM tbl_camera_preset WHERE cameraid = @cameraId";
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@cameraId", camera.CameraId);
+
+                        using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                        {
+                            while (await reader.ReadAsync())
+                            {
+                                string presetPosition = reader.IsDBNull(reader.GetOrdinal("presetposition")) ? string.Empty : reader.GetString(reader.GetOrdinal("presetposition"));
+                                CameraPreset preset = new CameraPreset
+                                {
+                                    Presetid = reader.GetInt32(reader.GetOrdinal("presetid")),
+                                    Presetname = reader.GetString(reader.GetOrdinal("presetname")),
+                                    Presetposition = ParsePresetPosition(presetPosition)
+                                };
+
+                                presetGroup.Presets.Add(preset);
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex);
+            }
+            //}
+            return presetGroup;
+        }
+
+
+        private byte[] ParsePresetPosition(string positionString)
+        {
+            if (string.IsNullOrEmpty(positionString))
+                return new byte[0];
+
+            string[] positionParts = positionString.Split(',');
+            byte[] positionBytes = new byte[positionParts.Length];
+            for (int i = 0; i < positionParts.Length; i++)
+            {
+                if (byte.TryParse(positionParts[i].Trim(), out byte parsedByte))
+                {
+                    positionBytes[i] = parsedByte;
+                }
+                else
+                {
+                    // 오류 처리: 변환 실패
+                    throw new FormatException("Invalid format in Preset Position string.");
                 }
             }
 
-            // 프리셋이 없으면 null 반환 (또는 필요에 따라 다른 기본값)
-            return null;
-
+            return positionBytes;
         }
-
 
 
 

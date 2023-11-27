@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Intrinsics.Arm;
-using System.Text;
-using System.Threading.Tasks;
-using TMCS_PRJ;
-using LshMatrix;
+﻿using LshMatrix;
 
 namespace LshDlp
 {
@@ -38,14 +31,14 @@ namespace LshDlp
             Dlp dlp = new Dlp();
             foreach (Dlp dlpItem in _dlpStruct.Dlps)
             {
-                if(dlpItem.DlpId == dlpId)
+                if (dlpItem.DlpId == dlpId)
                 {
                     dlp = dlpItem;
                     break;
                 }
-            }            
+            }
 
-            if(dlp == null)
+            if (dlp == null)
             {
                 throw new ArgumentException("dlp is Null!!!!!!!!");
             }

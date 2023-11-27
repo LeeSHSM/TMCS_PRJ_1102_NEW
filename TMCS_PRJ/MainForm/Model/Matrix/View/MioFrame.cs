@@ -1,15 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Diagnostics;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-
-namespace LshMatrix
+﻿namespace LshMatrix
 {
     public partial class MioFrame : UserControl, IMioFrame
     {
@@ -27,7 +16,7 @@ namespace LshMatrix
             get { return _matrixChannelOutput; }
             set
             {
-                if(_matrixChannelOutput != value)
+                if (_matrixChannelOutput != value)
                 {
                     if (_matrixChannelOutput != null)
                     {
@@ -35,7 +24,7 @@ namespace LshMatrix
                     }
                     _matrixChannelOutput = value;
                     _matrixChannelOutput.MatrixChannelValueChanged += _matrixChannelInput_MatrixChannelValueChanged;
-                    UpdateChannelText(); 
+                    UpdateChannelText();
 
                     if (_matrixChannelInput.Port > 0)
                     {
@@ -52,21 +41,21 @@ namespace LshMatrix
         {
             get { return _matrixChannelInput; }
             set
-            {                
+            {
                 //if (_matrixChannelInput != value)
                 //{
-                    if (_matrixChannelInput != null)
-                    {
-                        _matrixChannelInput.MatrixChannelValueChanged -= _matrixChannelInput_MatrixChannelValueChanged;
-                    }                    
-                    _matrixChannelInput = value;                    
-                    _matrixChannelInput.MatrixChannelValueChanged += _matrixChannelInput_MatrixChannelValueChanged;
-                    UpdateChannelText();
+                if (_matrixChannelInput != null)
+                {
+                    _matrixChannelInput.MatrixChannelValueChanged -= _matrixChannelInput_MatrixChannelValueChanged;
+                }
+                _matrixChannelInput = value;
+                _matrixChannelInput.MatrixChannelValueChanged += _matrixChannelInput_MatrixChannelValueChanged;
+                UpdateChannelText();
 
-                    if (_matrixChannelOutput.Port > 0)
-                    {
-                        RouteNoChange?.Invoke(_matrixChannelInput, _matrixChannelOutput);
-                    }                    
+                if (_matrixChannelOutput.Port > 0)
+                {
+                    RouteNoChange?.Invoke(_matrixChannelInput, _matrixChannelOutput);
+                }
                 //}
             }
         }
@@ -117,7 +106,7 @@ namespace LshMatrix
 
             lblInput.MouseDown += MioFrame_MouseDown;
             lblInput.MouseMove += MioFrame_MouseMove;
-            lblInput.MouseUp += MioFrame_MouseUp;            
+            lblInput.MouseUp += MioFrame_MouseUp;
         }
 
         #endregion
@@ -142,11 +131,11 @@ namespace LshMatrix
         private void MatrixInOutSelectFrame_ParentChanged(object? sender, EventArgs e)
         {
             var mainForm = this.FindForm();
-            if(mainForm != null)
+            if (mainForm != null)
             {
                 mainForm.Deactivate -= MainForm_Deactivated;
                 mainForm.Deactivate += MainForm_Deactivated;
-            }                        
+            }
         }
 
         private void _matrixChannelInput_MatrixChannelValueChanged(object sender, EventArgs e)
@@ -188,7 +177,7 @@ namespace LshMatrix
 
             if (!_isClick)
             {
-                if(lbl.Name == "lblOutput")
+                if (lbl.Name == "lblOutput")
                 {
                     //if (e.X < GRIPSIZE && e.Y < GRIPSIZE)
                     //{
@@ -197,7 +186,7 @@ namespace LshMatrix
                     //    _mioGripPosition = "좌상";
                     //    _isGrip = true;
                     //}
-                    
+
                     //else if (e.X > controlBounds.Width - GRIPSIZE && e.Y < GRIPSIZE)
                     //{
                     //    // 우측 상단 모서리
@@ -213,7 +202,7 @@ namespace LshMatrix
                     //    _isGrip = true;
                     //}
                     //else if (e.X < GRIPSIZE || e.X > controlBounds.Width - GRIPSIZE)
-                     if (e.X > lbl.Width - GRIPSIZE)
+                    if (e.X > lbl.Width - GRIPSIZE)
                     {
                         // 좌우측 모서리
                         lbl.Cursor = Cursors.SizeWE;
@@ -229,7 +218,7 @@ namespace LshMatrix
                     }
                 }
                 else
-                {                    
+                {
                     if (e.X > lbl.Width - GRIPSIZE && e.Y > lbl.Height - GRIPSIZE)
                     {
                         // 우측 하단 모서리
@@ -266,18 +255,18 @@ namespace LshMatrix
                         _mioGripPosition = string.Empty;
                         _isGrip = false;
                     }
-                }     
+                }
             }
-            else if(_isGrip && _isClick)
+            else if (_isGrip && _isClick)
             {
-                DragResized(sender,e);                        
+                DragResized(sender, e);
             }
         }
 
         private void MioFrame_MouseUp(object? sender, MouseEventArgs e)
         {
             Label lbl = sender as Label;
-            if(e.Button == MouseButtons.Right)
+            if (e.Button == MouseButtons.Right)
             {
                 cms.Show(MousePosition);
             }

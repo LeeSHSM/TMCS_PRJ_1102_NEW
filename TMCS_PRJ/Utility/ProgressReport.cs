@@ -1,22 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace LshGlobalSetting
+﻿namespace LshGlobalSetting
 {
     public class ProgressReport
     {
         private string _message;
         private string _test;
-        public string Message 
+        public string Message
         {
             get { return _message; }
-            set 
-            { 
-                _message = value;        
+            set
+            {
+                _message = value;
             }
         }
 

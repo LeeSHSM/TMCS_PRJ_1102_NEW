@@ -1,12 +1,8 @@
-﻿using System.Diagnostics;
-using System.IO;
-using System.Net.Sockets;
-using System.Runtime.Intrinsics.Arm;
-using System.Text;
-using LshCamera;
+﻿using LshCamera;
 using LshDlp;
 using LshGlobalSetting;
 using LshMatrix;
+using System.Diagnostics;
 
 
 namespace TMCS_PRJ
@@ -23,7 +19,7 @@ namespace TMCS_PRJ
         CameraPresenter _cameraPresenter;
         IProgress<ProgressReport> _progress;
 
-        
+
 
         public MainPresenter(IMainForm view, IProgress<ProgressReport> progress)
         {
@@ -38,7 +34,7 @@ namespace TMCS_PRJ
 
             _cameraPresenter = new CameraPresenter();
             _cameraPresenter.SetDBConnectString(GlobalSetting.DBConnectString);
-            _cameraPresenter.SetAmxServer("192.168.50.9", 1234);            
+            _cameraPresenter.SetAmxServer("192.168.50.9", 1234);
 
             InitializeViewEvent();
         }
@@ -95,12 +91,12 @@ namespace TMCS_PRJ
             }
         }
 
-        private void _view_CameraLoad(object? sender, EventArgs e)
+        private async void _view_CameraLoad(object? sender, EventArgs e)
         {
             ICamera camera = sender as ICamera;
             if (camera != null)
             {
-                _cameraPresenter.SetCamera(camera);
+                await _cameraPresenter.SetCameraAsync(camera);
             }
         }
 
@@ -129,7 +125,7 @@ namespace TMCS_PRJ
         //dlp에서 dlp클릭함
         private void _dlpPresenter_DlpClick(object? sender, EventArgs e)
         {
-            if(_selectedMatrixChannel == null || _selectedMatrixChannel.ChannelType != "INPUT")  
+            if (_selectedMatrixChannel == null || _selectedMatrixChannel.ChannelType != "INPUT")
             {
                 return;
             }
@@ -149,11 +145,11 @@ namespace TMCS_PRJ
             Form mainForm = _view.GetMainForm();
             Point formCoordinates = mainForm.PointToClient(Cursor.Position);
 
-            Control dlpParentControl = FindParentControl(_view.GetCollidedControl, typeof(Dlp));   
+            Control dlpParentControl = FindParentControl(_view.GetCollidedControl, typeof(Dlp));
 
-            if(dlpParentControl != null && _selectedMatrixChannel.ChannelType == "INPUT")
+            if (dlpParentControl != null && _selectedMatrixChannel.ChannelType == "INPUT")
             {
-                foreach(Dlp dlp in dlpParentControl.Controls)
+                foreach (Dlp dlp in dlpParentControl.Controls)
                 {
                     Point screenCoordinates = dlp.PointToScreen(Point.Empty);
 
@@ -161,7 +157,7 @@ namespace TMCS_PRJ
                     Point formRelativeCoordinates = mainForm.PointToClient(screenCoordinates);
 
                     Rectangle rectDlp = new Rectangle(formRelativeCoordinates, dlp.Size);
-                    Rectangle rectMouse = new Rectangle(formCoordinates, new Size(0,0));
+                    Rectangle rectMouse = new Rectangle(formCoordinates, new Size(0, 0));
 
                     if (rectDlp.IntersectsWith(rectMouse))
                     {
@@ -178,7 +174,7 @@ namespace TMCS_PRJ
         {
             foreach (Control childControl in control.Controls)
             {
-                if(childControl == null)
+                if (childControl == null)
                 {
                     return null;
                 }
@@ -188,7 +184,7 @@ namespace TMCS_PRJ
                 }
                 else
                 {
-                   return FindParentControl(childControl, senderType);
+                    return FindParentControl(childControl, senderType);
                 }
             }
             return null;

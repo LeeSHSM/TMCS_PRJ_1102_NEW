@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Net.Sockets;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Net.Sockets;
 
 namespace LshCamera
 {
@@ -14,7 +7,7 @@ namespace LshCamera
         void SetCameraId(int CameraId);
         Task PanTiltAsync(int panSpeed, int tiltSpeed, int panDir, int tiltDir);
         Task<byte[]> SavePresetAsync();
-        Task LoadPresetAsync(byte[] presetPosition);
+        Task LoadPresetAsync(CameraPreset preset);
 
     }
 
@@ -37,7 +30,7 @@ namespace LshCamera
 
         public async Task PanTiltAsync(int panSpeed, int tiltSpeed, int panDir, int tiltDir)
         {
-            await _amxServer.PanTiltAsync(_cameraId, panSpeed, tiltSpeed, panDir, tiltDir);            
+            await _amxServer.PanTiltAsync(_cameraId, panSpeed, tiltSpeed, panDir, tiltDir);
         }
 
         public async Task<byte[]> SavePresetAsync()
@@ -46,9 +39,9 @@ namespace LshCamera
             return position;
         }
 
-        public async Task LoadPresetAsync(byte[] presetPosition)
+        public async Task LoadPresetAsync(CameraPreset preset)
         {
-            await _amxServer.LoadPresetAsync(_cameraId, presetPosition);
+            await _amxServer.LoadPresetAsync(_cameraId, preset);
         }
     }
 
@@ -57,6 +50,11 @@ namespace LshCamera
         NetworkStream AmxStream;
 
         public Task LoadPresetAsync(byte[] presetPosition)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task LoadPresetAsync(CameraPreset preset)
         {
             throw new NotImplementedException();
         }
