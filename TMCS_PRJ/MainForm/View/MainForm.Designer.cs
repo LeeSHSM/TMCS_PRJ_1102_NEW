@@ -116,7 +116,7 @@ namespace TMCS_PRJ
             // 
             // menuStrip1
             // 
-            menuStrip1.BackColor = Color.Silver;
+            menuStrip1.BackColor = Color.FromArgb(30, 30, 30);
             menuStrip1.ImageScalingSize = new Size(20, 20);
             menuStrip1.Items.AddRange(new ToolStripItem[] { 파일ToolStripMenuItem, 보기ToolStripMenuItem });
             menuStrip1.Location = new Point(0, 0);
@@ -127,6 +127,7 @@ namespace TMCS_PRJ
             // 
             // 파일ToolStripMenuItem
             // 
+            파일ToolStripMenuItem.ForeColor = Color.White;
             파일ToolStripMenuItem.Name = "파일ToolStripMenuItem";
             파일ToolStripMenuItem.Size = new Size(43, 20);
             파일ToolStripMenuItem.Text = "파일";
@@ -134,6 +135,7 @@ namespace TMCS_PRJ
             // 보기ToolStripMenuItem
             // 
             보기ToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { 장비등록정보확인ToolStripMenuItem });
+            보기ToolStripMenuItem.ForeColor = Color.White;
             보기ToolStripMenuItem.Name = "보기ToolStripMenuItem";
             보기ToolStripMenuItem.Size = new Size(43, 20);
             보기ToolStripMenuItem.Text = "보기";
@@ -141,7 +143,7 @@ namespace TMCS_PRJ
             // 장비등록정보확인ToolStripMenuItem
             // 
             장비등록정보확인ToolStripMenuItem.Name = "장비등록정보확인ToolStripMenuItem";
-            장비등록정보확인ToolStripMenuItem.Size = new Size(170, 22);
+            장비등록정보확인ToolStripMenuItem.Size = new Size(180, 22);
             장비등록정보확인ToolStripMenuItem.Text = "장비등록정보확인";
             장비등록정보확인ToolStripMenuItem.Click += 장비등록정보확인ToolStripMenuItem_Click;
             // 
