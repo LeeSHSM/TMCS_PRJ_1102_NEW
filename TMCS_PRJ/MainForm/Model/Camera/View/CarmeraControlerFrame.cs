@@ -29,6 +29,7 @@ namespace LshCamera
 
         private void CarmeraControlerFrame_Paint(object? sender, PaintEventArgs e)
         {
+            Debug.WriteLine("test");
             //Graphics g = e.Graphics;
 
             //// 하얀색 펜 생성
