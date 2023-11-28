@@ -29,23 +29,10 @@
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
-            dgvMatrixChannelList = new DataGridView();
             cms = new ContextMenuStrip(components);
             이름바꾸기ToolStripMenuItem = new ToolStripMenuItem();
-            ((System.ComponentModel.ISupportInitialize)dgvMatrixChannelList).BeginInit();
             cms.SuspendLayout();
             SuspendLayout();
-            // 
-            // dgvMatrixChannelList
-            // 
-            dgvMatrixChannelList.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dgvMatrixChannelList.Dock = DockStyle.Fill;
-            dgvMatrixChannelList.Location = new Point(0, 0);
-            dgvMatrixChannelList.Margin = new Padding(0);
-            dgvMatrixChannelList.Name = "dgvMatrixChannelList";
-            dgvMatrixChannelList.RowTemplate.Height = 25;
-            dgvMatrixChannelList.Size = new Size(231, 433);
-            dgvMatrixChannelList.TabIndex = 0;
             // 
             // cms
             // 
@@ -64,17 +51,13 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            Controls.Add(dgvMatrixChannelList);
             Name = "MatrixFrame";
             Size = new Size(231, 433);
-            ((System.ComponentModel.ISupportInitialize)dgvMatrixChannelList).EndInit();
             cms.ResumeLayout(false);
             ResumeLayout(false);
         }
 
         #endregion
-
-        private DataGridView dgvMatrixChannelList;
         private ContextMenuStrip cms;
         private ToolStripMenuItem 이름바꾸기ToolStripMenuItem;
     }

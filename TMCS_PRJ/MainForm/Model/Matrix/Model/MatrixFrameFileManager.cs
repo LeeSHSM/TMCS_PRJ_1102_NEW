@@ -35,10 +35,10 @@ namespace LshMatrix
         private void SaveUserControlsToXml(List<MioFrameControlInfo> controls, string filePath)
         {
             var serializer = new XmlSerializer(typeof(List<MioFrameControlInfo>));
-            //using (var stream = new FileStream(filePath, FileMode.Create))
-            //{
-            //    serializer.Serialize(stream, controls);
-            //}
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                serializer.Serialize(stream, controls);
+            }
         }
 
         public async Task<List<IMioFrame>> LoadMatrixInOutFramesInfoAsync()

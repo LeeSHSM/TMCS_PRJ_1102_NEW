@@ -52,8 +52,8 @@ namespace LshMatrix
             if (_mFrame == null)
             {
                 _mFrame = new MatrixFrame();
-                _mFrame.SelectedCellChanged += MatrixFrame_SelectedCellChanged;
-                _mFrame.MatrixChannelNameChanged += _matrixFrame_CellValueChanged;
+                _mFrame.ClickedChannelChanged += _matrixFrame_ClickedChannellChanged;
+                _mFrame.ClickedChannelNameChanged += _matrixFrame_ClickedChannelNameChanged;
                 _mFrame.MFrameToObjectDragEnded += _matrixFrame_MFrameToObjectDragEnded;
             }
             UserControl uc = (UserControl)_mFrame;
@@ -64,8 +64,8 @@ namespace LshMatrix
         public void SetMFrame(UserControl uc)
         {
             _mFrame = (IMFrame)uc;
-            _mFrame.SelectedCellChanged += MatrixFrame_SelectedCellChanged;
-            _mFrame.MatrixChannelNameChanged += _matrixFrame_CellValueChanged;
+            _mFrame.ClickedChannelChanged += _matrixFrame_ClickedChannellChanged;
+            _mFrame.ClickedChannelNameChanged += _matrixFrame_ClickedChannelNameChanged;
             _mFrame.MFrameToObjectDragEnded += _matrixFrame_MFrameToObjectDragEnded;
         }
 
@@ -139,7 +139,7 @@ namespace LshMatrix
 
         public void ClearSelectedMatrixChannel()
         {
-            _mFrame.ClearClickedCell();
+            //_mFrame.ClearClickedChannel();
         }
 
         //------------------------------------------MioFrame----------------------------------------------------------
@@ -282,18 +282,17 @@ namespace LshMatrix
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void _matrixFrame_CellValueChanged(object? sender, EventArgs e)
+        private void _matrixFrame_ClickedChannelNameChanged(object? sender, EventArgs e)
         {
-            DataGridView dgv = sender as DataGridView;
-            DataGridViewCellEventArgs dgvEvent = e as DataGridViewCellEventArgs;
-            int rowNum = dgvEvent.RowIndex;
-            string channelName = dgv.Rows[dgvEvent.RowIndex].Cells[1].Value.ToString();
+            Label lbl = sender as Label;
+            int rowNum = (int)lbl.Tag;
+            string channelName = lbl.Text;
 
             _matrixManager.SetChannelName(rowNum, channelName, _channelType);
         }
 
         private void _matrixFrame_MFrameToObjectDragEnded(object? sender, EventArgs e)
-        {
+        {            
             Form mainForm = _mFrame.GetFindForm();
             Point formCoordinates = mainForm.PointToClient(Cursor.Position);
             int width = 30;
@@ -340,16 +339,14 @@ namespace LshMatrix
         }
 
         //프레임 셀 클릭
-        private void MatrixFrame_SelectedCellChanged(object? sender, EventArgs e)
+        private void _matrixFrame_ClickedChannellChanged(object? sender, EventArgs e)
         {
-            DataGridView dgv = sender as DataGridView;
-            if (dgv != null)
+           Label lbl = sender as Label;
+            if (lbl != null)
             {
-                var cell = dgv.SelectedCells[0];
-
-                _selectedChannel = _matrixManager.GetChannel(cell.RowIndex, _channelType);
+                _selectedChannel = _matrixManager.GetChannel((int)lbl.Tag, _channelType);
             }
-            else if (dgv == null)
+            else if (lbl == null)
             {
                 _selectedChannel = null;
             }

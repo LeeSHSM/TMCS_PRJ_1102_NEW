@@ -143,7 +143,7 @@ namespace TMCS_PRJ
             // 장비등록정보확인ToolStripMenuItem
             // 
             장비등록정보확인ToolStripMenuItem.Name = "장비등록정보확인ToolStripMenuItem";
-            장비등록정보확인ToolStripMenuItem.Size = new Size(180, 22);
+            장비등록정보확인ToolStripMenuItem.Size = new Size(170, 22);
             장비등록정보확인ToolStripMenuItem.Text = "장비등록정보확인";
             장비등록정보확인ToolStripMenuItem.Click += 장비등록정보확인ToolStripMenuItem_Click;
             // 
@@ -202,6 +202,7 @@ namespace TMCS_PRJ
             btnAddMioFrame.TabIndex = 10;
             btnAddMioFrame.Text = "추 가";
             btnAddMioFrame.UseVisualStyleBackColor = false;
+            btnAddMioFrame.Click += btnAddMioFrame_Click_1;
             // 
             // groupBox2
             // 
@@ -271,8 +272,8 @@ namespace TMCS_PRJ
             // 
             // MainForm
             // 
-            AutoScaleDimensions = new SizeF(7F, 15F);
-            AutoScaleMode = AutoScaleMode.Font;
+            AutoScaleDimensions = new SizeF(96F, 96F);
+            AutoScaleMode = AutoScaleMode.Dpi;
             BackColor = Color.FromArgb(30, 30, 30);
             ClientSize = new Size(1904, 1041);
             Controls.Add(groupBox4);

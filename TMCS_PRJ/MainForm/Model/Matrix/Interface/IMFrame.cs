@@ -6,10 +6,10 @@ namespace LshMatrix
     {
         Form GetFindForm();
         void SetMatrixFrameChannelList(DataTable dataTable);
-        void ClearClickedCell();
+        void ClearClickedChannel();
 
-        event EventHandler SelectedCellChanged;
-        event EventHandler MatrixChannelNameChanged;
+        event EventHandler ClickedChannelChanged;
+        event EventHandler ClickedChannelNameChanged;
         event EventHandler MFrameToObjectDragEnded;
     }
 }

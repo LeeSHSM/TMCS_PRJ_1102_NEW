@@ -59,6 +59,10 @@ namespace LshCamera
 
         public async Task PanTiltAsync(int cameraId, int panSpeed, int tiltSpeed, int panDir, int tiltDir)
         {
+            if (!await GetStatusAsync())
+            {
+                await ConnectAmxServerAsync();
+            }
             byte byteCameraId = (byte)(128 + cameraId);
             byte bytePanSpeed = (byte)panSpeed;
             byte bytetiltSpeed = (byte)tiltSpeed;
@@ -75,6 +79,10 @@ namespace LshCamera
 
         public async Task<byte[]> SavePresetAsync(int cameraId)
         {
+            if (!await GetStatusAsync())
+            {
+                await ConnectAmxServerAsync();
+            }
             byte byteCameraId = (byte)(128 + cameraId);
             saveCameraId = (byte)((16 * cameraId) + 128);
             byte[] command = new byte[] { byteCameraId, 0x09, 0x06, 0x12, 0xFF };
@@ -91,6 +99,10 @@ namespace LshCamera
 
         public async Task LoadPresetAsync(int cameraId, CameraPreset preset)
         {
+            if (!await GetStatusAsync())
+            {
+                await ConnectAmxServerAsync();
+            }
             byte byteCameraId = (byte)(128 + cameraId);
             List<byte> message = new List<byte> { byteCameraId };
             message.AddRange(new byte[] { 0x01, 0x06, 0x02, 0x18, 0x18 });

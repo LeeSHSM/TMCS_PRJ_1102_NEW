@@ -24,19 +24,6 @@ namespace LshCamera
             lblPanTiltSpeed.Text = userSpeed.ToString();
 
             tblMainBackground.BackColor = Color.FromArgb(30, 30, 30);
-            tblMainBackground.Paint += CarmeraControlerFrame_Paint;
-        }
-
-        private void CarmeraControlerFrame_Paint(object? sender, PaintEventArgs e)
-        {
-            Debug.WriteLine("test");
-            //Graphics g = e.Graphics;
-
-            //// 하얀색 펜 생성
-            //using (Pen whitePen = new Pen(Color.White, 2)) // 2는 펜의 두께를 나타냅니다
-            //{
-            //    g.DrawRectangle(whitePen, tblMainBackground.ClientRectangle);
-            //}
         }
 
         private void Initialize()

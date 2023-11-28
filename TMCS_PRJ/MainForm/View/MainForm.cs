@@ -164,11 +164,6 @@ namespace TMCS_PRJ
             FormLoad?.Invoke(sender, e);
         }
 
-        private void btnAddMioFrame_Click(object sender, EventArgs e)
-        {
-            btnAddMioFrameClick(sender, e);
-        }
-
         public void MioFrameDelete(object sender, EventArgs e)
         {
             MioFrame mioFrame = sender as MioFrame;
@@ -233,9 +228,9 @@ namespace TMCS_PRJ
 
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void btnAddMioFrame_Click_1(object sender, EventArgs e)
         {
-            ucCameraControler.Focus();
+            btnAddMioFrameClick(sender, e);
         }
 
 
