@@ -45,7 +45,7 @@ namespace TMCS_PRJ
             await _dlpPresenter.InitializeAsync();
             await _cameraPresenter.InitializeAsync();
 
-            //_matrixControler.ConnectMatrixAsync(); //서버와 통신... 중요하긴한데 일단 백그라운드 실행
+            _matrixControler.ConnectMatrixAsync(); //서버와 통신... 중요하긴한데 일단 백그라운드 실행
         }
 
         /// <summary>
@@ -234,10 +234,19 @@ namespace TMCS_PRJ
             _view.MioFrameDelete(sender, e);
         }
 
-        private void _view_EquipmentStatusClick(object? sender, EventArgs e)
+        private async void _view_EquipmentStatusClick(object? sender, EventArgs e)
         {
             EquipmentStatusForm equipmentStatusForm = new EquipmentStatusForm();
             equipmentStatusForm.Setlbl(GlobalSetting.MATRIX_IP.ToString());
+            bool matrixStatus = await _matrixControler.GetMatrixStatus();
+            string stt = "접속실패";
+            if(matrixStatus)
+            {
+                stt = "접속성공";
+            }
+            equipmentStatusForm.SetMatrixStatus(stt);
+            equipmentStatusForm.SetCameraInfo("192.168.50.9", 1234);
+            //equipmentStatusForm.SetCameraStatus();
             equipmentStatusForm.ShowDialog();
         }
 

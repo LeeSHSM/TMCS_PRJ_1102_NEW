@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using LSHComponent;
+using System.Diagnostics;
 using System.Security.Cryptography.Xml;
 using System.Windows.Forms;
 
@@ -24,6 +25,7 @@ namespace LshCamera
             lblPanTiltSpeed.Text = userSpeed.ToString();
 
             tblMainBackground.BackColor = Color.FromArgb(30, 30, 30);
+            pnPreeset.BackColor = Color.FromArgb(80,80,80);
         }
 
         private void Initialize()
@@ -90,11 +92,12 @@ namespace LshCamera
                 label.MouseClick += Label_MouseClick;
                 pnPreeset.Controls.Add(label);
 
-                Button button = new Button
+                LshButton button = new LshButton
                 {
                     Text = "실행",
                     Location = new Point(label.Left + label.Width + 20, yPos - 4),
-                    Tag = i + 1,
+                    Font = new Font("맑은 고딕", 9, FontStyle.Regular),
+                Tag = i + 1,
                     Size = new Size(75, ControlHeight),
                     TabStop = false
                 };
@@ -104,10 +107,11 @@ namespace LshCamera
                 button.KeyUp += CarmeraControlerFrame_KeyUp;
 
                 pnPreeset.Controls.Add(button);
-                Button button2 = new Button
+                LshButton button2 = new LshButton
                 {
                     Text = "저장",
                     Tag = i + 1,
+                    Font = new Font("맑은 고딕", 9, FontStyle.Regular),
                     Location = new Point(button.Width + button.Left + 20, yPos - 4),
                     Size = new Size(75, ControlHeight),
                     TabStop = false
@@ -118,10 +122,11 @@ namespace LshCamera
                 button2.KeyUp += CarmeraControlerFrame_KeyUp;
                 pnPreeset.Controls.Add(button2);
 
-                Button button3 = new Button
+                LshButton button3 = new LshButton
                 {
                     Text = "이름변경",
                     Tag = i + 1,
+                    Font = new Font("맑은 고딕", 9, FontStyle.Regular),
                     Location = new Point(button2.Width + button2.Left + 20, yPos - 4),
                     Size = new Size(75, ControlHeight),
                     TabStop = false
@@ -152,16 +157,18 @@ namespace LshCamera
         private void SetPresetName_Click(object? sender, EventArgs e)
         {
             btnDown.Focus();
-            Button btn = sender as Button;
+            LshButton btn = sender as LshButton;
             Label label = FindLabelWithTagOne((int)btn.Tag);
             label.Visible = false;
             TextBox tbox = new TextBox();
             tbox.Location = label.Location;
             tbox.Text = label.Text;
             tbox.Tag = label.Tag;
-            tbox.Font = new Font("맑은 고딕", 9, FontStyle.Regular);
+            tbox.Font = new Font("맑은 고딕", 10, FontStyle.Regular);
             tbox.Size = label.Size;
+            tbox.ForeColor = Color.White;
             tbox.ImeMode = ImeMode.Hangul;
+            tbox.BorderStyle = BorderStyle.None;
             tbox.BackColor = pnPreeset.BackColor;
             pnPreeset.Controls.Add(tbox);
             tbox.Focus();
@@ -200,14 +207,14 @@ namespace LshCamera
 
         private void Button_MouseLeave(object? sender, EventArgs e)
         {
-            Button btn = sender as Button;
+            LshButton btn = sender as LshButton;
             Label label = FindLabelWithTagOne((int)btn.Tag);
             label.Font = new Font("맑은 고딕", 9, FontStyle.Regular);
         }
 
         private void Button_MouseEnter(object? sender, EventArgs e)
         {
-            Button btn = sender as Button;
+            LshButton btn = sender as LshButton;
             Label label = FindLabelWithTagOne((int)btn.Tag);
             label.Font = new Font("맑은 고딕", 10, FontStyle.Bold);
         }

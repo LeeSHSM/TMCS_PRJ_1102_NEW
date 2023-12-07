@@ -52,6 +52,7 @@ namespace LshMatrix
             {
                 UpdateMainScreen(dataTable);
                 CheckCreateScrollBar();
+                ClearClickedChannel();
             }            
         }
 
@@ -384,9 +385,13 @@ namespace LshMatrix
 
         public void ClearClickedChannel()
         {
-            _clickedChannel.BackColor = Color.Transparent;
-            _clickedChannel.Font = new Font("맑은 고딕", 10, FontStyle.Regular);
-            _clickedChannel = null;
+            if (_clickedChannel != null)
+            {
+                _clickedChannel.BackColor = Color.Transparent;
+                _clickedChannel.Font = new Font("맑은 고딕", 10, FontStyle.Regular);
+                _clickedChannel = null;
+                ClickedChannelChanged?.Invoke(null, EventArgs.Empty);
+            }
         }
 
         private bool _isDragMouseMove = false;      //드래그관련 마우스 무브
@@ -511,6 +516,7 @@ namespace LshMatrix
                     }
                     else
                     {
+                        ClearClickedChannel();
                         Label lbl = sender as Label;
                         _clickedChannel = lbl;
                         cms.Show(MousePosition);
@@ -566,6 +572,13 @@ namespace LshMatrix
                 _clickedChannel.Text = tbox.Text;
                 tbox.Dispose();
                 ClickedChannelNameChanged?.Invoke(_clickedChannel, EventArgs.Empty);
+                ChangeClickedChannel();
+            }
+            else if(e.KeyCode == Keys.Escape)
+            {
+                RichTextBox tbox = sender as RichTextBox;
+                tbox?.Dispose();
+                ChangeClickedChannel();
             }
         }
 

@@ -23,7 +23,7 @@ namespace LshDlp
 
         public DlpPresenter(int row, int col, IProgress<ProgressReport> progress)
         {
-            _dlpManager = new DlpManager(new DlpStruct(row, col));
+            _dlpManager = new DlpManager(row, col);
             _dlpFrameFileManager = new DlpFrameFileManager();
             _dlpFrame = new DlpFrame(_dlpManager.GetDlpStruct());
 
@@ -96,14 +96,14 @@ namespace LshDlp
         private void _dlpManager_DlpInputChannelChanged(object? sender, EventArgs e)
         {
             Dlp dlp = sender as Dlp;
-            _dlpFrame.SetDlpFrame("INPUT");
+            //_dlpFrame.SetDlpFrame("INPUT");
 
             DlpRouteChanged?.Invoke(dlp.MatrixPort, dlp.InputChannel);
         }
 
         private void _dlpManager_DlpInputChannelValueChanged(object? sender, EventArgs e)
         {
-            _dlpFrame.SetDlpFrame("INPUT");
+            //_dlpFrame.SetDlpFrame("INPUT");
         }
 
     }

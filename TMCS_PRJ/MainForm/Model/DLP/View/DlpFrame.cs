@@ -7,10 +7,10 @@ namespace LshDlp
         public event EventHandler DlpClick;
 
         internal TableLayoutPanel _tlpDlpFrame;
-        private DlpStruct _dlpStruct;
+        private DlpGroup _dlpStruct;
 
 
-        internal DlpFrame(DlpStruct dlpStruct)
+        internal DlpFrame(DlpGroup dlpStruct)
         {
             InitializeComponent();
             this.DoubleBuffered = true;

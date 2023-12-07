@@ -289,9 +289,9 @@ namespace LshMatrix
             _connectInfo.DisConnect();
         }
 
-        public Task<bool> GetStateAsync()
+        public async Task<bool> GetStateAsync()
         {
-            return _connectInfo.GetState();
+            return await _connectInfo.GetState();
         }
 
         public async Task SendMsgAsync(string msg)
@@ -388,12 +388,12 @@ namespace LshMatrix
             _client?.Close();
         }
 
-        public Task<bool> GetState()
+        public async Task<bool> GetState()
         {
             // _client가 null이 아니고, 연결되어 있으면 true를 반환합니다.
             // 그리고 _stream이 null이 아니고 소켓이 연결되어 있으면 true를 반환합니다.
             bool state = _client != null && _client.Connected && _stream != null && _stream.CanRead;
-            return Task.FromResult(state);
+            return await Task.FromResult(state);
         }
 
         public async Task SendMsgAsync(string msg)

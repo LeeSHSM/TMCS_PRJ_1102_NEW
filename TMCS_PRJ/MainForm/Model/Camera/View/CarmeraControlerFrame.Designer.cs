@@ -64,7 +64,7 @@
             tblArrow.Name = "tblArrow";
             tblArrow.RowCount = 1;
             tblArrow.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            tblArrow.Size = new Size(860, 230);
+            tblArrow.Size = new Size(860, 258);
             tblArrow.TabIndex = 8;
             // 
             // tableLayoutPanel1
@@ -84,7 +84,7 @@
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 33.3333321F));
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 33.3333321F));
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 33.3333321F));
-            tableLayoutPanel1.Size = new Size(244, 224);
+            tableLayoutPanel1.Size = new Size(244, 252);
             tableLayoutPanel1.TabIndex = 4;
             // 
             // btnLeft
@@ -93,10 +93,10 @@
             btnLeft.BackgroundImage = TMCS_PRJ.Properties.Resources.LeftArrow;
             btnLeft.BackgroundImageLayout = ImageLayout.Zoom;
             btnLeft.Dock = DockStyle.Fill;
-            btnLeft.Location = new Point(0, 74);
+            btnLeft.Location = new Point(0, 84);
             btnLeft.Margin = new Padding(0);
             btnLeft.Name = "btnLeft";
-            btnLeft.Size = new Size(81, 74);
+            btnLeft.Size = new Size(81, 84);
             btnLeft.TabIndex = 2;
             btnLeft.TabStop = false;
             btnLeft.UseVisualStyleBackColor = false;
@@ -107,10 +107,10 @@
             btnDown.BackgroundImage = TMCS_PRJ.Properties.Resources.BotArrow;
             btnDown.BackgroundImageLayout = ImageLayout.Zoom;
             btnDown.Dock = DockStyle.Fill;
-            btnDown.Location = new Point(81, 148);
+            btnDown.Location = new Point(81, 168);
             btnDown.Margin = new Padding(0);
             btnDown.Name = "btnDown";
-            btnDown.Size = new Size(81, 76);
+            btnDown.Size = new Size(81, 84);
             btnDown.TabIndex = 3;
             btnDown.TabStop = false;
             btnDown.UseVisualStyleBackColor = false;
@@ -121,10 +121,10 @@
             btnRight.BackgroundImage = TMCS_PRJ.Properties.Resources.RightArrow;
             btnRight.BackgroundImageLayout = ImageLayout.Zoom;
             btnRight.Dock = DockStyle.Fill;
-            btnRight.Location = new Point(162, 74);
+            btnRight.Location = new Point(162, 84);
             btnRight.Margin = new Padding(0);
             btnRight.Name = "btnRight";
-            btnRight.Size = new Size(82, 74);
+            btnRight.Size = new Size(82, 84);
             btnRight.TabIndex = 0;
             btnRight.TabStop = false;
             btnRight.UseVisualStyleBackColor = false;
@@ -138,7 +138,7 @@
             btnUp.Location = new Point(81, 0);
             btnUp.Margin = new Padding(0);
             btnUp.Name = "btnUp";
-            btnUp.Size = new Size(81, 74);
+            btnUp.Size = new Size(81, 84);
             btnUp.TabIndex = 1;
             btnUp.TabStop = false;
             btnUp.UseVisualStyleBackColor = false;
@@ -156,7 +156,7 @@
             tableLayoutPanel3.Name = "tableLayoutPanel3";
             tableLayoutPanel3.RowCount = 1;
             tableLayoutPanel3.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
-            tableLayoutPanel3.Size = new Size(610, 230);
+            tableLayoutPanel3.Size = new Size(610, 258);
             tableLayoutPanel3.TabIndex = 5;
             // 
             // pnPreeset
@@ -165,7 +165,7 @@
             pnPreeset.Dock = DockStyle.Fill;
             pnPreeset.Location = new Point(146, 3);
             pnPreeset.Name = "pnPreeset";
-            pnPreeset.Size = new Size(461, 224);
+            pnPreeset.Size = new Size(461, 252);
             pnPreeset.TabIndex = 11;
             // 
             // tableLayoutPanel4
@@ -187,7 +187,7 @@
             tableLayoutPanel4.RowStyles.Add(new RowStyle(SizeType.Absolute, 40F));
             tableLayoutPanel4.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
             tableLayoutPanel4.RowStyles.Add(new RowStyle(SizeType.Absolute, 30F));
-            tableLayoutPanel4.Size = new Size(143, 230);
+            tableLayoutPanel4.Size = new Size(143, 258);
             tableLayoutPanel4.TabIndex = 7;
             // 
             // lblPanTiltSpeed
@@ -197,7 +197,7 @@
             lblPanTiltSpeed.BorderStyle = BorderStyle.FixedSingle;
             lblPanTiltSpeed.Dock = DockStyle.Fill;
             lblPanTiltSpeed.ForeColor = Color.White;
-            lblPanTiltSpeed.Location = new Point(8, 203);
+            lblPanTiltSpeed.Location = new Point(8, 231);
             lblPanTiltSpeed.Margin = new Padding(8, 3, 8, 3);
             lblPanTiltSpeed.Name = "lblPanTiltSpeed";
             lblPanTiltSpeed.Size = new Size(55, 24);
@@ -212,7 +212,7 @@
             lblZoomSpeed.BorderStyle = BorderStyle.FixedSingle;
             lblZoomSpeed.Dock = DockStyle.Fill;
             lblZoomSpeed.ForeColor = Color.White;
-            lblZoomSpeed.Location = new Point(79, 203);
+            lblZoomSpeed.Location = new Point(79, 231);
             lblZoomSpeed.Margin = new Padding(8, 3, 8, 3);
             lblZoomSpeed.Name = "lblZoomSpeed";
             lblZoomSpeed.Size = new Size(56, 24);
@@ -245,7 +245,7 @@
             scrollbarZoomSpeed.Minimum = 1;
             scrollbarZoomSpeed.Name = "scrollbarZoomSpeed";
             scrollbarZoomSpeed.ScaleScrollBarForDpiChange = false;
-            scrollbarZoomSpeed.Size = new Size(56, 154);
+            scrollbarZoomSpeed.Size = new Size(56, 182);
             scrollbarZoomSpeed.TabIndex = 7;
             scrollbarZoomSpeed.Value = 1;
             // 
@@ -259,7 +259,7 @@
             scrollbarPanTiltSpeed.Minimum = 1;
             scrollbarPanTiltSpeed.Name = "scrollbarPanTiltSpeed";
             scrollbarPanTiltSpeed.ScaleScrollBarForDpiChange = false;
-            scrollbarPanTiltSpeed.Size = new Size(55, 154);
+            scrollbarPanTiltSpeed.Size = new Size(55, 182);
             scrollbarPanTiltSpeed.TabIndex = 6;
             scrollbarPanTiltSpeed.Value = 1;
             // 
@@ -289,8 +289,8 @@
             tblMainBackground.Name = "tblMainBackground";
             tblMainBackground.Padding = new Padding(3);
             tblMainBackground.RowCount = 2;
-            tblMainBackground.RowStyles.Add(new RowStyle(SizeType.Percent, 45F));
-            tblMainBackground.RowStyles.Add(new RowStyle(SizeType.Percent, 55F));
+            tblMainBackground.RowStyles.Add(new RowStyle(SizeType.Percent, 50.390625F));
+            tblMainBackground.RowStyles.Add(new RowStyle(SizeType.Percent, 49.609375F));
             tblMainBackground.Size = new Size(866, 518);
             tblMainBackground.TabIndex = 10;
             // 

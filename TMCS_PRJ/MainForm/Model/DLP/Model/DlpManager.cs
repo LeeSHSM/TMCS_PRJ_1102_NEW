@@ -7,18 +7,18 @@ namespace LshDlp
         public event EventHandler? DlpInputChannelChanged;
         public event EventHandler? DlpInputChannelValueChanged;
 
-        private DlpStruct _dlpStruct;
+        private DlpGroup _dlpGroup;
 
-        internal DlpManager(DlpStruct dlpStruct)
+        internal DlpManager(int rowCount, int colCount)
         {
-            _dlpStruct = dlpStruct;
+            _dlpGroup = new DlpGroup(rowCount,colCount);
             InitializeEvent();
         }
 
         private void InitializeEvent()
         {
-            _dlpStruct.InputChannelChanged += _dlpStruct_InputChannelChanged;
-            _dlpStruct.InputChannelValueChanged += _dlpStruct_InputChannelValueChanged;
+            _dlpGroup.InputChannelChanged += _dlpStruct_InputChannelChanged;
+            _dlpGroup.InputChannelValueChanged += _dlpStruct_InputChannelValueChanged;
         }
 
         private void _dlpStruct_InputChannelValueChanged(object? sender, EventArgs e)
@@ -29,14 +29,7 @@ namespace LshDlp
         internal Dlp GetDlp(int dlpId)
         {
             Dlp dlp = new Dlp();
-            foreach (Dlp dlpItem in _dlpStruct.Dlps)
-            {
-                if (dlpItem.DlpId == dlpId)
-                {
-                    dlp = dlpItem;
-                    break;
-                }
-            }
+            dlp = _dlpGroup.Dlps.FirstOrDefault(dlp => dlp.DlpId == dlpId);
 
             if (dlp == null)
             {
@@ -48,7 +41,7 @@ namespace LshDlp
 
         internal List<Dlp> GetDlpList()
         {
-            List<Dlp> dlps = _dlpStruct.Dlps;
+            List<Dlp> dlps = _dlpGroup.Dlps;
 
             return dlps;
         }
@@ -69,7 +62,7 @@ namespace LshDlp
         {
             foreach (DlpFrameControlInfo dlp in dlps)
             {
-                Dlp matchingDlp = _dlpStruct.Dlps.FirstOrDefault(x => x.DlpId == dlp.DlpId);
+                Dlp matchingDlp = _dlpGroup.Dlps.FirstOrDefault(x => x.DlpId == dlp.DlpId);
                 matchingDlp.TileMode = dlp.TileMode;
                 matchingDlp.Row = dlp.Row;
                 matchingDlp.Col = dlp.Col;
@@ -95,9 +88,9 @@ namespace LshDlp
             DlpInputChannelChanged?.Invoke(sender, e);
         }
 
-        internal DlpStruct GetDlpStruct()
+        internal DlpGroup GetDlpStruct()
         {
-            return _dlpStruct;
+            return _dlpGroup;
         }
     }
 }

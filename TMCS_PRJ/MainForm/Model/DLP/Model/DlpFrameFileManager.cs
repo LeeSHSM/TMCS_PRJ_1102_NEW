@@ -6,7 +6,7 @@ namespace LshDlp
 {
     internal class DlpFrameFileManager
     {
-        public void SaveDlpsInfo(DlpStruct dlpStruct)
+        public void SaveDlpsInfo(DlpGroup dlpStruct)
         {
             List<DlpFrameControlInfo> dlpControls = new List<DlpFrameControlInfo>();
             foreach (Dlp dlp in dlpStruct.Dlps)

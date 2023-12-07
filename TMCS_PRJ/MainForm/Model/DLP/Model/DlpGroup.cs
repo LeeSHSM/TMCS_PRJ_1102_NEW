@@ -1,8 +1,9 @@
 ﻿using LshMatrix;
+using System.Runtime.Intrinsics.Arm;
 
 namespace LshDlp
 {
-    public class DlpStruct
+    public class DlpGroup
     {
         public event EventHandler? InputChannelChanged;
         public event EventHandler? InputChannelValueChanged;
@@ -11,7 +12,7 @@ namespace LshDlp
         private int _rowCount;
         private int _colCount;
 
-        public DlpStruct(int rowCount, int colCount)
+        public DlpGroup(int rowCount, int colCount)
         {
             RowCount = rowCount;
             ColCount = colCount;
@@ -26,11 +27,6 @@ namespace LshDlp
             set
             {
                 _dlps = value;
-                foreach (var dlp in _dlps)
-                {
-                    //dlp.InputChannelChanged += Dlp_InputChannelChanged;
-                    //dlp.InputChannelValueChanged += Dlp_InputChannelValueChanged;
-                }
             }
         }
 
@@ -44,10 +40,7 @@ namespace LshDlp
                     Dlp dlp = new Dlp();
                     dlp.DlpId = dlpCount++;
                     dlp.Row = i;
-                    dlp.Col = j;
-                    dlp.TileMode = 0;
-                    dlp.MatrixPort = 0;
-                    dlp.InputChannel = new MatrixChannel { ChannelName = "-", ChannelType = "INPUT", Port = 0, RouteNo = 0 };
+                    dlp.Col = j;                                    
                     dlp.InputChannelChanged += Dlp_InputChannelChanged;
                     dlp.InputChannelValueChanged += Dlp_InputChannelValueChanged;
                     Dlps.Add(dlp);
@@ -70,14 +63,18 @@ namespace LshDlp
     {
         public event EventHandler? InputChannelChanged;
         public event EventHandler? InputChannelValueChanged;
-
+        public Dlp() 
+        {
+            this.Font = new Font("맑은 고딕", 10, FontStyle.Regular);
+            this._inputChannel = new MatrixChannel { ChannelName = "-", ChannelType = "INPUT", Port = 0, RouteNo = 0 };
+        }
 
         private int _dlpId;
         private int _tileMode;
         private int _row;
         private int _col;
         private int _matrixPort;
-        private MatrixChannel? _inputChannel;
+        private MatrixChannel _inputChannel;
 
         public int TileMode
         {
@@ -96,18 +93,17 @@ namespace LshDlp
             get => _inputChannel;
             set
             {
-                if (_inputChannel != null)
-                {
-                    _inputChannel.MatrixChannelValueChanged -= _inputChannel_MatrixChannelValueChanged;
-                }
+                _inputChannel.MatrixChannelValueChanged -= _inputChannel_MatrixChannelValueChanged;
                 _inputChannel = value;
-                InputChannelChanged?.Invoke(this, EventArgs.Empty);
                 _inputChannel.MatrixChannelValueChanged += _inputChannel_MatrixChannelValueChanged;
+                this.Text = _inputChannel.ChannelName;                
+                InputChannelChanged?.Invoke(this, EventArgs.Empty);                
             }
         }
 
         private void _inputChannel_MatrixChannelValueChanged(object? sender, EventArgs e)
-        {
+        {         
+            this.Text = _inputChannel.ChannelName;
             InputChannelValueChanged?.Invoke(this, EventArgs.Empty);
         }
     }

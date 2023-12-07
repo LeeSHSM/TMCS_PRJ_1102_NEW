@@ -139,7 +139,7 @@ namespace LshMatrix
 
         public void ClearSelectedMatrixChannel()
         {
-            //_mFrame.ClearClickedChannel();
+            _mFrame.ClearClickedChannel();
         }
 
         //------------------------------------------MioFrame----------------------------------------------------------
@@ -384,6 +384,16 @@ namespace LshMatrix
             return dt;
         }
 
+
+
+        public async Task<bool> GetMatrixStatus()
+        {
+            bool status = await _matrixManager.GetStateAsync();
+
+
+            return status;
+
+        }
 
     }
 }
